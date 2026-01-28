@@ -1,6 +1,6 @@
-import { describe, expect, it, beforeAll } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { beforeAll,describe, expect, it } from 'vitest';
 
 import { Input } from '../input';
 import type { InputProps } from '../types';

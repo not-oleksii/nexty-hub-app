@@ -1,5 +1,5 @@
-import { describe, expect, it, beforeAll } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { beforeAll,describe, expect, it } from 'vitest';
 
 import { Stack } from '../stack';
 import type { StackProps } from '../types';
