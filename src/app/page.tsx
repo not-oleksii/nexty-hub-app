@@ -1,5 +1,8 @@
+import { Content } from '@/components/layout/content';
+import { FlexBox } from '@/components/layout/flex-box';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Caption1 } from '@/components/typography/caption1';
+import { Subtitle3 } from '@/components/typography/subtitle3';
 import { Title } from '@/components/typography/title';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -10,14 +13,14 @@ import { Textarea } from '@/components/ui/textarea';
 
 export default function Home() {
   return (
-    <main className="mx-auto flex w-full max-w-xl flex-col gap-6 p-6">
-      <header className="flex items-center justify-between">
-        <div className="space-y-1">
+    <Content className="flex flex-col gap-6">
+      <FlexBox align="center" justify="between">
+        <FlexBox direction="col" gap="xs">
           <Title>Nexty Hub</Title>
           <Caption1>UI kit preview (shadcn + theme tokens)</Caption1>
-        </div>
+        </FlexBox>
         <ThemeToggle />
-      </header>
+      </FlexBox>
 
       <Card>
         <CardHeader>
@@ -28,11 +31,11 @@ export default function Home() {
           <Input placeholder="Title" />
           <Input placeholder="Image URL (optional)" />
           <Textarea placeholder="Description (optional)" />
-          <div className="flex gap-2">
+          <FlexBox gap="sm">
             <Button>Add item</Button>
             <Button variant="secondary">Pick next</Button>
             <Button variant="outline">Cancel</Button>
-          </div>
+          </FlexBox>
         </CardContent>
       </Card>
 
@@ -41,24 +44,26 @@ export default function Home() {
           <TabsTrigger value="todo">TODO</TabsTrigger>
           <TabsTrigger value="done">DONE</TabsTrigger>
         </TabsList>
-        <TabsContent value="todo" className="pt-3">
+
+        <TabsContent className="pt-3" value="todo">
           <Card>
             <CardHeader className="flex-row items-center justify-between">
-              <div>
-                <CardTitle className="text-base">Movies</CardTitle>
-                <CardDescription>12 items</CardDescription>
-              </div>
+              <FlexBox direction="col" gap="xs">
+                <Subtitle3>Movies</Subtitle3>
+                <Caption1>12 items</Caption1>
+              </FlexBox>
               <Badge>Shared</Badge>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Empty state goes here later.</p>
+              <Caption1>Empty state goes here later.</Caption1>
             </CardContent>
           </Card>
         </TabsContent>
-        <TabsContent value="done" className="pt-3">
-          <p className="text-sm text-muted-foreground">No completed items yet.</p>
+
+        <TabsContent className="pt-3" value="done">
+          <Caption1>No completed items yet.</Caption1>
         </TabsContent>
       </Tabs>
-    </main>
+    </Content>
   );
 }

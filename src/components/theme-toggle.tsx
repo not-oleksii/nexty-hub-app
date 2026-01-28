@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import { useCallback } from 'react';
 
 import { useTheme } from 'next-themes';
 
@@ -15,17 +15,29 @@ import {
 export function ThemeToggle() {
   const { setTheme } = useTheme();
 
+  const onLightClick = useCallback(() => {
+    setTheme('light');
+  }, [setTheme]);
+
+  const onDarkClick = useCallback(() => {
+    setTheme('dark');
+  }, [setTheme]);
+
+  const onSystemClick = useCallback(() => {
+    setTheme('system');
+  }, [setTheme]);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm">
+        <Button size="sm" variant="outline">
           Theme
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme('light')}>Light</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('dark')}>Dark</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('system')}>System</DropdownMenuItem>
+        <DropdownMenuItem onClick={onLightClick}>Light</DropdownMenuItem>
+        <DropdownMenuItem onClick={onDarkClick}>Dark</DropdownMenuItem>
+        <DropdownMenuItem onClick={onSystemClick}>System</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
