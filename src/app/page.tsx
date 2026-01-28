@@ -1,4 +1,6 @@
 import { ThemeToggle } from '@/components/theme-toggle';
+import { Caption1 } from '@/components/typography/caption1';
+import { Title } from '@/components/typography/title';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,8 +13,8 @@ export default function Home() {
     <main className="mx-auto flex w-full max-w-xl flex-col gap-6 p-6">
       <header className="flex items-center justify-between">
         <div className="space-y-1">
-          <h1 className="text-2xl font-semibold">Nexty Hub</h1>
-          <p className="text-sm text-muted-foreground">UI kit preview (shadcn + theme tokens)</p>
+          <Title>Nexty Hub</Title>
+          <Caption1>UI kit preview (shadcn + theme tokens)</Caption1>
         </div>
         <ThemeToggle />
       </header>
