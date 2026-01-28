@@ -10,7 +10,7 @@ type Direction = 'row' | 'col';
 
 type Wrap = 'nowrap' | 'wrap';
 
-export type StackProps = HTMLAttributes<HTMLDivElement> & {
+export type StackProps = HTMLAttributes<HTMLDivElement> & { 'data-testid'?: string } & { 
   direction?: Direction;
   space?: Space;
   align?: Align;
