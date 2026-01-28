@@ -2,7 +2,7 @@ import next from 'eslint-config-next';
 import prettier from 'eslint-config-prettier';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 
-export default [
+const config = [
   ...next,
   prettier,
   {
@@ -14,17 +14,11 @@ export default [
         'error',
         {
           groups: [
-            // Side effect imports.
             ['^\\u0000'],
-            // React/Next first.
             ['^react$', '^react/', '^next$', '^next/'],
-            // Packages.
             ['^@?\\w'],
-            // Internal aliases.
             ['^@/'],
-            // Relative imports.
             ['^\\.\\.(?!/?$)', '^\\.\\./?$', '^\\.(?!/?$)', '^\\./?$'],
-            // Style imports.
             ['^.+\\.(css|scss)$'],
           ],
         },
@@ -33,3 +27,5 @@ export default [
     },
   },
 ];
+
+export default config;
