@@ -1,2 +1,2 @@
-export type { BodyProps } from './body';
 export { Body } from './body';
+export type { BodyProps } from './types';
