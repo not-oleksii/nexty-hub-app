@@ -1,0 +1,19 @@
+# If you later enable the Semantic Pull Requests GitHub App,
+# this config defines allowed types/scopes.
+types:
+  - feat
+  - fix
+  - chore
+  - refactor
+  - docs
+  - test
+  - ci
+scopes:
+  - ui
+  - lists
+  - items
+  - picker
+  - auth
+  - db
+  - infra
+requireScope: true
