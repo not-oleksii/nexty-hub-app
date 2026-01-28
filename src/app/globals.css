@@ -1,26 +1,84 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Light theme (kept simple for now) */
+  --background: 210 40% 98%;
+  --foreground: 222.2 84% 4.9%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+
+  /* Accent: green */
+  --primary: 142.1 70.6% 45.3%;
+  --primary-foreground: 144.9 80.4% 10%;
+
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+
+  --accent: 142.1 70.6% 45.3%;
+  --accent-foreground: 144.9 80.4% 10%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 142.1 70.6% 45.3%;
+
+  --radius: 0.9rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.dark {
+  /* Dark navy base */
+  --background: 214 67% 8%; /* ~ #071323 */
+  --foreground: 213 100% 95%; /* ~ #E6F0FF */
+
+  --card: 214 62% 13%; /* ~ #0B1E36 */
+  --card-foreground: 213 100% 95%;
+
+  --popover: 214 62% 13%;
+  --popover-foreground: 213 100% 95%;
+
+  /* Accent green */
+  --primary: 142.1 70.6% 45.3%; /* ~ #22C55E */
+  --primary-foreground: 144.9 80.4% 10%;
+
+  --secondary: 215 40% 18%; /* slightly lighter navy */
+  --secondary-foreground: 213 100% 95%;
+
+  --muted: 215 35% 18%;
+  --muted-foreground: 212 28% 75%; /* ~ #A7BEDA */
+
+  --accent: 142.1 70.6% 45.3%;
+  --accent-foreground: 144.9 80.4% 10%;
+
+  --destructive: 0 62.8% 50%;
+  --destructive-foreground: 213 100% 95%;
+
+  --border: 212 42% 23%; /* ~ #1B3A5C */
+  --input: 212 42% 23%;
+  --ring: 142.1 70.6% 45.3%;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  @apply border-border;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply bg-background text-foreground;
+}
+
+/* subtle background glow (optional) */
+.dark body {
+  background-image:
+    radial-gradient(600px circle at 20% 10%, hsl(199 89% 58% / 0.12), transparent 60%),
+    radial-gradient(800px circle at 80% 20%, hsl(142 71% 45% / 0.10), transparent 55%);
 }
