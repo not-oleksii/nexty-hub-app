@@ -1,23 +1,11 @@
 import { ContentWrapper } from '@/components/layout/content';
 import { Caption1 } from '@/components/typography/caption1';
 import { Header1 } from '@/components/typography/header1';
-
-type DiscoverItem = {
-  id: string;
-  type: string;
-  title: string;
-  category?: string | null;
-};
-
-async function getMovies(): Promise<DiscoverItem[]> {
-  const res = await fetch('//api/discover/movies', { cache: 'no-store' });
-  const data = (await res.json()) as { items: DiscoverItem[] };
-
-  return data.items;
-}
+import type { DiscoverItemDto } from '@/server/api/discover';
+import { getDiscoverMovies } from '@/server/api/discover';
 
 export default async function DiscoverMoviesPage() {
-  const items = await getMovies();
+  const items: DiscoverItemDto[] = await getDiscoverMovies();
 
   return (
     <ContentWrapper>

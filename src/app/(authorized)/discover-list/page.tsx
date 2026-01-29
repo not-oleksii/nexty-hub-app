@@ -1,38 +1,16 @@
 import { ContentWrapper } from '@/components/layout/content';
 import { Caption1 } from '@/components/typography/caption1';
 import { Header1 } from '@/components/typography/header1';
-
-type DiscoverItem = {
-  id: string;
-  type: string;
-  title: string;
-  category?: string | null;
-  imageUrl?: string | null;
-};
-
-async function getDiscoverItems(): Promise<DiscoverItem[]> {
-  const res = await fetch('//api/discover', { cache: 'no-store' });
-  const data = (await res.json()) as { items: DiscoverItem[] };
-
-  return data.items;
-}
+import type { DiscoverItemDto } from '@/server/api/discover';
+import { getDiscoverItems } from '@/server/api/discover';
 
 export default async function DiscoverListPage() {
-  const items = await getDiscoverItems();
+  const items: DiscoverItemDto[] = await getDiscoverItems();
 
   return (
     <ContentWrapper>
       <Header1>Discover</Header1>
       <Caption1>All items (movies, series, games, books, ...)</Caption1>
-
-      <div className="mt-4">
-        <a
-          className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
-          href="/discover-list/add"
-        >
-          Add item
-        </a>
-      </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {items.map((item) => (
