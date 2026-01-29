@@ -1,7 +1,5 @@
-import { Box } from '@/components/layout/box';
 import { ContentWrapper } from '@/components/layout/content';
 import { Header1 } from '@/components/typography/header1';
-import { Button } from '@/components/ui/button';
 
 const DUMMY_MOVIES_LISTS = [
   {
@@ -22,7 +20,14 @@ export default function DiscoverListPage() {
   return (
     <ContentWrapper>
       <Header1>Discover List</Header1>
-      <Box className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"></Box>
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {DUMMY_MOVIES_LISTS.map((list) => (
+          <div key={list.id} className="rounded-xl border bg-card p-4">
+            {list.name}
+          </div>
+        ))}
+      </div>
     </ContentWrapper>
   );
 }

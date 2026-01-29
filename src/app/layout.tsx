@@ -29,7 +29,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} from-background via-muted/40 to-background h-screen w-screen bg-gradient-to-br antialiased dark:from-[#071323] dark:via-[#0b1e36] dark:to-[#0f2745]`}
+        className={[
+          geistSans.variable,
+          geistMono.variable,
+          'antialiased',
+        ].join(' ')}
       >
         <ThemeProvider>{children} </ThemeProvider>
       </body>

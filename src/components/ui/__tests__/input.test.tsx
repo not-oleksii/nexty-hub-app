@@ -3,28 +3,21 @@ import userEvent from '@testing-library/user-event';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import { Input } from '../input';
-import type { InputProps } from '../types';
 
 describe('Input', () => {
-  let props: InputProps;
+  let testId: string;
 
   beforeAll(() => {
-    props = {
-      'data-testid': 'nexty-search-input',
-      placeholder: 'Search…',
-      defaultValue: '',
-    };
+    testId = 'nexty-search-input';
   });
 
   const getView = () => {
     const user = userEvent.setup();
 
-    render(<Input {...props} />);
+    render(<Input data-testid={testId} placeholder="Search…" defaultValue="" />);
 
     const getSearchInput = async () => {
-      return screen.findByTestId(
-        'nexty-search-input',
-      ) as Promise<HTMLInputElement>;
+      return screen.findByTestId(testId) as Promise<HTMLInputElement>;
     };
 
     const typeSearch = async (text: string) => {
