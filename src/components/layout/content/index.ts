@@ -1,2 +1,2 @@
-export { Content } from './content';
+export { ContentWrapper } from './content';
 export type { ContentProps } from './types';
