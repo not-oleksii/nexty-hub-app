@@ -41,7 +41,14 @@ export function FlexBox({
 }: FlexBoxProps) {
   return (
     <div
-      className={cn('flex', directionClass[direction], alignClass[align], justifyClass[justify], gapClass[gap], className)}
+      className={cn(
+        'flex',
+        directionClass[direction],
+        alignClass[align],
+        justifyClass[justify],
+        gapClass[gap],
+        className,
+      )}
       {...props}
     />
   );

@@ -43,6 +43,16 @@ const config = [
         'error',
         { blankLine: 'always', prev: '*', next: 'return' },
       ],
+      'max-len': [
+        'error',
+        {
+          code: 100,
+          ignoreUrls: true,
+          ignoreStrings: false,
+          ignoreTemplateLiterals: false,
+          ignoreComments: false,
+        },
+      ],
     },
   },
 ];

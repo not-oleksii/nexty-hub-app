@@ -6,7 +6,13 @@ import { Subtitle3 } from '@/components/typography/subtitle3';
 import { Title } from '@/components/typography/title';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
@@ -26,7 +32,9 @@ export default function Home() {
         <Card>
           <CardHeader>
             <CardTitle>Quick add</CardTitle>
-            <CardDescription>Example form fields using the shared theme.</CardDescription>
+            <CardDescription>
+              Example form fields using the shared theme.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <Input placeholder="Title" />

@@ -3,5 +3,10 @@ import { cn } from '@/lib/utils';
 import type { Subtitle4Props } from './types';
 
 export function Subtitle4({ className, ...props }: Subtitle4Props) {
-  return <h5 className={cn('text-xs font-medium uppercase tracking-wide', className)} {...props} />;
+  return (
+    <h5
+      className={cn('text-xs font-medium tracking-wide uppercase', className)}
+      {...props}
+    />
+  );
 }

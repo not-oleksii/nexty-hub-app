@@ -7,8 +7,8 @@ export function Code({ className, ...props }: CodeProps) {
     <code
       className={cn(
         [
-          'rounded bg-muted px-1.5 py-0.5 font-mono text-xs text-foreground',
-          'border border-border',
+          'bg-muted text-foreground rounded px-1.5 py-0.5 font-mono text-xs',
+          'border-border border',
         ].join(' '),
         className,
       )}

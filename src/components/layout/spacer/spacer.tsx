@@ -17,6 +17,17 @@ const axisClass: Record<NonNullable<SpacerProps['axis']>, string> = {
   y: 'w-0',
 };
 
-export function Spacer({ className, size = 8, axis = 'y', ...props }: SpacerProps) {
-  return <div className={cn(sizeClass[size], axisClass[axis], className)} aria-hidden {...props} />;
+export function Spacer({
+  className,
+  size = 8,
+  axis = 'y',
+  ...props
+}: SpacerProps) {
+  return (
+    <div
+      className={cn(sizeClass[size], axisClass[axis], className)}
+      aria-hidden
+      {...props}
+    />
+  );
 }
