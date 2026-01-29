@@ -1,30 +1,38 @@
 import { ContentWrapper } from '@/components/layout/content';
+import { Caption1 } from '@/components/typography/caption1';
 import { Header1 } from '@/components/typography/header1';
 
-const DUMMY_MOVIES_LISTS = [
-  {
-    id: 'lorem-1',
-    name: 'Party Favors',
-  },
-  {
-    id: 'lorem-2',
-    name: 'Last Call',
-  },
-  {
-    id: 'lorem-3',
-    name: 'The Last Dance',
-  },
-];
+type DiscoverItem = {
+  id: string;
+  type: string;
+  title: string;
+  category?: string | null;
+  imageUrl?: string | null;
+};
 
-export default function DiscoverListPage() {
+async function getDiscoverItems(): Promise<DiscoverItem[]> {
+  const res = await fetch('//api/discover', { cache: 'no-store' });
+  const data = (await res.json()) as { items: DiscoverItem[] };
+
+  return data.items;
+}
+
+export default async function DiscoverListPage() {
+  const items = await getDiscoverItems();
+
   return (
     <ContentWrapper>
-      <Header1>Discover List</Header1>
+      <Header1>Discover</Header1>
+      <Caption1>All items (movies, series, games, books, ...)</Caption1>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {DUMMY_MOVIES_LISTS.map((list) => (
-          <div key={list.id} className="rounded-xl border bg-card p-4">
-            {list.name}
+      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {items.map((item) => (
+          <div key={item.id} className="rounded-xl border bg-card p-4">
+            <div className="text-xs text-muted-foreground">{item.type}</div>
+            <div className="mt-1 font-medium">{item.title}</div>
+            {item.category ? (
+              <div className="mt-1 text-xs text-muted-foreground">{item.category}</div>
+            ) : null}
           </div>
         ))}
       </div>
