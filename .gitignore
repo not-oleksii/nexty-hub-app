@@ -42,3 +42,5 @@ next-env.d.ts
 
 # Local DB
 dev.db
+
+!.env.example
