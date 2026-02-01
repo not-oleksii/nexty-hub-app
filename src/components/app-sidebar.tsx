@@ -20,7 +20,7 @@ import { ROUTES } from '@/constants/routes';
 
 export function AppSidebar() {
   return (
-    <Sidebar collapsible="icon" className="bg-red-50">
+    <Sidebar variant="floating" collapsible="icon">
       <SidebarHeader />
       <SidebarContent>
         <SidebarGroup>

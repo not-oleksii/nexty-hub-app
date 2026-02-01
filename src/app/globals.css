@@ -90,18 +90,17 @@
 
   --radius: 0.9rem;
 
-  /* Sidebar (glass) */
-  --sidebar: hsl(215 45% 10% / 0.55);
-  --sidebar-foreground: hsl(210 40% 96%);
+  --sidebar: hsl(0 0% 98%);
+  --sidebar-foreground: hsl(240 5% 28%);
 
-  --sidebar-primary: hsl(142 70% 45%);
-  --sidebar-primary-foreground: hsl(0 0% 10%);
+  --sidebar-primary: hsl(240 6% 12%);
+  --sidebar-primary-foreground: hsl(0 0% 98%);
 
-  --sidebar-accent: hsl(215 40% 18% / 0.55);
-  --sidebar-accent-foreground: hsl(210 40% 96%);
+  --sidebar-accent: hsl(240 5% 96%);
+  --sidebar-accent-foreground: hsl(240 6% 12%);
 
-  --sidebar-border: hsl(215 35% 30% / 0.35);
-  --sidebar-ring: hsl(142 70% 45%);
+  --sidebar-border: hsl(220 13% 91%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
 
 .dark {
