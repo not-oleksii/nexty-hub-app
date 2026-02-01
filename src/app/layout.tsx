@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import type { Metadata } from 'next';
 
 import { ThemeProvider } from '@/components/providers/theme-provider';
+import { cn } from '@/lib/utils';
 
 import './globals.css';
 
@@ -29,11 +30,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={[
+        className={cn(
           geistSans.variable,
           geistMono.variable,
           'antialiased',
-        ].join(' ')}
+          'h-screen',
+        )}
       >
         <ThemeProvider>{children} </ThemeProvider>
       </body>

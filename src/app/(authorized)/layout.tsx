@@ -5,5 +5,5 @@ type AuthorizedLayoutProps = {
 };
 
 export default function AuthorizedLayout({ children }: AuthorizedLayoutProps) {
-  return <ContentWrapper>{children}</ContentWrapper>;
+  return <ContentWrapper className="max-w-7xl">{children}</ContentWrapper>;
 }

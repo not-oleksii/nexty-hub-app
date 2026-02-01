@@ -1,27 +1,61 @@
+import { ItemType } from '@prisma/client';
+import { SparkleIcon } from 'lucide-react';
+
+import { DiscoverListCard } from '@/components/discover-list-card';
 import { ContentWrapper } from '@/components/layout/content';
-import { Caption1 } from '@/components/typography/caption1';
+import { Body } from '@/components/typography/body';
 import { Header1 } from '@/components/typography/header1';
 import type { DiscoverItemDto } from '@/server/api/discover';
-import { getDiscoverItems } from '@/server/api/discover';
+import { getDiscoverListByType } from '@/server/api/discover';
 
 export default async function DiscoverListPage() {
-  const items: DiscoverItemDto[] = await getDiscoverItems();
+  const [
+    moviesResult,
+    seriesResult,
+    gamesResult,
+    booksResult,
+    coursesResult,
+    otherResult,
+  ] = await Promise.allSettled([
+    getDiscoverListByType(ItemType.MOVIE),
+    getDiscoverListByType(ItemType.SERIES),
+    getDiscoverListByType(ItemType.GAME),
+    getDiscoverListByType(ItemType.BOOK),
+    getDiscoverListByType(ItemType.COURSE),
+    getDiscoverListByType(ItemType.OTHER),
+  ]);
+
+  const getItems = (result: PromiseSettledResult<DiscoverItemDto[]>) => {
+    if (result.status === 'fulfilled') {
+      return result.value;
+    }
+
+    return [];
+  };
 
   return (
     <ContentWrapper>
-      <Header1>Discover</Header1>
-      <Caption1>All items (movies, series, games, books, ...)</Caption1>
+      <div className="flex items-center gap-2">
+        <Header1>Discover your next adventure</Header1>
+        <SparkleIcon className="text-primary" fill="currentColor" />
+      </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {items.map((item) => (
-          <div key={item.id} className="rounded-xl border bg-card p-4">
-            <div className="text-xs text-muted-foreground">{item.type}</div>
-            <div className="mt-1 font-medium">{item.title}</div>
-            {item.category ? (
-              <div className="mt-1 text-xs text-muted-foreground">{item.category}</div>
-            ) : null}
-          </div>
-        ))}
+      <div className="3xl:grid-cols-4 mt-8 grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
+        <DiscoverListCard
+          type={ItemType.MOVIE}
+          items={getItems(moviesResult)}
+        />
+        <DiscoverListCard
+          type={ItemType.SERIES}
+          items={getItems(seriesResult)}
+        />
+        <DiscoverListCard type={ItemType.GAME} items={getItems(gamesResult)} />
+        <DiscoverListCard type={ItemType.BOOK} items={getItems(booksResult)} />
+        <DiscoverListCard
+          type={ItemType.COURSE}
+          items={getItems(coursesResult)}
+        />
+        <DiscoverListCard type={ItemType.OTHER} items={getItems(otherResult)} />
       </div>
     </ContentWrapper>
   );

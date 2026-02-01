@@ -1,13 +1,15 @@
+import { ItemStatus, ItemType } from '@prisma/client';
+
 import { getBaseUrl } from '@/server/http/get-base-url';
 
 export type DiscoverItemDto = {
   id: string;
-  type: string;
+  type: ItemType;
   title: string;
   category?: string | null;
   imageUrl?: string | null;
   description?: string | null;
-  status?: string | null;
+  status?: ItemStatus | null;
 };
 
 async function getJson<T>(path: string): Promise<T> {
@@ -25,14 +27,16 @@ async function getJson<T>(path: string): Promise<T> {
   return (await res.json()) as T;
 }
 
-export async function getDiscoverItems() {
+export async function getDiscoverList() {
   const data = await getJson<{ items: DiscoverItemDto[] }>('/api/discover');
 
   return data.items;
 }
 
-export async function getDiscoverMovies() {
-  const data = await getJson<{ items: DiscoverItemDto[] }>('/api/discover/movies');
+export async function getDiscoverListByType(type: ItemType) {
+  const data = await getJson<{ items: DiscoverItemDto[] }>(
+    `/api/discover/${type}`,
+  );
 
   return data.items;
 }
