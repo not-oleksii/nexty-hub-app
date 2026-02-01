@@ -3,5 +3,7 @@ import { cn } from '@/lib/utils';
 import type { ContentProps } from './types';
 
 export function ContentWrapper({ className, ...props }: ContentProps) {
-  return <main className={cn('mx-auto w-full p-6', className)} {...props} />;
+  // NOTE: This is a layout wrapper, not the document <main>.
+  // Keep semantics in the page/layout components.
+  return <div className={cn('w-full p-6', className)} {...props} />;
 }

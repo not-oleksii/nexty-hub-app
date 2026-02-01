@@ -1,9 +1,29 @@
+import { AppSidebar } from '@/components/app-sidebar';
 import { ContentWrapper } from '@/components/layout/content';
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@/components/ui/sidebar';
 
 type AuthorizedLayoutProps = {
   children: React.ReactNode;
 };
 
 export default function AuthorizedLayout({ children }: AuthorizedLayoutProps) {
-  return <ContentWrapper className="max-w-7xl">{children}</ContentWrapper>;
+  return (
+    <SidebarProvider>
+      <AppSidebar />
+
+      <SidebarInset className="min-h-svh">
+        <header className="flex h-12 items-center gap-2 px-4">
+          <SidebarTrigger />
+        </header>
+
+        <ContentWrapper className="mx-auto w-full max-w-7xl px-4 md:px-6">
+          {children}
+        </ContentWrapper>
+      </SidebarInset>
+    </SidebarProvider>
+  );
 }

@@ -6,7 +6,7 @@ import { ROUTES } from '@/constants/routes';
 export default function Home() {
   return (
     <ContentWrapper>
-      <Link href={ROUTES.discoverList}>Discover List</Link>
+      <Link href={ROUTES.discoverList.root}>Discover List</Link>
     </ContentWrapper>
   );
 }
