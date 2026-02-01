@@ -252,6 +252,9 @@ function Sidebar({
             'backdrop-blur-md supports-[backdrop-filter]:backdrop-blur-md',
             // Border/Shadow for separation
             'border-sidebar-border/60 border-r',
+            // A subtle highlight to sell the glass look
+            'bg-gradient-to-b from-white/8 to-transparent',
+            'shadow-[0_0_0_1px_hsl(var(--sidebar-border))]',
             // Floating variant keeps its own border/shadow
             'group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm',
           )}
