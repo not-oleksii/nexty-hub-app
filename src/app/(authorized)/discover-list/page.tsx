@@ -3,7 +3,6 @@ import { SparkleIcon } from 'lucide-react';
 
 import { DiscoverListCard } from '@/components/discover-list-card';
 import { ContentWrapper } from '@/components/layout/content';
-import { Body } from '@/components/typography/body';
 import { Header1 } from '@/components/typography/header1';
 import type { DiscoverItemDto } from '@/server/api/discover';
 import { getDiscoverListByType } from '@/server/api/discover';
