@@ -27,7 +27,7 @@ export function AppSidebar() {
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild isActive>
-                <Link href={ROUTES.addItem}>
+                <Link href={ROUTES.discoverList.add}>
                   <CirclePlusIcon size={24} className="text-primary" /> Add new
                   item
                 </Link>

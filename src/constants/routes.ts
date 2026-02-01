@@ -1,5 +1,7 @@
 export const ROUTES = {
   home: '/',
-  discoverList: '/discover-list',
-  addItem: '/add-item',
+  discoverList: {
+    root: '/discover-list',
+    add: '/discover-list/add',
+  },
 } as const;
