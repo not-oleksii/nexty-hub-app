@@ -12,7 +12,14 @@ type AuthorizedLayoutProps = {
 
 export default function AuthorizedLayout({ children }: AuthorizedLayoutProps) {
   return (
-    <SidebarProvider>
+    <SidebarProvider
+      style={
+        {
+          '--sidebar-width': '12rem',
+          '--sidebar-width-mobile': '20rem',
+        } as React.CSSProperties & Record<string, string>
+      }
+    >
       <AppSidebar />
 
       <SidebarInset className="min-h-svh">

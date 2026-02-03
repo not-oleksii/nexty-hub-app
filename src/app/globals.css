@@ -55,6 +55,9 @@
   --color-sidebar-foreground: var(--sidebar-foreground);
 
   --color-sidebar: var(--sidebar);
+
+  /* custom variables */
+  --aspect-album: 9/16;
 }
 
 :root {

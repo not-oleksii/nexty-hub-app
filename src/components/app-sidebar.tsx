@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { CirclePlusIcon, User2 } from 'lucide-react';
+import { CirclePlusIcon, ListVideoIcon, User2 } from 'lucide-react';
 
 import {
   Sidebar,
@@ -27,9 +27,17 @@ export function AppSidebar() {
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild isActive>
+                <Link href={ROUTES.discoverList.root}>
+                  <ListVideoIcon size={24} className="text-primary" />
+                  Discovery List
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild isActive>
                 <Link href={ROUTES.discoverList.add}>
-                  <CirclePlusIcon size={24} className="text-primary" /> Add new
-                  item
+                  <CirclePlusIcon size={24} className="text-primary" /> Add New
+                  Item
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
