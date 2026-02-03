@@ -122,11 +122,6 @@ Main entity:
 - Tailwind v4 tokens are mapped via `@theme inline`.
 - Dark mode is handled by `next-themes`.
 
-Sidebar:
-
-- Implemented with shadcn `Sidebar` primitives (`src/components/ui/sidebar.tsx`).
-- `AppSidebar` lives in `src/components/app-sidebar.tsx`.
-
 ---
 
 ## Server-side fetch helpers
