@@ -40,3 +40,11 @@ export async function getDiscoverListByType(type: ItemType) {
 
   return data.items;
 }
+
+export async function getDiscoverItemById(type: ItemType, id: string) {
+  const data = await getJson<{ item: DiscoverItemDto }>(
+    `/api/discover/${type}/${id}`,
+  );
+
+  return data.item;
+}

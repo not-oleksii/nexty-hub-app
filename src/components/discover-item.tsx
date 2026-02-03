@@ -13,6 +13,7 @@ import { Header2 } from './typography/header2';
 import { Label } from './typography/label';
 import { Overline } from './typography/overline';
 import { Subtitle1 } from './typography/subtitle1';
+import { Subtitle2 } from './typography/subtitle2';
 import { Subtitle3 } from './typography/subtitle3';
 import { Title } from './typography/title';
 import { AlbumImage } from './ui/album-image';
@@ -25,7 +26,7 @@ type DiscoverItemProps = {
 };
 
 export function DiscoverItem({ item }: DiscoverItemProps) {
-  const { title, category, imageUrl, description, status } = item;
+  const { title, imageUrl, status } = item;
 
   return (
     <Link
@@ -43,7 +44,7 @@ export function DiscoverItem({ item }: DiscoverItemProps) {
           <AlbumImage src={imageUrl} title={title} aspectRatio="aspect-10/16" />
         </CardContent>
         <CardFooter>
-          <Subtitle1>{item.title}</Subtitle1>
+          <Subtitle2>{item.title}</Subtitle2>
         </CardFooter>
       </Card>
     </Link>
