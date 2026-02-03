@@ -31,29 +31,20 @@ export function DiscoverItem({ item }: DiscoverItemProps) {
     <Link
       href={`${ROUTES.discoverList.item.replace(':type', mapPrismaToItemType(item.type)).replace(':id', item.id)}`}
     >
-      <Card className="md:min-w-sm">
+      <Card className="max-w-xs">
         <CardHeader>
           <div className="flex justify-between">
-            <Header2>{item.title}</Header2>
             <Badge variant={status === ItemStatus.DONE ? 'default' : 'outline'}>
               {status === ItemStatus.DONE ? 'DONE' : 'ADD TO LIST'}
             </Badge>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="w-l flex justify-between gap-2">
-            <div className="w-1/2">
-              <DetailsList
-                items={[{ label: 'Category', value: category ?? '-' }]}
-              />
-              <div className="mt-4 flex flex-col gap-1">
-                <Caption1 className="w-full text-left">Description</Caption1>
-                <Body className="w-full text-left">{description ?? '-'}</Body>
-              </div>
-            </div>
-            <AlbumImage src={imageUrl} title={title} className="h-50 w-30" />
-          </div>
+          <AlbumImage src={imageUrl} title={title} aspectRatio="aspect-10/16" />
         </CardContent>
+        <CardFooter>
+          <Subtitle1>{item.title}</Subtitle1>
+        </CardFooter>
       </Card>
     </Link>
   );

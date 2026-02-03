@@ -31,6 +31,7 @@ type AlbumImageProps = {
   src?: string | null;
   title: string;
   className?: string;
+  aspectRatio?: string;
 };
 
 function getInitials(title: string) {
@@ -69,7 +70,12 @@ function isValidImageSrc(src?: string | null) {
   }
 }
 
-export function AlbumImage({ src = null, title, className }: AlbumImageProps) {
+export function AlbumImage({
+  src = null,
+  title,
+  className,
+  aspectRatio = 'aspect-album',
+}: AlbumImageProps) {
   const [hasError, setHasError] = useState(false);
   const imageSrc = useMemo(
     () => (isValidImageSrc(src) ? src : undefined),
@@ -85,7 +91,7 @@ export function AlbumImage({ src = null, title, className }: AlbumImageProps) {
   return (
     <div
       className={cn(
-        'aspect-album relative overflow-hidden rounded-lg',
+        `${aspectRatio} relative overflow-hidden rounded-lg`,
         className,
       )}
     >

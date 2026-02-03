@@ -15,8 +15,16 @@ async function main() {
         title: 'Interstellar',
         description:
           'A team travels through a wormhole in search of a new home for humanity.',
-        imageUrl:
-          'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=600&q=80',
+        imageUrl: 'https://i.imgur.com/bVXo3zK.jpeg',
+        status: 'DONE',
+      },
+      {
+        type: 'MOVIE',
+        category: 'Drama',
+        title: 'Lost in Translation',
+        description:
+          'A middle-aged actor and a young woman form a connection in Tokyo.',
+        imageUrl: 'https://broken.url/not-found.png',
         status: 'TODO',
       },
       {
@@ -35,8 +43,7 @@ async function main() {
         title: 'True Detective (S1)',
         description:
           'Two detectives investigate a series of ritualistic crimes.',
-        imageUrl:
-          'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=80',
+        imageUrl: 'https://i.imgur.com/IE7Af0Z.png',
         status: 'TODO',
       },
       {

@@ -20,10 +20,9 @@ export default async function DiscoverMoviesPage({
 
   return (
     <ContentWrapper>
-      <Header1>Movies</Header1>
-      <Caption1>Movies only</Caption1>
+      <Header1>{type.toUpperCase()}</Header1>
 
-      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
         {items.map((item) => (
           <DiscoverItem key={item.id} item={item} />
         ))}
