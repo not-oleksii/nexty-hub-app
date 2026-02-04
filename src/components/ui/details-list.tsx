@@ -1,5 +1,4 @@
 import { Body } from '../typography/body';
-import { Label } from '../typography/label';
 import { Subtitle2 } from '../typography/subtitle2';
 
 type DetailsRowProps = {

@@ -1,5 +1,4 @@
 import { ItemStatus } from '@prisma/client';
-import { PlusIcon } from 'lucide-react';
 
 import { ContentWrapper } from '@/components/layout/content';
 import { Body } from '@/components/typography/body';
@@ -7,7 +6,6 @@ import { Caption1 } from '@/components/typography/caption1';
 import { Title } from '@/components/typography/title';
 import { AlbumImage } from '@/components/ui/album-image';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { DetailsList } from '@/components/ui/details-list';
 import { getDiscoverItemById } from '@/server/api/discover';

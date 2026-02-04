@@ -15,7 +15,6 @@ import { DiscoverItemDto } from '@/server/api/discover';
 
 import { Body } from './typography/body';
 import { Header2 } from './typography/header2';
-import { Subtitle2 } from './typography/subtitle2';
 import { Badge } from './ui/badge';
 import { Card, CardFooter, CardHeader } from './ui/card';
 import { Progress } from './ui/progress';

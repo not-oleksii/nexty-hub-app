@@ -1,8 +1,5 @@
-import { ItemType } from '@prisma/client';
-
 import { DiscoverItem } from '@/components/discover-item';
 import { ContentWrapper } from '@/components/layout/content';
-import { Caption1 } from '@/components/typography/caption1';
 import { Header1 } from '@/components/typography/header1';
 import type { DiscoverItemDto } from '@/server/api/discover';
 import { getDiscoverListByType } from '@/server/api/discover';
