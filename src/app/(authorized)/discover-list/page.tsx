@@ -1,11 +1,12 @@
 import { ItemType } from '@prisma/client';
 import { SparkleIcon } from 'lucide-react';
 
-import { DiscoverListCard } from '@/components/discover-list-card';
 import { ContentWrapper } from '@/components/layout/content';
 import { Header1 } from '@/components/typography/header1';
 import type { DiscoverItemDto } from '@/server/api/discover';
 import { getDiscoverListByType } from '@/server/api/discover';
+
+import { DiscoverListCard } from './_components/discover-list-card';
 
 export default async function DiscoverListPage() {
   const [
@@ -23,6 +24,15 @@ export default async function DiscoverListPage() {
     getDiscoverListByType(ItemType.COURSE),
     getDiscoverListByType(ItemType.OTHER),
   ]);
+
+  console.log(
+    moviesResult,
+    seriesResult,
+    gamesResult,
+    booksResult,
+    coursesResult,
+    otherResult,
+  );
 
   const getItems = (result: PromiseSettledResult<DiscoverItemDto[]>) => {
     if (result.status === 'fulfilled') {

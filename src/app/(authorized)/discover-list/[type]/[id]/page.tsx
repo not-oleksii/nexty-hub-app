@@ -21,10 +21,6 @@ export default async function DiscoverItemPage({
   const { title, category, description, imageUrl, status } =
     await getDiscoverItemById(mapItemTypeToPrisma(type), id);
 
-  const onAddToListClick = () => {
-    console.log('add to list');
-  };
-
   return (
     <ContentWrapper className="flex justify-center">
       <Card className="max-w-3xl">

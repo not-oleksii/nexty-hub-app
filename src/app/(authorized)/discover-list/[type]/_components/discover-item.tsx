@@ -2,14 +2,18 @@ import Link from 'next/link';
 
 import { ItemStatus } from '@prisma/client';
 
+import { Subtitle2 } from '@/components/typography/subtitle2';
+import { AlbumImage } from '@/components/ui/album-image';
+import { Badge } from '@/components/ui/badge';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from '@/components/ui/card';
 import { ROUTES } from '@/constants/routes';
 import { DiscoverItemDto } from '@/server/api/discover';
 import { mapPrismaToItemType } from '@/server/lib/utils';
-
-import { Subtitle2 } from './typography/subtitle2';
-import { AlbumImage } from './ui/album-image';
-import { Badge } from './ui/badge';
-import { Card, CardContent, CardFooter, CardHeader } from './ui/card';
 
 type DiscoverItemProps = {
   item: DiscoverItemDto;

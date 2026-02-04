@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { AddDiscoverItemForm } from '@/components/forms/discover-list-add-form';
+import { AddDiscoverItemForm } from '@/app/(authorized)/discover-list/add/_components/discover-list-add-form';
 import { ContentWrapper } from '@/components/layout/content';
 import { Caption1 } from '@/components/typography/caption1';
 import { Header1 } from '@/components/typography/header1';
