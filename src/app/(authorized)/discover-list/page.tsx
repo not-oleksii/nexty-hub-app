@@ -25,15 +25,6 @@ export default async function DiscoverListPage() {
     getDiscoverListByType(ItemType.OTHER),
   ]);
 
-  console.log(
-    moviesResult,
-    seriesResult,
-    gamesResult,
-    booksResult,
-    coursesResult,
-    otherResult,
-  );
-
   const getItems = (result: PromiseSettledResult<DiscoverItemDto[]>) => {
     if (result.status === 'fulfilled') {
       return result.value;
