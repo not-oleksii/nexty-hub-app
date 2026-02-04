@@ -10,15 +10,13 @@ import {
   SparklesIcon,
 } from 'lucide-react';
 
+import { Body } from '@/components/typography/body';
+import { Header2 } from '@/components/typography/header2';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardFooter, CardHeader } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import { ROUTES } from '@/constants/routes';
 import { DiscoverItemDto } from '@/server/api/discover';
-
-import { Body } from './typography/body';
-import { Header2 } from './typography/header2';
-import { Subtitle2 } from './typography/subtitle2';
-import { Badge } from './ui/badge';
-import { Card, CardFooter, CardHeader } from './ui/card';
-import { Progress } from './ui/progress';
 
 type DiscoverListCardProps = {
   type: ItemType;

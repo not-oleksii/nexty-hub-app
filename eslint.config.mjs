@@ -2,6 +2,7 @@ import next from 'eslint-config-next';
 import prettier from 'eslint-config-prettier';
 import react from 'eslint-plugin-react';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import unusedImports from 'eslint-plugin-unused-imports';
 
 const config = [
   ...next,
@@ -10,6 +11,7 @@ const config = [
     plugins: {
       'simple-import-sort': simpleImportSort,
       react,
+      'unused-imports': unusedImports,
     },
     rules: {
       'simple-import-sort/imports': [
@@ -51,6 +53,17 @@ const config = [
           ignoreTemplateLiterals: true,
           ignoreRegExpLiterals: true,
           ignoreComments: true,
+        },
+      ],
+      'unused-imports/no-unused-imports': 'error',
+      'unused-imports/no-unused-imports': 'error',
+      'unused-imports/no-unused-vars': [
+        'warn',
+        {
+          vars: 'all',
+          varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_',
         },
       ],
     },

@@ -1,12 +1,15 @@
-import Link from 'next/link';
-
 import { ContentWrapper } from '@/components/layout/content';
-import { ROUTES } from '@/constants/routes';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function Home() {
   return (
     <ContentWrapper>
-      <Link href={ROUTES.discoverList.root}>Discover List</Link>
+      <Card>
+        <CardHeader>
+          <CardTitle>Login</CardTitle>
+        </CardHeader>
+        <CardContent></CardContent>
+      </Card>
     </ContentWrapper>
   );
 }
