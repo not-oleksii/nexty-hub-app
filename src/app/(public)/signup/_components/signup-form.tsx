@@ -1,6 +1,6 @@
 'use client';
 
-import { SubmitEvent, useCallback } from 'react';
+import { SubmitEvent, useCallback, useState } from 'react';
 import Link from 'next/link';
 
 import { useForm } from '@tanstack/react-form-nextjs';
@@ -20,17 +20,24 @@ import {
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/constants/routes';
+import { createUser } from '@/server/api/users';
 
 const formSchema = z
   .object({
     username: z
       .string()
       .trim()
-      .min(3, 'Username must be at least 3 characters long.'),
+      .min(3, 'Username must be at least 3 characters long.')
+      .max(20, 'Username must be less than 20 characters long.')
+      .regex(
+        /^[a-zA-Z0-9]+$/,
+        'Username must contain only letters and numbers.',
+      ),
     password: z
       .string()
       .trim()
-      .min(8, 'Password must be at least 8 characters long.'),
+      .min(8, 'Password must be at least 8 characters long.')
+      .max(30, 'Password must be less than 20 characters long.'),
     confirmPassword: z.string().trim().min(1, 'Confirm password is required.'),
   })
   .superRefine(({ password, confirmPassword }, ctx) => {
@@ -52,14 +59,27 @@ const DEFAULT_VALUES: SignupFormValues = {
 };
 
 export function SignupForm() {
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const form = useForm({
     defaultValues: DEFAULT_VALUES,
     validators: {
       onSubmit: formSchema,
       onBlur: formSchema,
     },
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: async ({ value }) => {
+      setSubmitError(null);
+
+      try {
+        await createUser({
+          username: value.username.trim(),
+          password: value.password,
+        });
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : 'Signup failed';
+
+        setSubmitError(message);
+      }
     },
   });
 
@@ -167,6 +187,9 @@ export function SignupForm() {
       </CardContent>
       <CardFooter>
         <div className="flex w-full flex-col gap-2">
+          {submitError && (
+            <Body className="text-destructive">{submitError}</Body>
+          )}
           <Field orientation="horizontal">
             <Button
               type="submit"

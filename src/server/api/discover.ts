@@ -1,6 +1,6 @@
 import { ItemStatus, ItemType } from '@prisma/client';
 
-import { getJson, postJson } from '@/server/lib/utils';
+import { getJson, postJson } from '@/server/http/get-base-url';
 
 export type DiscoverItemDto = {
   id: string;
@@ -10,6 +10,19 @@ export type DiscoverItemDto = {
   imageUrl?: string | null;
   description?: string | null;
   status?: ItemStatus | null;
+};
+
+type CreateDiscoverItemPayload = {
+  type: ItemType;
+  title: string;
+  category?: string;
+  description?: string;
+  imageUrl?: string;
+  status?: ItemStatus;
+};
+
+type CreateDiscoverItemResponse = {
+  item: DiscoverItemDto;
 };
 
 export async function getDiscoverList() {
@@ -33,19 +46,6 @@ export async function getDiscoverItemById(type: ItemType, id: string) {
 
   return data.item;
 }
-
-type CreateDiscoverItemPayload = {
-  type: ItemType;
-  title: string;
-  category?: string;
-  description?: string;
-  imageUrl?: string;
-  status?: ItemStatus;
-};
-
-type CreateDiscoverItemResponse = {
-  item: DiscoverItemDto;
-};
 
 export async function createDiscoverItem(payload: CreateDiscoverItemPayload) {
   return postJson<CreateDiscoverItemResponse>('/api/items', payload);

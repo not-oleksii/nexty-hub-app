@@ -1,4 +1,4 @@
-import { postJson } from '@/server/lib/utils';
+import { postJson } from '@/server/http/get-base-url';
 
 import { DiscoverItemDto } from './discover';
 

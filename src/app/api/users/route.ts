@@ -28,17 +28,47 @@ export async function POST(req: Request) {
     );
   }
 
-  if (body.username.trim().length < 3 || body.password.length < 8) {
+  const username = body.username.trim();
+  const password = body.password;
+
+  if (username.length < 3 || username.length > 20) {
     return NextResponse.json(
-      { error: 'username and password are required' },
+      { error: 'username must be between 3 and 20 characters long' },
+      { status: 400 },
+    );
+  }
+
+  if (!/^[a-zA-Z0-9]+$/.test(username)) {
+    return NextResponse.json(
+      { error: 'username must contain only letters and numbers' },
+      { status: 400 },
+    );
+  }
+
+  if (password.length < 8 || password.length > 30) {
+    return NextResponse.json(
+      { error: 'password must be between 8 and 30 characters long' },
+      { status: 400 },
+    );
+  }
+
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      username,
+    },
+  });
+
+  if (existingUser) {
+    return NextResponse.json(
+      { error: 'username already exists' },
       { status: 400 },
     );
   }
 
   const user = await prisma.user.create({
     data: {
-      username: body.username.trim(),
-      passwordHash: hashPassword(body.password),
+      username: username.trim(),
+      passwordHash: hashPassword(password),
     },
     include: {
       lists: { include: { discoverItem: true } },

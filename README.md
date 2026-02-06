@@ -68,6 +68,11 @@ Database (Prisma):
 - `npm run db:reset` — reset DB (push + seed)
 - `npm run prisma:studio` — Prisma Studio
 
+Test user accounts:
+
+- testuser1 / test1234
+- testuser2 / test1234
+
 ---
 
 ## Project structure

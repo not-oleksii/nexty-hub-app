@@ -1,6 +1,6 @@
 'use client';
 
-import { SubmitEvent, useCallback } from 'react';
+import { SubmitEvent, useCallback, useState } from 'react';
 import Link from 'next/link';
 
 import { useForm } from '@tanstack/react-form-nextjs';
@@ -18,7 +18,9 @@ import {
   FieldSet,
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/constants/routes';
+import { loginUser } from '@/server/api/users';
 
 const formSchema = z.object({
   username: z.string().trim().min(1, 'Username is required.'),
@@ -33,13 +35,25 @@ const DEFAULT_VALUES: LoginFormValues = {
 };
 
 export function LoginForm() {
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const form = useForm({
     defaultValues: DEFAULT_VALUES,
     validators: {
       onSubmit: formSchema,
     },
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: async ({ value }) => {
+      setSubmitError(null);
+
+      try {
+        await loginUser({
+          username: value.username.trim(),
+          password: value.password,
+        });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Login failed';
+
+        setSubmitError(message);
+      }
     },
   });
 
@@ -116,9 +130,23 @@ export function LoginForm() {
       </CardContent>
       <CardFooter>
         <div className="flex w-full flex-col gap-2">
+          {submitError && (
+            <Body className="text-destructive">{submitError}</Body>
+          )}
           <Field orientation="horizontal">
-            <Button type="submit" className="w-full" form="login-form">
-              Login
+            <Button
+              type="submit"
+              className="w-full"
+              form="login-form"
+              disabled={form.state.isSubmitting}
+            >
+              {form.state.isSubmitting ? (
+                <>
+                  <Spinner data-icon="inline-start" /> Logging in...
+                </>
+              ) : (
+                'Login'
+              )}
             </Button>
           </Field>
           <div className="flex w-full items-center">
