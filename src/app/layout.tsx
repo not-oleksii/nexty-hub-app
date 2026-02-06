@@ -1,5 +1,7 @@
 import { Geist, Geist_Mono } from 'next/font/google';
 
+import { TanStackDevtools } from '@tanstack/react-devtools';
+import { FormDevtoolsPanel } from '@tanstack/react-form-devtools';
 import type { Metadata } from 'next';
 
 import { ThemeProvider } from '@/components/providers/theme-provider';
@@ -28,17 +30,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={cn(
-          geistSans.variable,
-          geistMono.variable,
-          'antialiased',
-          'h-screen',
-        )}
-      >
-        <ThemeProvider>{children} </ThemeProvider>
-      </body>
-    </html>
+    <>
+      <html lang="en" suppressHydrationWarning>
+        <body
+          className={cn(
+            geistSans.variable,
+            geistMono.variable,
+            'antialiased',
+            'h-screen',
+          )}
+        >
+          <ThemeProvider>{children} </ThemeProvider>
+        </body>
+      </html>
+      <TanStackDevtools
+        plugins={[
+          {
+            name: 'TanStack Form Panel',
+            render: <FormDevtoolsPanel />,
+            defaultOpen: true,
+          },
+        ]}
+      />
+    </>
   );
 }
