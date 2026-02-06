@@ -59,6 +59,7 @@ const DEFAULT_VALUES: SignupFormValues = {
 };
 
 export function SignupForm() {
+  const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const form = useForm({
     defaultValues: DEFAULT_VALUES,
@@ -67,6 +68,7 @@ export function SignupForm() {
       onBlur: formSchema,
     },
     onSubmit: async ({ value }) => {
+      setSubmitSuccess(null);
       setSubmitError(null);
 
       try {
@@ -74,6 +76,8 @@ export function SignupForm() {
           username: value.username.trim(),
           password: value.password,
         });
+
+        setSubmitSuccess('Account created successfully. You can now log in.');
       } catch (error) {
         const message =
           error instanceof Error ? error.message : 'Signup failed';
@@ -187,6 +191,9 @@ export function SignupForm() {
       </CardContent>
       <CardFooter>
         <div className="flex w-full flex-col gap-2">
+          {submitSuccess && (
+            <Body className="text-emerald-500">{submitSuccess}</Body>
+          )}
           {submitError && (
             <Body className="text-destructive">{submitError}</Body>
           )}
