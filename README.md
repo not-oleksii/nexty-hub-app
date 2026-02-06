@@ -23,7 +23,7 @@ A **mobile-first** Next.js App Router project for tracking “discover” items 
 
 ```bash
 npm install
-cp .env.example .env.local
+cp .env.example .env
 npm run db:reset
 npm run dev
 ```

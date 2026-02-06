@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { createDiscoverItem } from '@/server/api/discover';
 
 const toOptionalTrimmed = (value: string) => {
   const trimmed = value.trim();
@@ -64,21 +65,7 @@ export function AddDiscoverItemForm() {
           imageUrl: toOptionalTrimmed(values.imageUrl),
         };
 
-        const res = await fetch('/api/items', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        });
-
-        if (!res.ok) {
-          const data = (await res.json().catch(() => null)) as {
-            error?: string;
-          } | null;
-
-          throw new Error(data?.error || `Request failed (${res.status})`);
-        }
+        await createDiscoverItem(payload);
 
         form.reset(DEFAULT_VALUES);
         router.push('/discover-list');

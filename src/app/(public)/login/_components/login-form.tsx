@@ -127,7 +127,7 @@ export function LoginForm() {
               <ArrowRightIcon size={16} />
             </div>
             <Button variant="link" className="p-2">
-              <Link href={ROUTES.signup}>Signup Now!</Link>
+              <Link href={ROUTES.signup}>Sign Up Now!</Link>
             </Button>
           </div>
         </div>

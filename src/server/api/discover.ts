@@ -1,6 +1,6 @@
 import { ItemStatus, ItemType } from '@prisma/client';
 
-import { getBaseUrl } from '@/server/http/get-base-url';
+import { getJson, postJson } from '@/server/lib/utils';
 
 export type DiscoverItemDto = {
   id: string;
@@ -11,21 +11,6 @@ export type DiscoverItemDto = {
   description?: string | null;
   status?: ItemStatus | null;
 };
-
-async function getJson<T>(path: string): Promise<T> {
-  const baseUrl = await getBaseUrl();
-  const url = new URL(path, baseUrl);
-
-  const res = await fetch(url, {
-    cache: 'no-store',
-  });
-
-  if (!res.ok) {
-    throw new Error(`Request failed: ${res.status} ${res.statusText}`);
-  }
-
-  return (await res.json()) as T;
-}
 
 export async function getDiscoverList() {
   const data = await getJson<{ items: DiscoverItemDto[] }>('/api/discover');
@@ -47,4 +32,21 @@ export async function getDiscoverItemById(type: ItemType, id: string) {
   );
 
   return data.item;
+}
+
+type CreateDiscoverItemPayload = {
+  type: ItemType;
+  title: string;
+  category?: string;
+  description?: string;
+  imageUrl?: string;
+  status?: ItemStatus;
+};
+
+type CreateDiscoverItemResponse = {
+  item: DiscoverItemDto;
+};
+
+export async function createDiscoverItem(payload: CreateDiscoverItemPayload) {
+  return postJson<CreateDiscoverItemResponse>('/api/items', payload);
 }
