@@ -4,6 +4,8 @@ import { scryptSync, timingSafeEqual } from 'crypto';
 
 import { prisma } from '@/server/db/prisma';
 
+const AUTH_COOKIE = 'nexty_auth';
+
 function verifyPassword(password: string, storedHash: string) {
   const [salt, expectedHex] = storedHash.split(':');
 
@@ -46,5 +48,20 @@ export async function POST(request: Request) {
     );
   }
 
-  return NextResponse.json({ message: 'Login successful' }, { status: 200 });
+  const response = NextResponse.json(
+    { message: 'Login successful' },
+    { status: 200 },
+  );
+
+  response.cookies.set({
+    name: AUTH_COOKIE,
+    value: user.id,
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 7,
+  });
+
+  return response;
 }

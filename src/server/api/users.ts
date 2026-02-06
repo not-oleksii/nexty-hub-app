@@ -1,7 +1,6 @@
-import { postJson } from '@/server/http/get-base-url';
+import { postJson } from '@/server/lib/utils';
 
 import { DiscoverItemDto } from './discover';
-
 type CreateUserPayload = {
   username: string;
   password: string;

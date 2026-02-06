@@ -1,6 +1,6 @@
 import { ItemStatus, ItemType } from '@prisma/client';
 
-import { getJson, postJson } from '@/server/http/get-base-url';
+import { getJson, postJson } from '@/server/lib/utils';
 
 export type DiscoverItemDto = {
   id: string;

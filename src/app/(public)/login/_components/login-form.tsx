@@ -2,6 +2,7 @@
 
 import { SubmitEvent, useCallback, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { useForm } from '@tanstack/react-form-nextjs';
 import { ArrowRightIcon } from 'lucide-react';
@@ -35,6 +36,7 @@ const DEFAULT_VALUES: LoginFormValues = {
 };
 
 export function LoginForm() {
+  const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const form = useForm({
     defaultValues: DEFAULT_VALUES,
@@ -49,6 +51,9 @@ export function LoginForm() {
           username: value.username.trim(),
           password: value.password,
         });
+
+        router.push(ROUTES.discoverList.root);
+        router.refresh();
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Login failed';
 
