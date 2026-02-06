@@ -10,6 +10,14 @@ export function middleware(request: NextRequest) {
   const authCookie = request.cookies.get(AUTH_COOKIE);
 
   if (!authCookie?.value) {
+    if (
+      pathname === ROUTES.home ||
+      pathname === ROUTES.login ||
+      pathname === ROUTES.signup
+    ) {
+      return NextResponse.next();
+    }
+
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = '/login';
     loginUrl.searchParams.set('next', pathname);
@@ -32,10 +40,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    ROUTES.home,
-    ROUTES.login,
-    ROUTES.signup,
-    `${ROUTES.discoverList.root}/:path*`,
-  ],
+  matcher: ['/', '/login', '/signup', '/discover-list/:path*'],
 };
