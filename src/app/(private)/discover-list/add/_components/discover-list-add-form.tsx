@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import { ItemStatus, ItemType } from '@generated/prisma/enums';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ItemStatus, ItemType } from '@prisma/client';
 import { useController, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
