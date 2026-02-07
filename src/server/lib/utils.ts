@@ -1,4 +1,4 @@
-import { ItemType } from '@prisma/client';
+import { ItemType } from '@generated/prisma/enums';
 
 const itemTypeMap: Record<string, ItemType> = {
   movie: ItemType.MOVIE,

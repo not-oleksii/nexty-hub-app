@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { ItemStatus } from '@prisma/client';
+import { ItemStatus } from '@generated/prisma/enums';
 
 import { Subtitle2 } from '@/components/typography/subtitle2';
 import { AlbumImage } from '@/components/ui/album-image';

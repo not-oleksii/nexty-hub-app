@@ -5,7 +5,7 @@ import { ROUTES } from '@/constants/routes';
 
 const AUTH_COOKIE = 'nexty_auth';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const authCookie = request.cookies.get(AUTH_COOKIE);
 
@@ -19,6 +19,7 @@ export function middleware(request: NextRequest) {
     }
 
     const loginUrl = request.nextUrl.clone();
+
     loginUrl.pathname = '/login';
     loginUrl.searchParams.set('next', pathname);
 
@@ -31,6 +32,7 @@ export function middleware(request: NextRequest) {
     pathname === ROUTES.signup
   ) {
     const redirectUrl = request.nextUrl.clone();
+
     redirectUrl.pathname = ROUTES.discoverList.root;
 
     return NextResponse.redirect(redirectUrl);

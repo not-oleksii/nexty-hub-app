@@ -4,6 +4,9 @@
 
 - `main` is protected — **no direct pushes**.
 - Create a branch and open a PR.
+- name branch as:
+  <type>/<ticket-number-if-exists-><some-summary-and-scopes>
+  i.e. feat/21-users-discovery-list
 - Prefer **Squash merge**.
 
 ## PR title format (Conventional Commits)

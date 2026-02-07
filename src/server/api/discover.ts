@@ -1,4 +1,4 @@
-import { ItemStatus, ItemType } from '@prisma/client';
+import type { ItemStatus, ItemType } from '@generated/prisma/enums';
 
 import { getJson, postJson } from '@/server/lib/utils';
 

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { ItemStatus, ItemType } from '@prisma/client';
+import { ItemStatus, ItemType } from '@generated/prisma/enums';
 import {
   BookIcon,
   BrainIcon,

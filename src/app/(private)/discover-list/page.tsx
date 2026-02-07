@@ -1,4 +1,4 @@
-import { ItemType } from '@prisma/client';
+import { ItemType } from '@generated/prisma/enums';
 import { SparkleIcon } from 'lucide-react';
 
 import { ContentWrapper } from '@/components/layout/content';

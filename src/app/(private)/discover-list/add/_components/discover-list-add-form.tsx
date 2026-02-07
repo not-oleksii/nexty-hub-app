@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import { ItemStatus, ItemType } from '@generated/prisma/enums';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ItemStatus, ItemType } from '@prisma/client';
 import { useController, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -137,7 +137,7 @@ export function AddDiscoverItemForm() {
             className="border-input bg-background h-9 rounded-md border px-3 text-sm"
             {...typeField.field}
           >
-            {Object.values(ItemType).map((t) => (
+            {(Object.values(ItemType) as ItemType[]).map((t) => (
               <option key={t} value={t}>
                 {t}
               </option>
@@ -151,7 +151,7 @@ export function AddDiscoverItemForm() {
             className="border-input bg-background h-9 rounded-md border px-3 text-sm"
             {...statusField.field}
           >
-            {Object.values(ItemStatus).map((s) => (
+            {(Object.values(ItemStatus) as ItemStatus[]).map((s) => (
               <option key={s} value={s}>
                 {s}
               </option>

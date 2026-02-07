@@ -1,4 +1,4 @@
-import { ItemStatus } from '@prisma/client';
+import { ItemStatus } from '@generated/prisma/enums';
 
 import { ContentWrapper } from '@/components/layout/content';
 import { Body } from '@/components/typography/body';
