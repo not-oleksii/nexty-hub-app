@@ -43,8 +43,20 @@ Open: http://localhost:3000
 2. Run next commands
 
 ```
-   npx prisma migrate dev --name init
-   npx prisma generate
+npx prisma migrate dev --name init
+npx prisma generate
+```
+
+3. To seed new data run
+
+```
+npm run db:reset
+```
+
+or
+
+```
+prisma db push --force-reset && prisma db seed
 ```
 
 ---

@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
 
-import { ItemType } from '@generated/prisma/enums';
-
 import { prisma } from '@/server/db/prisma';
 import { mapItemTypeToPrisma } from '@/server/lib/utils';
 
