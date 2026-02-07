@@ -19,6 +19,7 @@ export function proxy(request: NextRequest) {
     }
 
     const loginUrl = request.nextUrl.clone();
+
     loginUrl.pathname = '/login';
     loginUrl.searchParams.set('next', pathname);
 
@@ -31,6 +32,7 @@ export function proxy(request: NextRequest) {
     pathname === ROUTES.signup
   ) {
     const redirectUrl = request.nextUrl.clone();
+
     redirectUrl.pathname = ROUTES.discoverList.root;
 
     return NextResponse.redirect(redirectUrl);
