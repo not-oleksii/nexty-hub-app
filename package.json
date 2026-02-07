@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "format": "prettier . --write",
     "lint:fix": "eslint . --fix",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "prisma generate && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "prepare": "husky",

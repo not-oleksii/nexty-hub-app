@@ -6,7 +6,7 @@ import { prisma } from '@/server/db/prisma';
 import { mapItemTypeToPrisma } from '@/server/lib/utils';
 
 type Params = {
-  params: Promise<{ type: ItemType; id: string }>;
+  params: Promise<{ type: string; id: string }>;
 };
 
 export async function GET(_request: Request, { params }: Params) {
