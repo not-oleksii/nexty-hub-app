@@ -32,18 +32,30 @@ Open: http://localhost:3000
 
 ---
 
+### Database
+
+- Local dev uses **Postgresql**.
+- The file `dev.db` will be created in the project root when you run `db:reset`.
+
+1. Setup a local DB
+   To setup a local PostgreSQL database follow this guide -> [Setting up a local PostgreSQL database](https://www.prisma.io/docs/orm/more/help-and-troubleshooting/dataguide/setting-up-a-local-postgresql-database)
+
+2. Run next commands
+
+```
+   npx prisma migrate dev --name init
+   npx prisma generate
+```
+
+---
+
 ## Environment variables
 
 `.env.example`:
 
 ```bash
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://username:password@localhost:5432/mydb?schema=public"
 ```
-
-### Database
-
-- Local dev uses **SQLite**.
-- The file `dev.db` will be created in the project root when you run `db:reset`.
 
 ---
 
