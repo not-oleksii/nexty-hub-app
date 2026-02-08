@@ -1,24 +1,38 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { type SubmitEvent, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { ItemStatus, ItemType } from '@generated/prisma/enums';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useController, useForm } from 'react-hook-form';
+import { useForm } from '@tanstack/react-form-nextjs';
+import { useMutation } from '@tanstack/react-query';
 import { z } from 'zod';
 
-import { Caption1 } from '@/components/typography/caption1';
 import { Button } from '@/components/ui/button';
 import { CardContent } from '@/components/ui/card';
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+} from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { createDiscoverItem } from '@/server/api/discover';
+import { getErrorMessage } from '@/server/lib/utils';
 
 const toOptionalTrimmed = (value: string) => {
   const trimmed = value.trim();
 
-  return trimmed.length === 0 ? undefined : trimmed;
+  return trimmed.length === 0 ? null : trimmed;
 };
 
 const formSchema = z.object({
@@ -43,175 +57,256 @@ const DEFAULT_VALUES: AddItemFormValues = {
 
 export function AddDiscoverItemForm() {
   const router = useRouter();
-  const [submitError, setSubmitError] = useState<string | null>(null);
-
-  const form = useForm<AddItemFormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: DEFAULT_VALUES,
-    mode: 'onChange',
+  const { mutateAsync, isPending, error, isSuccess, isError } = useMutation({
+    mutationFn: createDiscoverItem,
   });
 
-  const onSubmit = useCallback(
-    async (values: AddItemFormValues) => {
-      setSubmitError(null);
-
+  const form = useForm({
+    defaultValues: DEFAULT_VALUES,
+    validators: {
+      onSubmit: formSchema,
+      onChange: formSchema,
+    },
+    onSubmit: async ({ value }) => {
       try {
-        const payload = {
-          type: values.type,
-          status: values.status,
-          title: values.title.trim(),
-          category: toOptionalTrimmed(values.category),
-          description: toOptionalTrimmed(values.description),
-          imageUrl: toOptionalTrimmed(values.imageUrl),
-        };
-
-        await createDiscoverItem(payload);
+        await mutateAsync({
+          type: value.type,
+          status: value.status,
+          title: value.title.trim(),
+          category: toOptionalTrimmed(value.category),
+          description: toOptionalTrimmed(value.description),
+          imageUrl: toOptionalTrimmed(value.imageUrl),
+        });
 
         form.reset(DEFAULT_VALUES);
         router.push('/discover-list');
         router.refresh();
       } catch (error) {
-        const message =
-          error instanceof Error ? error.message : 'Unknown error';
-
-        setSubmitError(message);
+        console.error(error);
       }
     },
-    [form, router],
+  });
+
+  const onSubmitClick = useCallback(
+    (event: SubmitEvent) => {
+      event.preventDefault();
+      form.handleSubmit();
+    },
+    [form],
   );
 
-  const {
-    control,
-    formState: { errors, isSubmitting, isValid },
-  } = form;
-
-  const handleSubmit = useCallback(() => {
-    void form.handleSubmit(onSubmit)();
-  }, [form, onSubmit]);
-
-  const handleReset = useCallback(() => {
+  const onResetClick = useCallback(() => {
     form.reset(DEFAULT_VALUES);
-    setSubmitError(null);
   }, [form]);
 
-  const typeField = useController({ name: 'type', control });
-  const statusField = useController({ name: 'status', control });
-  const categoryField = useController({ name: 'category', control });
-  const titleField = useController({ name: 'title', control });
-  const imageUrlField = useController({ name: 'imageUrl', control });
-  const descriptionField = useController({ name: 'description', control });
-  const formRef = useRef<HTMLFormElement | null>(null);
-
-  useEffect(() => {
-    const formElement = formRef.current;
-
-    if (!formElement) {
-      return;
-    }
-
-    const submitHandler = (event: Event) => {
-      event.preventDefault();
-      void handleSubmit();
-    };
-
-    const resetHandler = (event: Event) => {
-      event.preventDefault();
-      handleReset();
-    };
-
-    formElement.addEventListener('submit', submitHandler);
-    formElement.addEventListener('reset', resetHandler);
-
-    return () => {
-      formElement.removeEventListener('submit', submitHandler);
-      formElement.removeEventListener('reset', resetHandler);
-    };
-  }, [handleReset, handleSubmit]);
-
   return (
-    <CardContent className="flex flex-col gap-3">
-      <form className="flex flex-col gap-3" ref={formRef}>
-        <label className="flex flex-col gap-1">
-          <Caption1>Type</Caption1>
-          <select
-            className="border-input bg-background h-9 rounded-md border px-3 text-sm"
-            {...typeField.field}
-          >
-            {(Object.values(ItemType) as ItemType[]).map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
-        </label>
+    <CardContent>
+      <form id="discover-item-form" onSubmit={onSubmitClick}>
+        <FieldGroup>
+          <FieldSet>
+            <FieldGroup>
+              <form.Field name="type">
+                {(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+                  const handleTypeChange = (value: string) => {
+                    field.handleChange(value as ItemType);
+                  };
 
-        <label className="flex flex-col gap-1">
-          <Caption1>Status</Caption1>
-          <select
-            className="border-input bg-background h-9 rounded-md border px-3 text-sm"
-            {...statusField.field}
-          >
-            {(Object.values(ItemStatus) as ItemStatus[]).map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-        </label>
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>Type</FieldLabel>
+                      <Select
+                        value={field.state.value}
+                        // eslint-disable-next-line react/jsx-no-bind
+                        onValueChange={handleTypeChange}
+                      >
+                        <SelectTrigger id={field.name} aria-invalid={isInvalid}>
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {(Object.values(ItemType) as ItemType[]).map(
+                            (type) => (
+                              <SelectItem key={type} value={type}>
+                                {type}
+                              </SelectItem>
+                            ),
+                          )}
+                        </SelectContent>
+                      </Select>
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  );
+                }}
+              </form.Field>
 
-        <label className="flex flex-col gap-1">
-          <Caption1>Category</Caption1>
-          <Input {...categoryField.field} placeholder="e.g. Sci-Fi" />
-          {errors.category && (
-            <Caption1 className="text-destructive">
-              {errors.category.message}
-            </Caption1>
-          )}
-        </label>
+              <form.Field name="status">
+                {(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+                  const handleStatusChange = (value: string) => {
+                    field.handleChange(value as ItemStatus);
+                  };
 
-        <label className="flex flex-col gap-1">
-          <Caption1>Title *</Caption1>
-          <Input {...titleField.field} placeholder="e.g. Interstellar" />
-          {errors.title && (
-            <Caption1 className="text-destructive">
-              {errors.title.message}
-            </Caption1>
-          )}
-        </label>
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>Status</FieldLabel>
+                      <Select
+                        value={field.state.value}
+                        // eslint-disable-next-line react/jsx-no-bind
+                        onValueChange={handleStatusChange}
+                      >
+                        <SelectTrigger id={field.name} aria-invalid={isInvalid}>
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {(Object.values(ItemStatus) as ItemStatus[]).map(
+                            (status) => (
+                              <SelectItem key={status} value={status}>
+                                {status}
+                              </SelectItem>
+                            ),
+                          )}
+                        </SelectContent>
+                      </Select>
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  );
+                }}
+              </form.Field>
 
-        <label className="flex flex-col gap-1">
-          <Caption1>Image URL</Caption1>
-          <Input {...imageUrlField.field} placeholder="https://..." />
-          {errors.imageUrl && (
-            <Caption1 className="text-destructive">
-              {errors.imageUrl.message}
-            </Caption1>
-          )}
-        </label>
+              <form.Field name="category">
+                {(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
 
-        <label className="flex flex-col gap-1">
-          <Caption1>Description</Caption1>
-          <Textarea {...descriptionField.field} className="min-h-24" />
-          {errors.description && (
-            <Caption1 className="text-destructive">
-              {errors.description.message}
-            </Caption1>
-          )}
-        </label>
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>Category</FieldLabel>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        // eslint-disable-next-line react/jsx-no-bind
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        onBlur={field.handleBlur}
+                        placeholder="e.g. Sci-Fi"
+                        aria-invalid={isInvalid}
+                      />
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  );
+                }}
+              </form.Field>
 
-        {submitError && (
-          <Caption1 className="text-destructive">{submitError}</Caption1>
+              <form.Field name="title">
+                {(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>Title *</FieldLabel>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        // eslint-disable-next-line react/jsx-no-bind
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        onBlur={field.handleBlur}
+                        placeholder="e.g. Interstellar"
+                        required
+                        aria-invalid={isInvalid}
+                      />
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  );
+                }}
+              </form.Field>
+
+              <form.Field name="imageUrl">
+                {(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>Image URL</FieldLabel>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        // eslint-disable-next-line react/jsx-no-bind
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        onBlur={field.handleBlur}
+                        placeholder="https://..."
+                        aria-invalid={isInvalid}
+                      />
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  );
+                }}
+              </form.Field>
+
+              <form.Field name="description">
+                {(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>Description</FieldLabel>
+                      <Textarea
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        // eslint-disable-next-line react/jsx-no-bind
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        onBlur={field.handleBlur}
+                        className="min-h-24"
+                        aria-invalid={isInvalid}
+                      />
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  );
+                }}
+              </form.Field>
+            </FieldGroup>
+          </FieldSet>
+        </FieldGroup>
+      </form>
+      <div className="mt-3 flex flex-col gap-2">
+        {isError && <FieldError>{getErrorMessage(error)}</FieldError>}
+        {isSuccess && (
+          <FieldError className="text-success">
+            Item created successfully.
+          </FieldError>
         )}
-
-        <div className="flex gap-2">
-          <Button disabled={!isValid || isSubmitting} type="submit">
-            {isSubmitting ? 'Saving…' : 'Save'}
+        <Field orientation="horizontal">
+          <Button
+            type="submit"
+            form="discover-item-form"
+            disabled={form.state.isSubmitting || isPending}
+          >
+            {form.state.isSubmitting || isPending ? 'Saving…' : 'Save'}
           </Button>
-          <Button type="reset" variant="secondary">
+          <Button type="reset" variant="secondary" onClick={onResetClick}>
             Reset
           </Button>
-        </div>
-      </form>
+        </Field>
+      </div>
     </CardContent>
   );
 }

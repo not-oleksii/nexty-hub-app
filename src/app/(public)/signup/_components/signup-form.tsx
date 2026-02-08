@@ -1,9 +1,10 @@
 'use client';
 
-import { SubmitEvent, useCallback, useState } from 'react';
+import { SubmitEvent, useCallback } from 'react';
 import Link from 'next/link';
 
 import { useForm } from '@tanstack/react-form-nextjs';
+import { useMutation } from '@tanstack/react-query';
 import { ArrowRightIcon } from 'lucide-react';
 import { z } from 'zod';
 
@@ -20,7 +21,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/constants/routes';
-import { createUser } from '@/server/api/users';
+import { usersMutations } from '@/server/api/queries/users.queries';
+import { getErrorMessage } from '@/server/lib/utils';
 
 const formSchema = z
   .object({
@@ -59,30 +61,24 @@ const DEFAULT_VALUES: SignupFormValues = {
 };
 
 export function SignupForm() {
-  const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const { mutateAsync, isPending, error, isError, isSuccess } = useMutation(
+    usersMutations.create(),
+  );
+
   const form = useForm({
     defaultValues: DEFAULT_VALUES,
     validators: {
       onSubmit: formSchema,
-      onBlur: formSchema,
+      onChange: formSchema,
     },
     onSubmit: async ({ value }) => {
-      setSubmitSuccess(null);
-      setSubmitError(null);
-
       try {
-        await createUser({
+        await mutateAsync({
           username: value.username.trim(),
           password: value.password,
         });
-
-        setSubmitSuccess('Account created successfully. You can now log in.');
       } catch (error) {
-        const message =
-          error instanceof Error ? error.message : 'Signup failed';
-
-        setSubmitError(message);
+        console.error(error);
       }
     },
   });
@@ -90,6 +86,7 @@ export function SignupForm() {
   const onSubmitClick = useCallback(
     (e: SubmitEvent) => {
       e.preventDefault();
+      e.stopPropagation();
       form.handleSubmit();
     },
     [form],
@@ -191,11 +188,13 @@ export function SignupForm() {
       </CardContent>
       <CardFooter>
         <div className="flex w-full flex-col gap-2">
-          {submitSuccess && (
-            <Body className="text-emerald-500">{submitSuccess}</Body>
+          {isSuccess && (
+            <Body className="text-success">
+              Account created successfully. You can now log in.
+            </Body>
           )}
-          {submitError && (
-            <Body className="text-destructive">{submitError}</Body>
+          {isError && (
+            <Body className="text-destructive">{getErrorMessage(error)}</Body>
           )}
           <Field orientation="horizontal">
             <Button
@@ -204,7 +203,7 @@ export function SignupForm() {
               form="signup-form"
               disabled={form.state.isSubmitting}
             >
-              {form.state.isSubmitting ? (
+              {form.state.isSubmitting || isPending ? (
                 <>
                   <Spinner data-icon="inline-start" /> Signing up...
                 </>

@@ -31,6 +31,9 @@
   --color-accent: hsl(var(--accent));
   --color-accent-foreground: hsl(var(--accent-foreground));
 
+  --color-success: hsl(var(--success));
+  --color-success-foreground: hsl(var(--success-foreground));
+
   --color-destructive: hsl(var(--destructive));
   --color-destructive-foreground: hsl(var(--destructive-foreground));
 
@@ -75,14 +78,17 @@
   --primary: 142.1 70.6% 45.3%;
   --primary-foreground: 144.9 80.4% 10%;
 
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
+  --secondary: 270 65% 90%;
+  --secondary-foreground: 270 30% 20%;
 
   --muted: 210 40% 96.1%;
   --muted-foreground: 215.4 16.3% 46.9%;
 
   --accent: 142.1 70.6% 45.3%;
   --accent-foreground: 144.9 80.4% 10%;
+
+  --success: 142.1 70.6% 45.3%;
+  --success-foreground: 144.9 80.4% 10%;
 
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
@@ -121,14 +127,17 @@
   --primary: 142.1 70.6% 45.3%; /* ~ #22C55E */
   --primary-foreground: 144.9 80.4% 10%;
 
-  --secondary: 215 40% 18%;
-  --secondary-foreground: 213 100% 95%;
+  --secondary: 270 45% 28%;
+  --secondary-foreground: 270 60% 92%;
 
   --muted: 215 35% 18%;
   --muted-foreground: 212 28% 75%; /* ~ #A7BEDA */
 
   --accent: 142.1 70.6% 45.3%;
   --accent-foreground: 144.9 80.4% 10%;
+
+  --success: 142.1 70.6% 45.3%;
+  --success-foreground: 144.9 80.4% 10%;
 
   --destructive: 0 62.8% 50%;
   --destructive-foreground: 213 100% 95%;

@@ -1,46 +1,42 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
+import { AUTH_COOKIE } from '@/constants/auth';
 import { ROUTES } from '@/constants/routes';
 
-const AUTH_COOKIE = 'nexty_auth';
+const PRIVATE_ROUTES = [ROUTES.discoverList.root];
+const PUBLIC_ROUTES = [ROUTES.home, ROUTES.login, ROUTES.signup];
 
 export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
   const authCookie = request.cookies.get(AUTH_COOKIE);
+  const path = request.nextUrl.pathname;
+  const isPrivateRoute = PRIVATE_ROUTES.some((route) => path.startsWith(route));
 
-  if (!authCookie?.value) {
-    if (
-      pathname === ROUTES.home ||
-      pathname === ROUTES.login ||
-      pathname === ROUTES.signup
-    ) {
-      return NextResponse.next();
-    }
-
-    const loginUrl = request.nextUrl.clone();
-
-    loginUrl.pathname = '/login';
-    loginUrl.searchParams.set('next', pathname);
-
-    return NextResponse.redirect(loginUrl);
+  if (isPrivateRoute && !authCookie) {
+    return NextResponse.redirect(new URL(ROUTES.login, request.url));
   }
 
+  const isPublicRoute = PUBLIC_ROUTES.some((route) => {
+    if (route === '/') {
+      return path === route;
+    }
+
+    return path.startsWith(route);
+  });
+
   if (
-    pathname === ROUTES.home ||
-    pathname === ROUTES.login ||
-    pathname === ROUTES.signup
+    isPublicRoute &&
+    authCookie &&
+    !path.startsWith(ROUTES.discoverList.root)
   ) {
-    const redirectUrl = request.nextUrl.clone();
-
-    redirectUrl.pathname = ROUTES.discoverList.root;
-
-    return NextResponse.redirect(redirectUrl);
+    return NextResponse.redirect(
+      new URL(ROUTES.discoverList.root, request.url),
+    );
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/', '/login', '/signup', '/discover-list/:path*'],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };

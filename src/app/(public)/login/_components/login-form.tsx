@@ -1,10 +1,11 @@
 'use client';
 
-import { SubmitEvent, useCallback, useState } from 'react';
+import { SubmitEvent, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { useForm } from '@tanstack/react-form-nextjs';
+import { useMutation } from '@tanstack/react-query';
 import { ArrowRightIcon } from 'lucide-react';
 import { z } from 'zod';
 
@@ -21,7 +22,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/constants/routes';
-import { loginUser } from '@/server/api/users';
+import { usersMutations } from '@/server/api/queries/users.queries';
+import { getErrorMessage } from '@/server/lib/utils';
 
 const formSchema = z.object({
   username: z.string().trim().min(1, 'Username is required.'),
@@ -37,27 +39,25 @@ const DEFAULT_VALUES: LoginFormValues = {
 
 export function LoginForm() {
   const router = useRouter();
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const { mutateAsync, isPending, error, isError, isSuccess } = useMutation(
+    usersMutations.login(),
+  );
   const form = useForm({
     defaultValues: DEFAULT_VALUES,
     validators: {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value }) => {
-      setSubmitError(null);
-
       try {
-        await loginUser({
+        await mutateAsync({
           username: value.username.trim(),
           password: value.password,
         });
 
         router.push(ROUTES.discoverList.root);
         router.refresh();
-      } catch (error) {
-        const message = error instanceof Error ? error.message : 'Login failed';
-
-        setSubmitError(message);
+      } catch (error: unknown) {
+        console.error('Error logging in:', error);
       }
     },
   });
@@ -135,8 +135,13 @@ export function LoginForm() {
       </CardContent>
       <CardFooter>
         <div className="flex w-full flex-col gap-2">
-          {submitError && (
-            <Body className="text-destructive">{submitError}</Body>
+          {isError && (
+            <Body className="text-destructive">{getErrorMessage(error)}</Body>
+          )}
+          {isSuccess && (
+            <Body className="text-success">
+              Login successful. You are now logged in.
+            </Body>
           )}
           <Field orientation="horizontal">
             <Button
@@ -145,7 +150,7 @@ export function LoginForm() {
               form="login-form"
               disabled={form.state.isSubmitting}
             >
-              {form.state.isSubmitting ? (
+              {form.state.isSubmitting || isPending ? (
                 <>
                   <Spinner data-icon="inline-start" /> Logging in...
                 </>

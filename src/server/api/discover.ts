@@ -1,38 +1,25 @@
-import type { ItemStatus, ItemType } from '@generated/prisma/enums';
+import { DiscoverItem } from '@generated/prisma/browser';
+import type { ItemType } from '@generated/prisma/enums';
 
-import { getJson, postJson } from '@/server/lib/utils';
+import { getJson, postJson } from '@/server/lib/fetch-json';
 
-export type DiscoverItemDto = {
-  id: string;
-  type: ItemType;
-  title: string;
-  category?: string | null;
-  imageUrl?: string | null;
-  description?: string | null;
-  status?: ItemStatus | null;
-};
-
-type CreateDiscoverItemPayload = {
-  type: ItemType;
-  title: string;
-  category?: string;
-  description?: string;
-  imageUrl?: string;
-  status?: ItemStatus;
-};
+type CreateDiscoverItemPayload = Omit<
+  DiscoverItem,
+  'id' | 'createdAt' | 'updatedAt'
+>;
 
 type CreateDiscoverItemResponse = {
-  item: DiscoverItemDto;
+  item: DiscoverItem;
 };
 
 export async function getDiscoverList() {
-  const data = await getJson<{ items: DiscoverItemDto[] }>('/api/discover');
+  const data = await getJson<{ items: DiscoverItem[] }>('/api/discover');
 
   return data.items;
 }
 
 export async function getDiscoverListByType(type: ItemType) {
-  const data = await getJson<{ items: DiscoverItemDto[] }>(
+  const data = await getJson<{ items: DiscoverItem[] }>(
     `/api/discover/${type}`,
   );
 
@@ -40,7 +27,7 @@ export async function getDiscoverListByType(type: ItemType) {
 }
 
 export async function getDiscoverItemById(type: ItemType, id: string) {
-  const data = await getJson<{ item: DiscoverItemDto }>(
+  const data = await getJson<{ item: DiscoverItem }>(
     `/api/discover/${type}/${id}`,
   );
 

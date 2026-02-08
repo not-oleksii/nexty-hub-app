@@ -15,9 +15,12 @@
     "test:watch": "vitest",
     "prepare": "husky",
     "db:generate": "prisma generate",
-    "db:push": "prisma db push",
+    "db:migrate:reset": "npx prisma migrate reset",
+    "db:migrate:dev": "npx prisma migrate dev --name init",
     "db:seed": "prisma db seed",
+    "db:push": "prisma db push",
     "db:reset": "prisma db push --force-reset && prisma db seed",
+    "db:deploy": "npx prisma migrate deploy",
     "prisma:studio": "prisma studio"
   },
   "dependencies": {
@@ -35,6 +38,8 @@
     "@tanstack/react-devtools": "^0.9.4",
     "@tanstack/react-form-devtools": "^0.2.13",
     "@tanstack/react-form-nextjs": "^1.28.0",
+    "@tanstack/react-query": "^5.90.20",
+    "@tanstack/react-query-devtools": "^5.91.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^17.2.4",
@@ -51,6 +56,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@tanstack/eslint-plugin-query": "^5.91.4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",

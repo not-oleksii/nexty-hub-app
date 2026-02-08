@@ -1,22 +1,33 @@
 import { NextResponse } from 'next/server';
 
-const AUTH_COOKIE = 'nexty_auth';
+import { AUTH_COOKIE } from '@/constants/auth';
+
+import { ApiErrorType } from '../error-types';
 
 export async function POST() {
-  const response = NextResponse.json(
-    { message: 'Logged out' },
-    { status: 200 },
-  );
+  try {
+    const response = NextResponse.json(
+      { message: 'Logged out' },
+      { status: 200 },
+    );
 
-  response.cookies.set({
-    name: AUTH_COOKIE,
-    value: '',
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    path: '/',
-    maxAge: 0,
-  });
+    response.cookies.set({
+      name: AUTH_COOKIE,
+      value: '',
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      maxAge: 0,
+    });
 
-  return response;
+    return response;
+  } catch (error: unknown) {
+    console.error('Error logging out:', error);
+
+    return NextResponse.json(
+      { error: ApiErrorType.INTERNAL_SERVER_ERROR },
+      { status: 500 },
+    );
+  }
 }

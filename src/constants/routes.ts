@@ -1,7 +1,10 @@
 export const ROUTES = {
+  // Public routes
   home: '/',
   login: '/login',
   signup: '/signup',
+
+  // Private routes
   discoverList: {
     root: '/discover-list',
     add: '/discover-list/add',
