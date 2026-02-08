@@ -1,9 +1,8 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
+import { AUTH_COOKIE } from '@/constants/auth';
 import { ROUTES } from '@/constants/routes';
-
-const AUTH_COOKIE = 'nexty_auth';
 
 const PRIVATE_ROUTES = [ROUTES.discoverList.root];
 const PUBLIC_ROUTES = [ROUTES.home, ROUTES.login, ROUTES.signup];

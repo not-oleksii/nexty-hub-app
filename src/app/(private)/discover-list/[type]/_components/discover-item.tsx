@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 import { type DiscoverItem } from '@generated/prisma/browser';
 
+import { AddToListButton } from '@/components/add-to-list-button';
 import { Subtitle2 } from '@/components/typography/subtitle2';
 import { AlbumImage } from '@/components/ui/album-image';
 import {
@@ -20,30 +21,31 @@ type DiscoverItemProps = {
 };
 
 export function DiscoverItem({ item, isLoading }: DiscoverItemProps) {
-  const { title, imageUrl, status } = item;
+  const { title, imageUrl } = item;
 
   if (isLoading) {
     return <DiscoverItemSkeleton />;
   }
 
   return (
-    <Link
-      href={`${ROUTES.discoverList.item.replace(':type', mapPrismaToItemType(item.type)).replace(':id', item.id)}`}
-    >
-      <Card className="max-w-xs">
-        <CardHeader>
-          <div className="flex justify-between">
-            {/* <AddToListButton /> */}
-          </div>
-        </CardHeader>
+    <Card className="max-w-xs">
+      <CardHeader>
+        <div className="flex justify-between">
+          <AddToListButton itemId={item.id} />
+        </div>
+      </CardHeader>
+      <Link
+        href={`${ROUTES.discoverList.item.replace(':type', mapPrismaToItemType(item.type)).replace(':id', item.id)}`}
+        className="block"
+      >
         <CardContent>
           <AlbumImage src={imageUrl} title={title} aspectRatio="aspect-10/16" />
         </CardContent>
         <CardFooter>
           <Subtitle2>{item.title}</Subtitle2>
         </CardFooter>
-      </Card>
-    </Link>
+      </Link>
+    </Card>
   );
 }
 

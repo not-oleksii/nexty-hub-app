@@ -2,11 +2,10 @@ import { NextResponse } from 'next/server';
 
 import { scryptSync, timingSafeEqual } from 'crypto';
 
+import { AUTH_COOKIE } from '@/constants/auth';
 import { prisma } from '@/server/db/prisma';
 
 import { ApiErrorType } from '../error-types';
-
-const AUTH_COOKIE = 'nexty_auth';
 
 function verifyPassword(password: string, storedHash: string) {
   const [salt, expectedHex] = storedHash.split(':');
