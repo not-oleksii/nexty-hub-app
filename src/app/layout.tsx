@@ -1,12 +1,10 @@
 import { Geist, Geist_Mono } from 'next/font/google';
 
-import { TanStackDevtools } from '@tanstack/react-devtools';
-import { FormDevtoolsPanel } from '@tanstack/react-form-devtools';
 import type { Metadata } from 'next';
 
 import { cn } from '@/lib/utils';
 
-import Providers from './providers';
+import { Providers } from './providers';
 
 import './globals.css';
 
@@ -44,15 +42,6 @@ export default function RootLayout({
           <Providers>{children}</Providers>
         </body>
       </html>
-      <TanStackDevtools
-        plugins={[
-          {
-            name: 'TanStack Form Panel',
-            render: <FormDevtoolsPanel />,
-            defaultOpen: true,
-          },
-        ]}
-      />
     </>
   );
 }

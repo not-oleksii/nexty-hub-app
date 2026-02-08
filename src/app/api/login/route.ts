@@ -4,6 +4,8 @@ import { scryptSync, timingSafeEqual } from 'crypto';
 
 import { prisma } from '@/server/db/prisma';
 
+import { ApiErrorType } from '../error-types';
+
 const AUTH_COOKIE = 'nexty_auth';
 
 function verifyPassword(password: string, storedHash: string) {
@@ -25,43 +27,52 @@ function verifyPassword(password: string, storedHash: string) {
 }
 
 export async function POST(request: Request) {
-  const { username, password } = await request.json();
-  const user = await prisma.user.findUnique({
-    where: {
-      username,
-    },
-  });
+  try {
+    const { username, password } = await request.json();
+    const user = await prisma.user.findUnique({
+      where: {
+        username,
+      },
+    });
 
-  if (!user) {
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Invalid username or password' },
+        { status: 401 },
+      );
+    }
+
+    const isPasswordValid = verifyPassword(password, user.passwordHash);
+
+    if (!isPasswordValid) {
+      return NextResponse.json(
+        { error: 'Invalid username or password' },
+        { status: 401 },
+      );
+    }
+
+    const response = NextResponse.json(
+      { message: 'Login successful' },
+      { status: 200 },
+    );
+
+    response.cookies.set({
+      name: AUTH_COOKIE,
+      value: user.id,
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7,
+    });
+
+    return response;
+  } catch (error: unknown) {
+    console.error('Login error:', error);
+
     return NextResponse.json(
-      { error: 'Invalid username or password' },
-      { status: 401 },
+      { error: ApiErrorType.INTERNAL_SERVER_ERROR },
+      { status: 500 },
     );
   }
-
-  const isPasswordValid = verifyPassword(password, user.passwordHash);
-
-  if (!isPasswordValid) {
-    return NextResponse.json(
-      { error: 'Invalid username or password' },
-      { status: 401 },
-    );
-  }
-
-  const response = NextResponse.json(
-    { message: 'Login successful' },
-    { status: 200 },
-  );
-
-  response.cookies.set({
-    name: AUTH_COOKIE,
-    value: user.id,
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    path: '/',
-    maxAge: 60 * 60 * 24 * 7,
-  });
-
-  return response;
 }

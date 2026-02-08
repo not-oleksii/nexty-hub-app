@@ -1,6 +1,6 @@
 import type { ItemStatus, ItemType } from '@generated/prisma/enums';
 
-import { getJson, postJson } from '@/server/lib/utils';
+import { getJson, postJson } from '@/server/lib/fetch-json';
 
 export type DiscoverItemDto = {
   id: string;

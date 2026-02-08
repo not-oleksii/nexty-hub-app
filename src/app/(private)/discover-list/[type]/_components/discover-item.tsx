@@ -1,6 +1,5 @@
 import Link from 'next/link';
 
-import { AddToListButton } from '@/components/add-to-list-button';
 import { Subtitle2 } from '@/components/typography/subtitle2';
 import { AlbumImage } from '@/components/ui/album-image';
 import {
@@ -27,7 +26,7 @@ export function DiscoverItem({ item }: DiscoverItemProps) {
       <Card className="max-w-xs">
         <CardHeader>
           <div className="flex justify-between">
-            <AddToListButton />
+            {/* <AddToListButton /> */}
           </div>
         </CardHeader>
         <CardContent>

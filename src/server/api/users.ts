@@ -1,4 +1,4 @@
-import { postJson } from '@/server/lib/utils';
+import { postJson } from '@/server/lib/fetch-json';
 
 import { DiscoverItemDto } from './discover';
 type CreateUserPayload = {
