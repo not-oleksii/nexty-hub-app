@@ -1,7 +1,11 @@
+import Link from 'next/link';
+
 import { QueryClient } from '@tanstack/react-query';
+import { ArrowLeftIcon } from 'lucide-react';
 
 import { ContentWrapper } from '@/components/layout/content';
 import { Card, CardContent } from '@/components/ui/card';
+import { ROUTES } from '@/constants/routes';
 import { discoverQueries } from '@/server/api/queries/discover.queries';
 import { mapItemTypeToPrisma } from '@/server/lib/utils';
 
@@ -20,6 +24,15 @@ export default async function DiscoverItemPage({
     <ContentWrapper className="flex justify-center">
       <Card className="max-w-3xl">
         <CardContent>
+          <div className="mb-4">
+            <Link
+              href={`${ROUTES.discoverList.root}/${type}`}
+              className="text-primary inline-flex items-center gap-2 text-sm font-medium underline-offset-4 hover:underline"
+            >
+              <ArrowLeftIcon className="h-4 w-4" />
+              Back to list
+            </Link>
+          </div>
           <DiscoverItemDetails type={prismaType} id={id} />
         </CardContent>
       </Card>
