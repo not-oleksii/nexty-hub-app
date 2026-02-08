@@ -1,5 +1,7 @@
 import { ItemType } from '@generated/prisma/enums';
 
+interface FetchConfig extends RequestInit {}
+
 const itemTypeMap: Record<string, ItemType> = {
   movie: ItemType.MOVIE,
   series: ItemType.SERIES,
@@ -41,28 +43,49 @@ async function resolveRequestUrl(path: string) {
   return new URL(path, baseUrl).toString();
 }
 
-export async function getJson<T>(path: string): Promise<T> {
+export async function getJson<T>(
+  path: string,
+  config?: FetchConfig,
+): Promise<T> {
   const url = await resolveRequestUrl(path);
+
   const res = await fetch(url, {
     cache: 'no-store',
+    ...config,
+    headers: {
+      'Content-Type': 'application/json',
+      ...config?.headers,
+    },
   });
 
   if (!res.ok) {
-    throw new Error(`Request failed: ${res.status} ${res.statusText}`);
+    const errorBody = await res.json().catch(() => null);
+
+    throw new Error(
+      errorBody?.message ||
+        `GET Request failed: ${res.status} ${res.statusText}`,
+    );
   }
 
-  return (await res.json()) as T;
+  return res.json() as Promise<T>;
 }
 
-export async function postJson<T>(path: string, body: unknown): Promise<T> {
+export async function postJson<T>(
+  path: string,
+  body: unknown,
+  config?: FetchConfig,
+): Promise<T> {
   const url = await resolveRequestUrl(path);
+
   const res = await fetch(url, {
     method: 'POST',
+    cache: 'no-store',
+    ...config,
     headers: {
-      'content-type': 'application/json',
+      'Content-Type': 'application/json',
+      ...config?.headers,
     },
     body: JSON.stringify(body),
-    cache: 'no-store',
   });
 
   if (!res.ok) {
@@ -70,10 +93,10 @@ export async function postJson<T>(path: string, body: unknown): Promise<T> {
     const message =
       typeof error?.error === 'string'
         ? error.error
-        : `Request failed: ${res.status} ${res.statusText}`;
+        : `POST Request failed: ${res.status} ${res.statusText}`;
 
     throw new Error(message);
   }
 
-  return (await res.json()) as T;
+  return res.json() as Promise<T>;
 }

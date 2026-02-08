@@ -4,8 +4,9 @@ import { TanStackDevtools } from '@tanstack/react-devtools';
 import { FormDevtoolsPanel } from '@tanstack/react-form-devtools';
 import type { Metadata } from 'next';
 
-import { ThemeProvider } from '@/components/providers/theme-provider';
 import { cn } from '@/lib/utils';
+
+import Providers from './providers';
 
 import './globals.css';
 
@@ -40,7 +41,7 @@ export default function RootLayout({
             'h-screen',
           )}
         >
-          <ThemeProvider>{children} </ThemeProvider>
+          <Providers>{children}</Providers>
         </body>
       </html>
       <TanStackDevtools
