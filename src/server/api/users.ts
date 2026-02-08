@@ -1,10 +1,11 @@
+import { DiscoverItem } from '@generated/prisma/browser';
+
 import { postJson } from '@/server/lib/fetch-json';
 
-import { DiscoverItemDto } from './discover';
 type CreateUserPayload = {
   username: string;
   password: string;
-  lists?: DiscoverItemDto[];
+  lists?: DiscoverItem[];
 };
 
 type CreateUserResponse = {
