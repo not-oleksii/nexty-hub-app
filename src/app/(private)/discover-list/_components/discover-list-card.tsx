@@ -1,6 +1,9 @@
+'use client';
+
 import Link from 'next/link';
 
 import { ItemStatus, ItemType } from '@generated/prisma/enums';
+import { useQuery } from '@tanstack/react-query';
 import {
   BookIcon,
   BrainIcon,
@@ -15,43 +18,46 @@ import { Header2 } from '@/components/typography/header2';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardFooter, CardHeader } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ROUTES } from '@/constants/routes';
-import { DiscoverItemDto } from '@/server/api/discover';
+import { discoverQueries } from '@/server/api/queries/discover.queries';
 
-type DiscoverListCardProps = {
+interface DiscoverListCardProps {
   type: ItemType;
-  items: DiscoverItemDto[];
+}
+
+const itemTypeTitleMap: Record<ItemType, string> = {
+  [ItemType.MOVIE]: 'Movie',
+  [ItemType.SERIES]: 'Series',
+  [ItemType.GAME]: 'Game',
+  [ItemType.BOOK]: 'Book',
+  [ItemType.COURSE]: 'Course',
+  [ItemType.OTHER]: 'Other',
 };
 
-export function DiscoverListCard({ type, items }: DiscoverListCardProps) {
-  const itemTypeTitleMap: Record<ItemType, string> = {
-    [ItemType.MOVIE]: 'Movie',
-    [ItemType.SERIES]: 'Series',
-    [ItemType.GAME]: 'Game',
-    [ItemType.BOOK]: 'Book',
-    [ItemType.COURSE]: 'Course',
-    [ItemType.OTHER]: 'Other',
-  };
+const itemTypeIconMap: Record<ItemType, React.ReactNode> = {
+  [ItemType.MOVIE]: <ClapperboardIcon />,
+  [ItemType.SERIES]: <FilmIcon />,
+  [ItemType.GAME]: <Gamepad2Icon />,
+  [ItemType.BOOK]: <BookIcon />,
+  [ItemType.COURSE]: <BrainIcon />,
+  [ItemType.OTHER]: <SparklesIcon />,
+};
 
-  const itemTypeIconMap: Record<ItemType, React.ReactNode> = {
-    [ItemType.MOVIE]: <ClapperboardIcon />,
-    [ItemType.SERIES]: <FilmIcon />,
-    [ItemType.GAME]: <Gamepad2Icon />,
-    [ItemType.BOOK]: <BookIcon />,
-    [ItemType.COURSE]: <BrainIcon />,
-    [ItemType.OTHER]: <SparklesIcon />,
-  };
+export function DiscoverListCard({ type }: DiscoverListCardProps) {
+  const { data, isLoading, isError } = useQuery(discoverQueries.type(type));
 
-  const totalItems = items.length;
-  const completedItems = items.filter(
-    (item) => item.status === ItemStatus.DONE,
-  ).length;
+  const totalItems = data?.length || 0;
+  const completedItems =
+    data?.filter((item) => item.status === ItemStatus.DONE).length || 0;
 
   const progress = (completedItems / totalItems) * 100;
 
-  if (items.length === 0) {
-    return null;
+  if (isLoading) {
+    return <DiscoverListCardSkeleton />;
   }
+
+  if (!data?.length || isError) return null;
 
   return (
     <Link href={`${ROUTES.discoverList.root}/${type.toLowerCase()}`}>
@@ -61,7 +67,7 @@ export function DiscoverListCard({ type, items }: DiscoverListCardProps) {
             {itemTypeIconMap[type]}
             <div className="flex items-center gap-2 pl-2">
               <Header2>{itemTypeTitleMap[type]}</Header2>
-              <Badge>{items.length}</Badge>
+              <Badge>{data?.length}</Badge>
             </div>
           </div>
         </CardHeader>
@@ -73,5 +79,22 @@ export function DiscoverListCard({ type, items }: DiscoverListCardProps) {
         </CardFooter>
       </Card>
     </Link>
+  );
+}
+
+export function DiscoverListCardSkeleton() {
+  return (
+    <Card className="md:min-w-sm">
+      <CardHeader>
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-8 w-8 rounded-full" />
+          <Skeleton className="h-6 w-30" />
+        </div>
+      </CardHeader>
+      <CardFooter className="flex flex-col gap-2">
+        <Skeleton className="h-3 w-full" />
+        <Skeleton className="h-2 w-full" />
+      </CardFooter>
+    </Card>
   );
 }

@@ -1,5 +1,7 @@
 import Link from 'next/link';
 
+import { type DiscoverItem } from '@generated/prisma/browser';
+
 import { Subtitle2 } from '@/components/typography/subtitle2';
 import { AlbumImage } from '@/components/ui/album-image';
 import {
@@ -8,16 +10,21 @@ import {
   CardFooter,
   CardHeader,
 } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ROUTES } from '@/constants/routes';
-import { DiscoverItemDto } from '@/server/api/discover';
 import { mapPrismaToItemType } from '@/server/lib/utils';
 
 type DiscoverItemProps = {
-  item: DiscoverItemDto;
+  item: DiscoverItem;
+  isLoading: boolean;
 };
 
-export function DiscoverItem({ item }: DiscoverItemProps) {
+export function DiscoverItem({ item, isLoading }: DiscoverItemProps) {
   const { title, imageUrl, status } = item;
+
+  if (isLoading) {
+    return <DiscoverItemSkeleton />;
+  }
 
   return (
     <Link
@@ -37,5 +44,21 @@ export function DiscoverItem({ item }: DiscoverItemProps) {
         </CardFooter>
       </Card>
     </Link>
+  );
+}
+
+export function DiscoverItemSkeleton() {
+  return (
+    <Card className="max-w-xs">
+      <CardHeader>
+        <Skeleton className="h-10 w-20" />
+      </CardHeader>
+      <CardContent>
+        <Skeleton className="h-70 w-full" />
+      </CardContent>
+      <CardFooter>
+        <Skeleton className="h-5 w-30" />
+      </CardFooter>
+    </Card>
   );
 }
