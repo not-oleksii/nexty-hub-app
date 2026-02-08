@@ -37,11 +37,12 @@ model DiscoverItem {
   status      ItemStatus @default(TODO)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
-  listEntries UserListItem[] @relation("UserListItemsOnDiscoverItem")
+  userLists UserList[]
 
   @@index([type])
+  @@index([title])
+  @@index([category])
   @@index([status])
-  @@index([createdAt])
 }
 
 model User {
@@ -50,18 +51,18 @@ model User {
   passwordHash String
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
-  lists        UserListItem[] @relation("UserListItemsOnUser")
+  lists        UserList[]
+
+  @@index([username])
 }
 
-model UserListItem {
-  id             String       @id @default(cuid())
-  user           User         @relation("UserListItemsOnUser", fields: [userId], references: [id], onDelete: Cascade)
-  userId         String
-  discoverItem   DiscoverItem @relation("UserListItemsOnDiscoverItem", fields: [discoverItemId], references: [id], onDelete: Cascade)
-  discoverItemId String
-  createdAt      DateTime     @default(now())
+model UserList {
+  id String @id @default(uuid())
+  name String
+  users User[]
+  items DiscoverItem[] 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@unique([userId, discoverItemId])
-  @@index([userId])
-  @@index([discoverItemId])
+  @@index([name])
 }
