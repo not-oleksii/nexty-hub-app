@@ -11,7 +11,7 @@ type CreateUserBody = {
   lists?: DiscoverItemDto[];
 };
 
-function hashPassword(password: string) {
+export function hashPassword(password: string) {
   const salt = randomBytes(16).toString('hex');
   const hash = scryptSync(password, salt, 64).toString('hex');
 
@@ -71,7 +71,7 @@ export async function POST(req: Request) {
       passwordHash: hashPassword(password),
     },
     include: {
-      lists: { include: { discoverItem: true } },
+      lists: { include: { lists: true } },
     },
   });
 

@@ -87,9 +87,13 @@ Quality:
 
 Database (Prisma):
 
-- `npm run db:push` — apply schema to DB
+- `npm run db:generate` — generate Prisma client
+- `npm run db:migrate:reset` — reset DB and reapply migrations
+- `npm run db:migrate:dev` — create/apply dev migration (`init`)
 - `npm run db:seed` — seed DB
+- `npm run db:push` — apply schema to DB
 - `npm run db:reset` — reset DB (push + seed)
+- `npm run db:deploy` — apply migrations in production
 - `npm run prisma:studio` — Prisma Studio
 
 Test user accounts:

@@ -2,18 +2,12 @@ import 'dotenv/config';
 
 import { ItemStatus, ItemType, PrismaClient } from '@generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { randomBytes, scryptSync } from 'crypto';
+
+import { hashPassword } from '@/app/api/users/route';
 
 const connectionString = process.env.DATABASE_URL ?? '';
 const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
-
-function hashPassword(password: string) {
-  const salt = randomBytes(16).toString('hex');
-  const hash = scryptSync(password, salt, 64).toString('hex');
-
-  return `${salt}:${hash}`;
-}
 
 async function main() {
   const count = await prisma.discoverItem.count();
