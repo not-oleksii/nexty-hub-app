@@ -47,6 +47,22 @@ export async function getDiscoverItemById(type: ItemType, id: string) {
   return data.item;
 }
 
+export async function getRandomDiscoverItem() {
+  const data = await getJson<{ item: DiscoverItemDto }>(
+    '/api/discover?random=true',
+  );
+
+  return data.item;
+}
+
+export async function getRandomDiscoverItemByType(type: ItemType) {
+  const data = await getJson<{ item: DiscoverItemDto }>(
+    `/api/discover/${type}?random=true`,
+  );
+
+  return data.item;
+}
+
 export async function createDiscoverItem(payload: CreateDiscoverItemPayload) {
   return postJson<CreateDiscoverItemResponse>('/api/items', payload);
 }

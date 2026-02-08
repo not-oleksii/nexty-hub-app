@@ -2,11 +2,13 @@ import { ItemType } from '@generated/prisma/enums';
 import { SparkleIcon } from 'lucide-react';
 
 import { ContentWrapper } from '@/components/layout/content';
+import { Caption1 } from '@/components/typography/caption1';
 import { Header1 } from '@/components/typography/header1';
 import type { DiscoverItemDto } from '@/server/api/discover';
 import { getDiscoverListByType } from '@/server/api/discover';
 
 import { DiscoverListCard } from './_components/discover-list-card';
+import { RandomPickButton } from './_components/random-pick-button';
 
 export default async function DiscoverListPage() {
   const [
@@ -38,6 +40,11 @@ export default async function DiscoverListPage() {
       <div className="flex items-center gap-2">
         <Header1>Discover your next adventure</Header1>
         <SparkleIcon className="text-primary" fill="currentColor" />
+      </div>
+
+      <div className="mt-4 flex items-center gap-2">
+        <Caption1>Don&apos;t know what to take next?</Caption1>
+        <RandomPickButton />
       </div>
 
       <div className="3xl:grid-cols-4 mt-8 grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
