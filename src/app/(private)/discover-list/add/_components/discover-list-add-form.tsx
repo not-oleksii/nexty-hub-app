@@ -10,7 +10,6 @@ import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { CardContent } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   Field,
   FieldError,
@@ -27,6 +26,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { createDiscoverItem } from '@/server/api/discover';
 import { getErrorMessage } from '@/server/lib/utils';
 
@@ -108,94 +108,11 @@ export function AddDiscoverItemForm() {
   }, [form]);
 
   return (
-    <CardContent>
+    <CardContent className="mx-auto w-full max-w-md">
       <form id="discover-item-form" onSubmit={onSubmitClick}>
         <FieldGroup>
           <FieldSet>
             <FieldGroup>
-              <form.Field name="type">
-                {(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
-                  const handleTypeChange = (value: string) => {
-                    field.handleChange(value as ItemType);
-                  };
-
-                  return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Type</FieldLabel>
-                      <Select
-                        value={field.state.value}
-                        // eslint-disable-next-line react/jsx-no-bind
-                        onValueChange={handleTypeChange}
-                      >
-                        <SelectTrigger id={field.name} aria-invalid={isInvalid}>
-                          <SelectValue placeholder="Select type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {(Object.values(ItemType) as ItemType[]).map(
-                            (type) => (
-                              <SelectItem key={type} value={type}>
-                                {type}
-                              </SelectItem>
-                            ),
-                          )}
-                        </SelectContent>
-                      </Select>
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </Field>
-                  );
-                }}
-              </form.Field>
-
-              <form.Field name="category">
-                {(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
-
-                  return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Category</FieldLabel>
-                      <Input
-                        id={field.name}
-                        name={field.name}
-                        value={field.state.value}
-                        // eslint-disable-next-line react/jsx-no-bind
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        onBlur={field.handleBlur}
-                        placeholder="e.g. Sci-Fi"
-                        aria-invalid={isInvalid}
-                      />
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </Field>
-                  );
-                }}
-              </form.Field>
-
-              <form.Field name="completed">
-                {(field) => (
-                  <Field>
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        id={field.name}
-                        checked={field.state.value}
-                        // eslint-disable-next-line react/jsx-no-bind
-                        onCheckedChange={(checked) =>
-                          field.handleChange(Boolean(checked))
-                        }
-                      />
-                      <FieldLabel htmlFor={field.name}>
-                        Mark as completed
-                      </FieldLabel>
-                    </div>
-                  </Field>
-                )}
-              </form.Field>
-
               <form.Field name="title">
                 {(field) => {
                   const isInvalid =
@@ -223,31 +140,134 @@ export function AddDiscoverItemForm() {
                 }}
               </form.Field>
 
-              <form.Field name="imageUrl">
-                {(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
+              <div className="grid gap-4 md:grid-cols-2">
+                <form.Field name="type">
+                  {(field) => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid;
+                    const handleTypeChange = (value: string) => {
+                      field.handleChange(value as ItemType);
+                    };
 
-                  return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Image URL</FieldLabel>
-                      <Input
-                        id={field.name}
-                        name={field.name}
-                        value={field.state.value}
+                    return (
+                      <Field data-invalid={isInvalid}>
+                        <FieldLabel htmlFor={field.name}>Type</FieldLabel>
+                        <Select
+                          value={field.state.value}
+                          // eslint-disable-next-line react/jsx-no-bind
+                          onValueChange={handleTypeChange}
+                        >
+                          <SelectTrigger
+                            id={field.name}
+                            aria-invalid={isInvalid}
+                            className="cursor-pointer"
+                          >
+                            <SelectValue placeholder="Select type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {(Object.values(ItemType) as ItemType[]).map(
+                              (type) => (
+                                <SelectItem
+                                  className="cursor-pointer"
+                                  key={type}
+                                  value={type}
+                                >
+                                  {type}
+                                </SelectItem>
+                              ),
+                            )}
+                          </SelectContent>
+                        </Select>
+                        {isInvalid && (
+                          <FieldError errors={field.state.meta.errors} />
+                        )}
+                      </Field>
+                    );
+                  }}
+                </form.Field>
+
+                <form.Field name="completed">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel>Already completed?</FieldLabel>
+                      <ToggleGroup
+                        type="single"
+                        value={field.state.value ? 'yes' : 'no'}
                         // eslint-disable-next-line react/jsx-no-bind
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        onBlur={field.handleBlur}
-                        placeholder="https://..."
-                        aria-invalid={isInvalid}
-                      />
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
+                        onValueChange={(value) => {
+                          if (!value) {
+                            return;
+                          }
+
+                          field.handleChange(value === 'yes');
+                        }}
+                        variant="outline"
+                      >
+                        <ToggleGroupItem value="yes" className="cursor-pointer">
+                          Yes
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="no" className="cursor-pointer">
+                          No
+                        </ToggleGroupItem>
+                      </ToggleGroup>
                     </Field>
-                  );
-                }}
-              </form.Field>
+                  )}
+                </form.Field>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <form.Field name="category">
+                  {(field) => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid;
+
+                    return (
+                      <Field data-invalid={isInvalid}>
+                        <FieldLabel htmlFor={field.name}>Category</FieldLabel>
+                        <Input
+                          id={field.name}
+                          name={field.name}
+                          value={field.state.value}
+                          // eslint-disable-next-line react/jsx-no-bind
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          onBlur={field.handleBlur}
+                          placeholder="e.g. Sci-Fi"
+                          aria-invalid={isInvalid}
+                        />
+                        {isInvalid && (
+                          <FieldError errors={field.state.meta.errors} />
+                        )}
+                      </Field>
+                    );
+                  }}
+                </form.Field>
+
+                <form.Field name="imageUrl">
+                  {(field) => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid;
+
+                    return (
+                      <Field data-invalid={isInvalid}>
+                        <FieldLabel htmlFor={field.name}>Image URL</FieldLabel>
+                        <Input
+                          id={field.name}
+                          name={field.name}
+                          value={field.state.value}
+                          // eslint-disable-next-line react/jsx-no-bind
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          onBlur={field.handleBlur}
+                          placeholder="https://..."
+                          aria-invalid={isInvalid}
+                        />
+                        {isInvalid && (
+                          <FieldError errors={field.state.meta.errors} />
+                        )}
+                      </Field>
+                    );
+                  }}
+                </form.Field>
+              </div>
 
               <form.Field name="description">
                 {(field) => {
