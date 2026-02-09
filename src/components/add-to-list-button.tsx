@@ -65,8 +65,7 @@ export function AddToListButton({ itemId }: AddToListButtonProps) {
   const handleToggleList = useCallback(
     (listId: string, checked: boolean | 'indeterminate') => {
       const selectedIds = getSelectedListIds();
-      const shouldAdd = checked === true;
-      const nextIds = shouldAdd
+      const nextIds = Boolean(checked)
         ? Array.from(new Set([...selectedIds, listId]))
         : selectedIds.filter((id) => id !== listId);
 
@@ -122,7 +121,7 @@ export function AddToListButton({ itemId }: AddToListButtonProps) {
           >
             <div className="flex items-center gap-2">
               <Checkbox
-                checked={!!list.hasItem}
+                checked={Boolean(list.hasItem)}
                 className="pointer-events-none"
                 // eslint-disable-next-line react/jsx-no-bind
                 onCheckedChange={(checked) => {

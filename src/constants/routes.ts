@@ -10,4 +10,7 @@ export const ROUTES = {
     add: '/discover-list/add',
     item: '/discover-list/:type/:id',
   },
+  lists: {
+    root: '/lists',
+  },
 } as const;

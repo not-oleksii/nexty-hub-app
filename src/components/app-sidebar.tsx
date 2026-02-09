@@ -4,7 +4,13 @@ import { useCallback, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import { CirclePlusIcon, ListVideoIcon, LogOutIcon, User2 } from 'lucide-react';
+import {
+  BookmarkIcon,
+  CirclePlusIcon,
+  ListVideoIcon,
+  LogOutIcon,
+  User2,
+} from 'lucide-react';
 
 import {
   Sidebar,
@@ -17,6 +23,22 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { ROUTES } from '@/constants/routes';
+
+const MenuItem = ({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) => {
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton asChild isActive>
+        <Link href={href}>{children}</Link>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+};
 
 export function AppSidebar() {
   const router = useRouter();
@@ -51,22 +73,16 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive>
-                <Link href={ROUTES.discoverList.root}>
-                  <ListVideoIcon size={24} className="text-primary" />
-                  Discovery List
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive>
-                <Link href={ROUTES.discoverList.add}>
-                  <CirclePlusIcon size={24} className="text-primary" /> Add New
-                  Item
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+            <MenuItem href={ROUTES.discoverList.root}>
+              <ListVideoIcon size={24} className="text-primary" />
+              Discovery List
+            </MenuItem>
+            <MenuItem href={ROUTES.discoverList.add}>
+              <CirclePlusIcon size={24} className="text-primary" /> Add New Item
+            </MenuItem>
+            <MenuItem href={ROUTES.lists.root}>
+              <BookmarkIcon size={24} className="text-primary" /> Lists
+            </MenuItem>
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
