@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { DiscoverItem, User, UserList } from '@generated/prisma/client';
+import { User, UserList } from '@generated/prisma/client';
 
 import { getUserId } from '@/server/auth/session';
 import { prisma } from '@/server/db/prisma';
@@ -12,13 +12,18 @@ type AddDiscoverItemToListBody = {
   itemId: string;
 };
 
-type UserListDto = Pick<UserList, 'id' | 'name' | 'createdAt'> & {
+type UserListSummaryDto = Pick<UserList, 'id' | 'name' | 'createdAt'> & {
   owner: Pick<User, 'id' | 'username'>;
-  items: DiscoverItem[];
+  totalItems: number;
+  completedItems: number;
+};
+
+type UserListItemDto = Pick<UserList, 'id' | 'name'> & {
+  hasItem: boolean;
 };
 
 type UserListResponse = {
-  lists: UserListDto[];
+  lists: UserListSummaryDto[] | UserListItemDto[];
 };
 
 export async function GET(req: Request) {
@@ -32,6 +37,32 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const itemId = searchParams.get('itemId');
 
+    if (itemId) {
+      const lists = await prisma.userList.findMany({
+        where: { users: { some: { id: userId } } },
+        select: {
+          id: true,
+          name: true,
+          items: {
+            where: { id: itemId },
+            select: { id: true },
+          },
+        },
+        orderBy: { createdAt: 'asc' },
+      });
+
+      const listsWithStatus = lists.map((list) => ({
+        id: list.id,
+        name: list.name,
+        hasItem: list.items.length > 0,
+      }));
+
+      return NextResponse.json<UserListResponse>(
+        { lists: listsWithStatus },
+        { status: 200 },
+      );
+    }
+
     const lists = await prisma.userList.findMany({
       where: { users: { some: { id: userId } } },
       select: {
@@ -44,17 +75,38 @@ export async function GET(req: Request) {
             username: true,
           },
         },
-        items: itemId
-          ? {
-              where: { id: itemId },
+        items: {
+          select: {
+            id: true,
+            usersCompleted: {
               select: { id: true },
-            }
-          : false,
+            },
+          },
+        },
       },
       orderBy: { createdAt: 'asc' },
     });
 
-    return NextResponse.json<UserListResponse>({ lists }, { status: 200 });
+    const listsWithProgress = lists.map((list) => {
+      const totalItems = list.items.length;
+      const completedItems = list.items.filter((item) =>
+        item.usersCompleted.some((user) => user.id === userId),
+      ).length;
+
+      return {
+        id: list.id,
+        name: list.name,
+        createdAt: list.createdAt,
+        owner: list.owner,
+        totalItems,
+        completedItems,
+      };
+    });
+
+    return NextResponse.json<UserListResponse>(
+      { lists: listsWithProgress },
+      { status: 200 },
+    );
   } catch (error: unknown) {
     console.error('Error fetching user lists:', error);
 

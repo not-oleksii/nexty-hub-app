@@ -1,9 +1,21 @@
 import { getJson, postJson } from '@/server/lib/fetch-json';
 
-type UserListDto = {
+export type UserListItemDto = {
   id: string;
   name: string;
-  hasItem?: boolean;
+  hasItem: boolean;
+};
+
+export type UserListSummaryDto = {
+  id: string;
+  name: string;
+  createdAt: string;
+  owner: {
+    id: string;
+    username: string;
+  };
+  totalItems: number;
+  completedItems: number;
 };
 
 type AddDiscoverItemToListPayload = {
@@ -11,8 +23,8 @@ type AddDiscoverItemToListPayload = {
   listIds?: string[];
 };
 
-type UserListsResponse = {
-  lists: UserListDto[];
+type UserListsResponse<TList> = {
+  lists: TList[];
 };
 
 export async function addDiscoverItemToList(
@@ -21,9 +33,18 @@ export async function addDiscoverItemToList(
   return postJson<{ listIds?: string[] }>('/api/lists', payload);
 }
 
-export async function getUserLists(itemId?: string) {
-  const query = itemId ? `?itemId=${encodeURIComponent(itemId)}` : '';
-  const data = await getJson<UserListsResponse>(`/api/lists${query}`);
+export async function getUserListsByItem(itemId: string) {
+  const query = `?itemId=${encodeURIComponent(itemId)}`;
+  const data = await getJson<UserListsResponse<UserListItemDto>>(
+    `/api/lists${query}`,
+  );
+
+  return data.lists;
+}
+
+export async function getUserListsOverview() {
+  const data =
+    await getJson<UserListsResponse<UserListSummaryDto>>('/api/lists');
 
   return data.lists;
 }

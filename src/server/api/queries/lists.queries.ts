@@ -1,11 +1,16 @@
 import { mutationOptions, queryOptions } from '@tanstack/react-query';
 
-import { addDiscoverItemToList, getUserLists } from '../lists';
+import {
+  addDiscoverItemToList,
+  getUserListsByItem,
+  getUserListsOverview,
+} from '../lists';
 
 export const listsKeys = {
   all: ['lists'] as const,
   lists: () => [...listsKeys.all] as const,
   byItem: (itemId: string) => [...listsKeys.lists(), 'item', itemId] as const,
+  overview: () => [...listsKeys.lists(), 'overview'] as const,
   mutations: {
     addDiscoverItemToList: () =>
       [...listsKeys.all, 'addDiscoverItemToList'] as const,
@@ -13,15 +18,15 @@ export const listsKeys = {
 };
 
 export const listsQueries = {
-  all: () =>
+  overview: () =>
     queryOptions({
-      queryKey: listsKeys.lists(),
-      queryFn: () => getUserLists(),
+      queryKey: listsKeys.overview(),
+      queryFn: getUserListsOverview,
     }),
   byItem: (itemId: string) =>
     queryOptions({
       queryKey: listsKeys.byItem(itemId),
-      queryFn: () => getUserLists(itemId),
+      queryFn: () => getUserListsByItem(itemId),
     }),
 };
 
