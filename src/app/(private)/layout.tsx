@@ -22,7 +22,7 @@ export default function AuthorizedLayout({ children }: AuthorizedLayoutProps) {
     >
       <AppSidebar />
 
-      <SidebarInset className="min-h-svh">
+      <SidebarInset className="min-h-svh bg-transparent">
         <header className="flex h-12 items-center gap-2 px-4">
           <SidebarTrigger />
         </header>
