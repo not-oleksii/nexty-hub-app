@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 
+import { getUserId } from '@/server/auth/session';
 import { prisma } from '@/server/db/prisma';
 import { mapItemTypeToPrisma } from '@/server/lib/utils';
 
@@ -11,16 +12,31 @@ type Params = {
 
 export async function GET(_request: Request, { params }: Params) {
   try {
+    const userId = await getUserId();
     const { type } = await params;
 
     const prismaType = mapItemTypeToPrisma(type);
 
     const items = await prisma.discoverItem.findMany({
       where: { type: prismaType },
+      include: {
+        usersSaved: { select: { id: true } },
+        usersCompleted: { select: { id: true } },
+      },
       orderBy: { createdAt: 'desc' },
     });
 
-    return NextResponse.json({ items });
+    const itemsWithStatus = items.map((item) => ({
+      ...item,
+      isSaved: userId
+        ? item.usersSaved.some((user) => user.id === userId)
+        : false,
+      isCompleted: userId
+        ? item.usersCompleted.some((user) => user.id === userId)
+        : false,
+    }));
+
+    return NextResponse.json({ items: itemsWithStatus });
   } catch (error: unknown) {
     console.error('Error fetching discover items:', error);
 

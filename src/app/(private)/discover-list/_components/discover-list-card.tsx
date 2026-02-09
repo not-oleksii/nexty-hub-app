@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { ItemStatus, ItemType } from '@generated/prisma/enums';
+import { ItemType } from '@generated/prisma/enums';
 import { useQuery } from '@tanstack/react-query';
 import {
   BookIcon,
@@ -48,10 +48,9 @@ export function DiscoverListCard({ type }: DiscoverListCardProps) {
   const { data, isLoading, isError } = useQuery(discoverQueries.type(type));
 
   const totalItems = data?.length || 0;
-  const completedItems =
-    data?.filter((item) => item.status === ItemStatus.DONE).length || 0;
+  const completedItems = data?.filter((item) => item.isCompleted).length || 0;
 
-  const progress = (completedItems / totalItems) * 100;
+  const progress = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
 
   if (isLoading) {
     return <DiscoverListCardSkeleton />;

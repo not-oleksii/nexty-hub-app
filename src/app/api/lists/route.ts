@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+import { DiscoverItem, User, UserList } from '@generated/prisma/client';
+
 import { getUserId } from '@/server/auth/session';
 import { prisma } from '@/server/db/prisma';
 
@@ -10,8 +12,13 @@ type AddDiscoverItemToListBody = {
   itemId: string;
 };
 
+type UserListDto = Pick<UserList, 'id' | 'name' | 'createdAt'> & {
+  owner: Pick<User, 'id' | 'username'>;
+  items: DiscoverItem[];
+};
+
 type UserListResponse = {
-  lists: Array<{ id: string; name: string; hasItem: boolean }>;
+  lists: UserListDto[];
 };
 
 export async function GET(req: Request) {
@@ -30,6 +37,13 @@ export async function GET(req: Request) {
       select: {
         id: true,
         name: true,
+        createdAt: true,
+        owner: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
         items: itemId
           ? {
               where: { id: itemId },
@@ -40,16 +54,7 @@ export async function GET(req: Request) {
       orderBy: { createdAt: 'asc' },
     });
 
-    const responseLists = lists.map((list) => ({
-      id: list.id,
-      name: list.name,
-      hasItem: itemId ? list.items.length > 0 : false,
-    }));
-
-    return NextResponse.json<UserListResponse>(
-      { lists: responseLists },
-      { status: 200 },
-    );
+    return NextResponse.json<UserListResponse>({ lists }, { status: 200 });
   } catch (error: unknown) {
     console.error('Error fetching user lists:', error);
 
@@ -117,7 +122,8 @@ export async function POST(req: Request) {
 
     const list = await prisma.userList.create({
       data: {
-        name: 'My',
+        name: 'My List',
+        owner: { connect: { id: userId } },
         users: { connect: { id: userId } },
         items: { connect: { id: body.itemId } },
       },

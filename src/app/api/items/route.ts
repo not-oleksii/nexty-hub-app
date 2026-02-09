@@ -1,12 +1,20 @@
 import { NextResponse } from 'next/server';
 
-import { DiscoverItem } from '@generated/prisma/client';
+import { ItemType } from '@generated/prisma/enums';
 
+import { getUserId } from '@/server/auth/session';
 import { prisma } from '@/server/db/prisma';
 
 import { ApiErrorType } from '../error-types';
 
-type CreateItemBody = Omit<DiscoverItem, 'id' | 'createdAt' | 'updatedAt'>;
+type CreateItemBody = {
+  type: ItemType;
+  category?: string | null;
+  title: string;
+  description?: string | null;
+  imageUrl?: string | null;
+  completed?: boolean;
+};
 
 export async function POST(req: Request) {
   try {
@@ -19,14 +27,50 @@ export async function POST(req: Request) {
       );
     }
 
+    const title = body.title.trim();
+    const titlePattern = /^[A-Za-z0-9][A-Za-z0-9\s'’\-:.,!?()&/+#]*$/;
+
+    if (!titlePattern.test(title)) {
+      return NextResponse.json(
+        {
+          error:
+            'Title can only include letters, numbers, spaces, and common title symbols.',
+        },
+        { status: 400 },
+      );
+    }
+
+    const existingItem = await prisma.discoverItem.findFirst({
+      where: { title },
+      select: { id: true },
+    });
+
+    if (existingItem) {
+      return NextResponse.json(
+        { error: 'Title must be unique' },
+        { status: 409 },
+      );
+    }
+
+    const userId = await getUserId();
+
+    if (body.completed && !userId) {
+      return NextResponse.json(
+        { error: ApiErrorType.UNAUTHORIZED },
+        { status: 401 },
+      );
+    }
+
     const item = await prisma.discoverItem.create({
       data: {
         type: body.type,
         category: body.category,
-        title: body.title,
+        title,
         description: body.description,
         imageUrl: body.imageUrl,
-        status: body.status ?? 'TODO',
+        ...(body.completed && userId
+          ? { usersCompleted: { connect: { id: userId } } }
+          : {}),
       },
     });
 

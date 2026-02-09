@@ -1,6 +1,6 @@
 import 'dotenv/config';
 
-import { ItemStatus, ItemType, PrismaClient } from '@generated/prisma/client';
+import { ItemType, PrismaClient } from '@generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 
 import { hashPassword } from '@/app/api/users/route';
@@ -22,7 +22,6 @@ async function main() {
           description:
             'A team travels through a wormhole in search of a new home for humanity.',
           imageUrl: 'https://i.imgur.com/bVXo3zK.jpeg',
-          status: ItemStatus.DONE,
         },
         {
           type: ItemType.MOVIE,
@@ -31,7 +30,6 @@ async function main() {
           description:
             'A middle-aged actor and a young woman form a connection in Tokyo.',
           imageUrl: 'https://broken.url/not-found.png',
-          status: ItemStatus.TODO,
         },
         {
           type: ItemType.MOVIE,
@@ -41,7 +39,6 @@ async function main() {
             'A young drummer and an intense instructor push each other to extremes.',
           imageUrl:
             'https://images.unsplash.com/photo-1485579149621-3123dd979885?auto=format&fit=crop&w=600&q=80',
-          status: ItemStatus.TODO,
         },
         {
           type: ItemType.SERIES,
@@ -50,7 +47,6 @@ async function main() {
           description:
             'Two detectives investigate a series of ritualistic crimes.',
           imageUrl: 'https://i.imgur.com/IE7Af0Z.png',
-          status: ItemStatus.TODO,
         },
         {
           type: ItemType.GAME,
@@ -59,7 +55,6 @@ async function main() {
           description: 'A detective RPG with deep dialogue and choices.',
           imageUrl:
             'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=600&q=80',
-          status: ItemStatus.TODO,
         },
         {
           type: ItemType.BOOK,
@@ -69,7 +64,6 @@ async function main() {
             'Practical strategies to build good habits and break bad ones.',
           imageUrl:
             'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=600&q=80',
-          status: ItemStatus.DONE,
         },
       ],
     });

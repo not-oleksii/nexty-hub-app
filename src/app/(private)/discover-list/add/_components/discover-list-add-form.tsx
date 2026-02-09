@@ -3,13 +3,14 @@
 import { type SubmitEvent, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { ItemStatus, ItemType } from '@generated/prisma/enums';
+import { ItemType } from '@generated/prisma/enums';
 import { useForm } from '@tanstack/react-form-nextjs';
 import { useMutation } from '@tanstack/react-query';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { CardContent } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Field,
   FieldError,
@@ -37,9 +38,16 @@ const toOptionalTrimmed = (value: string) => {
 
 const formSchema = z.object({
   type: z.enum(ItemType),
-  status: z.enum(ItemStatus),
+  completed: z.boolean(),
   category: z.string().max(50, 'Category is too long.'),
-  title: z.string().trim().min(1, 'Title is required.'),
+  title: z
+    .string()
+    .trim()
+    .min(1, 'Title is required.')
+    .regex(
+      /^[A-Za-z0-9][A-Za-z0-9\s'’\-:.,!?()&/+#]*$/,
+      'Title can only include letters, numbers, spaces, and common title symbols.',
+    ),
   description: z.string().max(1000, 'Description is too long.'),
   imageUrl: z.union([z.url('Enter a valid URL.'), z.literal('')]),
 });
@@ -48,7 +56,7 @@ type AddItemFormValues = z.infer<typeof formSchema>;
 
 const DEFAULT_VALUES: AddItemFormValues = {
   type: ItemType.MOVIE,
-  status: ItemStatus.TODO,
+  completed: false,
   category: '',
   title: '',
   description: '',
@@ -71,11 +79,11 @@ export function AddDiscoverItemForm() {
       try {
         await mutateAsync({
           type: value.type,
-          status: value.status,
           title: value.title.trim(),
           category: toOptionalTrimmed(value.category),
           description: toOptionalTrimmed(value.description),
           imageUrl: toOptionalTrimmed(value.imageUrl),
+          completed: value.completed,
         });
 
         form.reset(DEFAULT_VALUES);
@@ -142,43 +150,6 @@ export function AddDiscoverItemForm() {
                 }}
               </form.Field>
 
-              <form.Field name="status">
-                {(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
-                  const handleStatusChange = (value: string) => {
-                    field.handleChange(value as ItemStatus);
-                  };
-
-                  return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Status</FieldLabel>
-                      <Select
-                        value={field.state.value}
-                        // eslint-disable-next-line react/jsx-no-bind
-                        onValueChange={handleStatusChange}
-                      >
-                        <SelectTrigger id={field.name} aria-invalid={isInvalid}>
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {(Object.values(ItemStatus) as ItemStatus[]).map(
-                            (status) => (
-                              <SelectItem key={status} value={status}>
-                                {status}
-                              </SelectItem>
-                            ),
-                          )}
-                        </SelectContent>
-                      </Select>
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </Field>
-                  );
-                }}
-              </form.Field>
-
               <form.Field name="category">
                 {(field) => {
                   const isInvalid =
@@ -203,6 +174,26 @@ export function AddDiscoverItemForm() {
                     </Field>
                   );
                 }}
+              </form.Field>
+
+              <form.Field name="completed">
+                {(field) => (
+                  <Field>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id={field.name}
+                        checked={field.state.value}
+                        // eslint-disable-next-line react/jsx-no-bind
+                        onCheckedChange={(checked) =>
+                          field.handleChange(Boolean(checked))
+                        }
+                      />
+                      <FieldLabel htmlFor={field.name}>
+                        Mark as completed
+                      </FieldLabel>
+                    </div>
+                  </Field>
+                )}
               </form.Field>
 
               <form.Field name="title">
