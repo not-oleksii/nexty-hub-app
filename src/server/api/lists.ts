@@ -34,9 +34,8 @@ export async function addDiscoverItemToList(
 }
 
 export async function getUserListsByItem(itemId: string) {
-  const query = `?itemId=${encodeURIComponent(itemId)}`;
   const data = await getJson<UserListsResponse<UserListItemDto>>(
-    `/api/lists${query}`,
+    `/api/lists/item/${encodeURIComponent(itemId)}`,
   );
 
   return data.lists;

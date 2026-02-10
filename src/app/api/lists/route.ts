@@ -18,49 +18,16 @@ type UserListSummaryDto = Pick<UserList, 'id' | 'name' | 'createdAt'> & {
   completedItems: number;
 };
 
-type UserListItemDto = Pick<UserList, 'id' | 'name'> & {
-  hasItem: boolean;
-};
-
 type UserListResponse = {
-  lists: UserListSummaryDto[] | UserListItemDto[];
+  lists: UserListSummaryDto[];
 };
 
-export async function GET(req: Request) {
+export async function GET(_req: Request) {
   try {
     const userId = await getUserId();
 
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { searchParams } = new URL(req.url);
-    const itemId = searchParams.get('itemId');
-
-    if (itemId) {
-      const lists = await prisma.userList.findMany({
-        where: { users: { some: { id: userId } } },
-        select: {
-          id: true,
-          name: true,
-          items: {
-            where: { id: itemId },
-            select: { id: true },
-          },
-        },
-        orderBy: { createdAt: 'asc' },
-      });
-
-      const listsWithStatus = lists.map((list) => ({
-        id: list.id,
-        name: list.name,
-        hasItem: list.items.length > 0,
-      }));
-
-      return NextResponse.json<UserListResponse>(
-        { lists: listsWithStatus },
-        { status: 200 },
-      );
     }
 
     const lists = await prisma.userList.findMany({
@@ -171,6 +138,8 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
+
+    console.log('userId', userId);
 
     const list = await prisma.userList.create({
       data: {
