@@ -29,7 +29,7 @@ export function AddToListButton({ itemId }: AddToListButtonProps) {
   const { mutateAsync, isPending } = useMutation(
     listsMutations.addDiscoverItemToList(),
   );
-  const isSaved = lists.some((list) => list.hasItem);
+  const isSaved = lists.some((list) => list.hasItems);
 
   const handleUpdateLists = useCallback(
     async (listIds?: string[]) => {
@@ -58,15 +58,14 @@ export function AddToListButton({ itemId }: AddToListButtonProps) {
   );
 
   const getSelectedListIds = useCallback(
-    () => lists.filter((list) => list.hasItem).map((list) => list.id),
+    () => lists.filter((list) => list.hasItems).map((list) => list.id),
     [lists],
   );
 
   const handleToggleList = useCallback(
     (listId: string, checked: boolean | 'indeterminate') => {
       const selectedIds = getSelectedListIds();
-      const shouldAdd = checked === true;
-      const nextIds = shouldAdd
+      const nextIds = Boolean(checked)
         ? Array.from(new Set([...selectedIds, listId]))
         : selectedIds.filter((id) => id !== listId);
 
@@ -117,12 +116,12 @@ export function AddToListButton({ itemId }: AddToListButtonProps) {
             // eslint-disable-next-line react/jsx-no-bind
             onSelect={(event) => {
               event.preventDefault();
-              handleToggleList(list.id, !list.hasItem);
+              handleToggleList(list.id, !list.hasItems);
             }}
           >
             <div className="flex items-center gap-2">
               <Checkbox
-                checked={!!list.hasItem}
+                checked={Boolean(list.hasItems)}
                 className="pointer-events-none"
                 // eslint-disable-next-line react/jsx-no-bind
                 onCheckedChange={(checked) => {

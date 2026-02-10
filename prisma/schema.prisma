@@ -22,47 +22,50 @@ enum ItemType {
   OTHER
 }
 
-enum ItemStatus {
-  TODO
-  DONE
-}
-
 model DiscoverItem {
-  id          String     @id @default(uuid())
-  type        ItemType
-  category    String?
-  title       String
-  description String?
-  imageUrl    String?
-  status      ItemStatus @default(TODO)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  userLists UserList[]
+  id             String     @id @default(uuid())
+  type           ItemType
+  category       String?
+  title          String
+  description    String?
+  imageUrl       String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  userLists      UserList[] @relation("UserListItems")
+  usersSaved     User[]     @relation("UserSavedItems")
+  usersCompleted User[]     @relation("UserCompletedItems")
+  owner          User?      @relation(fields: [ownerId], references: [id])
+  ownerId        String?
 
   @@index([type])
   @@index([title])
   @@index([category])
-  @@index([status])
 }
 
 model User {
-  id           String         @id @default(uuid())
-  username     String         @unique
-  passwordHash String
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  lists        UserList[]
+  id             String         @id @default(uuid())
+  username       String         @unique
+  passwordHash   String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  lists          UserList[]     @relation("UserListUsers")
+  ownedLists     UserList[]     @relation("Owner")
+  savedItems     DiscoverItem[] @relation("UserSavedItems")
+  completedItems DiscoverItem[] @relation("UserCompletedItems")
+  discoverItems  DiscoverItem[]
 
   @@index([username])
 }
 
 model UserList {
-  id String @id @default(uuid())
-  name String
-  users User[]
-  items DiscoverItem[] 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String         @id @default(uuid())
+  name      String
+  users     User[]         @relation("UserListUsers")
+  items     DiscoverItem[] @relation("UserListItems")
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  owner     User           @relation(name: "Owner", fields: [ownerId], references: [id])
+  ownerId   String
 
   @@index([name])
 }

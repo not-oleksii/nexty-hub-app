@@ -7,7 +7,7 @@ import {
 import { ContentWrapper } from '@/components/layout/content';
 import { Header1 } from '@/components/typography/header1';
 import { discoverQueries } from '@/server/api/queries/discover.queries';
-import { mapItemTypeToPrisma } from '@/server/lib/utils';
+import { mapItemTypeToPrisma } from '@/server/utils/prisma-maps';
 
 import { DiscoverItemsGrid } from './_components/discover-items-grid';
 import { DiscoverListPageProps } from './types';

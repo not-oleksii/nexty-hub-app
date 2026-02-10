@@ -1,7 +1,5 @@
 import { ItemType } from '@generated/prisma/enums';
 
-import { ApiErrorType } from '@/app/api/error-types';
-
 const itemTypeMap: Record<string, ItemType> = {
   movie: ItemType.MOVIE,
   series: ItemType.SERIES,
@@ -26,12 +24,4 @@ export function mapItemTypeToPrisma(type: string): ItemType {
 
 export function mapPrismaToItemType(type: ItemType): string {
   return PrismaItemTypeMap[type];
-}
-
-export function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message;
-  }
-
-  return ApiErrorType.UNKNOWN_ERROR;
 }

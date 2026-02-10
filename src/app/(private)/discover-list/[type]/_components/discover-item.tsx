@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ROUTES } from '@/constants/routes';
-import { mapPrismaToItemType } from '@/server/lib/utils';
+import { mapPrismaToItemType } from '@/server/utils/prisma-maps';
 
 type DiscoverItemProps = {
   item: DiscoverItem;

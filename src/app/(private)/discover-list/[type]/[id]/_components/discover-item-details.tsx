@@ -1,6 +1,6 @@
 'use client';
 
-import { ItemStatus, ItemType } from '@generated/prisma/enums';
+import { ItemType } from '@generated/prisma/enums';
 import { useQuery } from '@tanstack/react-query';
 
 import { Body } from '@/components/typography/body';
@@ -26,15 +26,15 @@ export function DiscoverItemDetails({ type, id }: DiscoverItemDetailsProps) {
     return <DiscoverItemDetailsSkeleton />;
   }
 
+  const isCompleted = Boolean(data?.isCompleted);
+
   return (
     <div className="flex justify-between gap-6 max-md:flex-col max-md:gap-4">
       <div className="flex max-w-sm flex-col gap-3">
         <div className="flex items-center gap-2">
           <Title>{data?.title}</Title>
-          <Badge
-            variant={data?.status === ItemStatus.DONE ? 'default' : 'outline'}
-          >
-            {data?.status}
+          <Badge variant={isCompleted ? 'default' : 'outline'}>
+            {isCompleted ? 'Completed' : 'Todo'}
           </Badge>
         </div>
         <DetailsList

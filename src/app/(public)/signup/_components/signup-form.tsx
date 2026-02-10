@@ -22,7 +22,7 @@ import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/constants/routes';
 import { usersMutations } from '@/server/api/queries/users.queries';
-import { getErrorMessage } from '@/server/lib/utils';
+import { getErrorMessage } from '@/utils/common';
 
 const formSchema = z
   .object({

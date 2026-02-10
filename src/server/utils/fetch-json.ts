@@ -44,7 +44,7 @@ export async function getJson<T>(
 
 export async function postJson<T>(
   path: string,
-  body: unknown,
+  body: unknown = {},
   config?: FetchConfig,
 ): Promise<T> {
   const url = await resolveRequestUrl(path);

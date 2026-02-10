@@ -1,20 +1,27 @@
 import { NextResponse } from 'next/server';
 
+import { User, UserList } from '@generated/prisma/client';
+
+import { ApiErrorType } from '@/app/api/error-types';
 import { getUserId } from '@/server/auth/session';
 import { prisma } from '@/server/db/prisma';
-
-import { ApiErrorType } from '../error-types';
 
 type AddDiscoverItemToListBody = {
   listIds?: string[];
   itemId: string;
 };
 
-type UserListResponse = {
-  lists: Array<{ id: string; name: string; hasItem: boolean }>;
+type UserListSummaryDto = Pick<UserList, 'id' | 'name' | 'createdAt'> & {
+  owner: Pick<User, 'id' | 'username'>;
+  totalItems: number;
+  completedItems: number;
 };
 
-export async function GET(req: Request) {
+type UserListResponse = {
+  lists: UserListSummaryDto[];
+};
+
+export async function GET(_req: Request) {
   try {
     const userId = await getUserId();
 
@@ -22,32 +29,53 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { searchParams } = new URL(req.url);
-    const itemId = searchParams.get('itemId');
-
     const lists = await prisma.userList.findMany({
       where: { users: { some: { id: userId } } },
       select: {
         id: true,
         name: true,
-        items: itemId
-          ? {
-              where: { id: itemId },
+        createdAt: true,
+        owner: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+        items: {
+          select: {
+            id: true,
+            usersCompleted: {
               select: { id: true },
-            }
-          : false,
+            },
+          },
+        },
       },
       orderBy: { createdAt: 'asc' },
     });
 
-    const responseLists = lists.map((list) => ({
-      id: list.id,
-      name: list.name,
-      hasItem: itemId ? list.items.length > 0 : false,
-    }));
+    const listsWithProgress = lists.map((list) => {
+      const totalItems = list.items.length;
+      const completedItems = list.items.filter((item) =>
+        item.usersCompleted.some((user) => user.id === userId),
+      ).length;
+      const owner = list.owner;
+
+      if (owner.id === userId) {
+        owner.username = 'You';
+      }
+
+      return {
+        id: list.id,
+        name: list.name,
+        createdAt: list.createdAt,
+        owner,
+        totalItems,
+        completedItems,
+      };
+    });
 
     return NextResponse.json<UserListResponse>(
-      { lists: responseLists },
+      { lists: listsWithProgress },
       { status: 200 },
     );
   } catch (error: unknown) {
@@ -115,9 +143,12 @@ export async function POST(req: Request) {
       );
     }
 
+    console.log('userId', userId);
+
     const list = await prisma.userList.create({
       data: {
-        name: 'My',
+        name: 'My List',
+        owner: { connect: { id: userId } },
         users: { connect: { id: userId } },
         items: { connect: { id: body.itemId } },
       },
