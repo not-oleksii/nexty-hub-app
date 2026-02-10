@@ -22,7 +22,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/constants/routes';
-import { usersMutations } from '@/server/api/queries/users.queries';
+import { authMutations } from '@/server/api/queries/auth.queries';
 import { getErrorMessage } from '@/server/lib/utils';
 
 const formSchema = z.object({
@@ -40,7 +40,7 @@ const DEFAULT_VALUES: LoginFormValues = {
 export function LoginForm() {
   const router = useRouter();
   const { mutateAsync, isPending, error, isError, isSuccess } = useMutation(
-    usersMutations.login(),
+    authMutations.login(),
   );
   const form = useForm({
     defaultValues: DEFAULT_VALUES,

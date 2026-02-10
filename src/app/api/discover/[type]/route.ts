@@ -36,7 +36,7 @@ export async function GET(_request: Request, { params }: Params) {
         : false,
     }));
 
-    return NextResponse.json({ items: itemsWithStatus });
+    return NextResponse.json({ items: itemsWithStatus }, { status: 200 });
   } catch (error: unknown) {
     console.error('Error fetching discover items:', error);
 

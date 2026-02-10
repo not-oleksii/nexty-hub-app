@@ -28,9 +28,13 @@ export function mapPrismaToItemType(type: ItemType): string {
   return PrismaItemTypeMap[type];
 }
 
-export function getErrorMessage(error: unknown): string {
+export function getErrorMessage(error: unknown | unknown[]): string {
   if (error instanceof Error) {
     return error.message;
+  }
+
+  if (error instanceof Array) {
+    return error.map((error) => error.message).join(', ');
   }
 
   return ApiErrorType.UNKNOWN_ERROR;

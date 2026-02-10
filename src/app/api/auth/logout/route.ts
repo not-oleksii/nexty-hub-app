@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 
+import { ApiErrorType } from '@/app/api/error-types';
 import { AUTH_COOKIE } from '@/constants/auth';
-
-import { ApiErrorType } from '../error-types';
 
 export async function POST() {
   try {

@@ -1,6 +1,6 @@
-import { DiscoverItem } from '@generated/prisma/browser';
+import { DiscoverItem, User, UserList } from '@generated/prisma/client';
 
-import { postJson } from '@/server/lib/fetch-json';
+import { getJson, postJson } from '@/server/lib/fetch-json';
 
 type CreateUserPayload = {
   username: string;
@@ -12,19 +12,21 @@ type CreateUserResponse = {
   user: unknown;
 };
 
-type LoginPayload = {
-  username: string;
-  password: string;
-};
-
-type LoginResponse = {
-  message: string;
+type CurrentUserResponse = Omit<
+  User,
+  'passwordHash' | 'createdAt' | 'updatedAt'
+> & {
+  lists: UserList[];
+  ownedLists: UserList[];
+  savedItems: DiscoverItem[];
+  completedItems: DiscoverItem[];
+  discoverItems: DiscoverItem[];
 };
 
 export async function createUser(payload: CreateUserPayload) {
   return postJson<CreateUserResponse>('/api/users', payload);
 }
 
-export async function loginUser(payload: LoginPayload) {
-  return postJson<LoginResponse>('/api/login', payload);
+export async function getCurrentUser() {
+  return getJson<CurrentUserResponse>('/api/users/current');
 }
