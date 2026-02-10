@@ -1,7 +1,7 @@
 import type { Prisma } from '@generated/prisma/client';
 import type { ItemType } from '@generated/prisma/enums';
 
-import { getJson, postJson } from '@/server/lib/fetch-json';
+import { getJson, postJson } from '@/server/utils/fetch-json';
 
 export type DiscoverItemDto = Prisma.DiscoverItemGetPayload<{
   include: {

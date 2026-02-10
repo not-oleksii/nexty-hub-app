@@ -1,4 +1,4 @@
-import { postJson } from '../lib/fetch-json';
+import { postJson } from '../utils/fetch-json';
 
 type LoginPayload = {
   username: string;

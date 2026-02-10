@@ -7,7 +7,7 @@ import { ContentWrapper } from '@/components/layout/content';
 import { Card, CardContent } from '@/components/ui/card';
 import { ROUTES } from '@/constants/routes';
 import { discoverQueries } from '@/server/api/queries/discover.queries';
-import { mapItemTypeToPrisma } from '@/server/lib/utils';
+import { mapItemTypeToPrisma } from '@/server/utils/prisma-maps';
 
 import { DiscoverItemDetails } from './_components/discover-item-details';
 import { DiscoverItemPageProps } from './types';

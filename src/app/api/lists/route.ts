@@ -2,10 +2,9 @@ import { NextResponse } from 'next/server';
 
 import { User, UserList } from '@generated/prisma/client';
 
+import { ApiErrorType } from '@/app/api/error-types';
 import { getUserId } from '@/server/auth/session';
 import { prisma } from '@/server/db/prisma';
-
-import { ApiErrorType } from '../error-types';
 
 type AddDiscoverItemToListBody = {
   listIds?: string[];

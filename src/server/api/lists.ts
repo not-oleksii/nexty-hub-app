@@ -1,4 +1,4 @@
-import { getJson, postJson } from '@/server/lib/fetch-json';
+import { getJson, postJson } from '@/server/utils/fetch-json';
 
 export type UserListItemDto = {
   id: string;

@@ -1,6 +1,6 @@
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/common';
 
 export const DropdownMenu = DropdownMenuPrimitive.Root;
 export const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
@@ -22,7 +22,7 @@ export function DropdownMenuContent({
         sideOffset={sideOffset}
         className={cn(
           [
-            'z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md',
+            'bg-popover text-popover-foreground z-50 min-w-[8rem] overflow-hidden rounded-md border p-1 shadow-md',
             'data-[state=open]:animate-in data-[state=closed]:animate-out',
             'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
             'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
@@ -41,14 +41,15 @@ export function DropdownMenuItem({
   className,
   inset,
   ...props
-}: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> &
-  { inset?: boolean }) {
+}: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
+  inset?: boolean;
+}) {
   return (
     <DropdownMenuPrimitive.Item
       className={cn(
         [
-          'relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none',
-          'transition-colors focus:bg-accent focus:text-accent-foreground',
+          'relative flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-none select-none',
+          'focus:bg-accent focus:text-accent-foreground transition-colors',
           'data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
         ].join(' '),
         inset && 'pl-8',

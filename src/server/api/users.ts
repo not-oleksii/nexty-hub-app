@@ -1,6 +1,6 @@
 import { DiscoverItem, User, UserList } from '@generated/prisma/client';
 
-import { getJson, postJson } from '@/server/lib/fetch-json';
+import { getJson, postJson } from '@/server/utils/fetch-json';
 
 type CreateUserPayload = {
   username: string;

@@ -23,7 +23,7 @@ import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/constants/routes';
 import { authMutations } from '@/server/api/queries/auth.queries';
-import { getErrorMessage } from '@/server/lib/utils';
+import { getErrorMessage } from '@/utils/common';
 
 const formSchema = z.object({
   username: z.string().trim().min(1, 'Username is required.'),

@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
 
+import { ApiErrorType } from '@/app/api/error-types';
 import { getUserId } from '@/server/auth/session';
 import { prisma } from '@/server/db/prisma';
-import { mapItemTypeToPrisma } from '@/server/lib/utils';
-
-import { ApiErrorType } from '../../error-types';
+import { mapItemTypeToPrisma } from '@/server/utils/prisma-maps';
 
 type Params = {
   params: Promise<{ type: string }>;
