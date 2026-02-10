@@ -28,7 +28,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { createDiscoverItem } from '@/server/api/discover';
-import { getErrorMessage } from '@/server/lib/utils';
+import { getErrorMessage } from '@/utils/common';
 
 const toOptionalTrimmed = (value: string) => {
   const trimmed = value.trim();
