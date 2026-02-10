@@ -59,12 +59,17 @@ export async function GET(_req: Request) {
       const completedItems = list.items.filter((item) =>
         item.usersCompleted.some((user) => user.id === userId),
       ).length;
+      const owner = list.owner;
+
+      if (owner.id === userId) {
+        owner.username = 'You';
+      }
 
       return {
         id: list.id,
         name: list.name,
         createdAt: list.createdAt,
-        owner: list.owner,
+        owner,
         totalItems,
         completedItems,
       };

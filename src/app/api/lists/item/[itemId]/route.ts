@@ -11,7 +11,7 @@ type Params = {
 type UserListItemDto = {
   id: string;
   name: string;
-  hasItem: boolean;
+  hasItems: boolean;
 };
 
 type UserListResponse = {
@@ -44,7 +44,7 @@ export async function GET(_req: Request, { params }: Params) {
     const listsWithStatus = lists.map((list) => ({
       id: list.id,
       name: list.name,
-      hasItem: list.items.length > 0,
+      hasItems: list.items.length > 0,
     }));
 
     return NextResponse.json<UserListResponse>(

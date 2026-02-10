@@ -3,7 +3,7 @@ import { getJson, postJson } from '@/server/lib/fetch-json';
 export type UserListItemDto = {
   id: string;
   name: string;
-  hasItem: boolean;
+  hasItems: boolean;
 };
 
 export type UserListSummaryDto = {

@@ -12,6 +12,8 @@ import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { listsQueries } from '@/server/api/queries/lists.queries';
 
+import { CreateListCard } from './create-list-card';
+
 const formatDate = (value: string) =>
   new Intl.DateTimeFormat('en', { dateStyle: 'medium' }).format(
     new Date(value),
@@ -21,22 +23,7 @@ export function ListsGrid() {
   const { data = [], isLoading, isError } = useQuery(listsQueries.overview());
 
   if (isLoading) {
-    return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 6 }).map((_, index) => (
-          <Card key={index}>
-            <CardHeader className="space-y-2">
-              <Skeleton className="h-6 w-32" />
-              <Skeleton className="h-4 w-24" />
-            </CardHeader>
-            <CardFooter className="flex flex-col gap-2">
-              <Skeleton className="h-3 w-full" />
-              <Skeleton className="h-2 w-full" />
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
-    );
+    return <ListsGridSkeleton />;
   }
 
   if (isError) {
@@ -49,6 +36,7 @@ export function ListsGrid() {
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <CreateListCard />
       {data.map((list) => {
         const progress =
           list.totalItems > 0
@@ -79,6 +67,25 @@ export function ListsGrid() {
           </Card>
         );
       })}
+    </div>
+  );
+}
+
+export function ListsGridSkeleton() {
+  return (
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {Array.from({ length: 6 }).map((_, index) => (
+        <Card key={index}>
+          <CardHeader className="space-y-2">
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="h-4 w-24" />
+          </CardHeader>
+          <CardFooter className="flex flex-col gap-2">
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-2 w-full" />
+          </CardFooter>
+        </Card>
+      ))}
     </div>
   );
 }
