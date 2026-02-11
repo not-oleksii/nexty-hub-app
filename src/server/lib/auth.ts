@@ -3,7 +3,7 @@
 import { scryptSync, timingSafeEqual } from 'crypto';
 
 import { prisma } from '@/server/db/prisma';
-import { HttpStatus } from '@/server/http/types';
+import { ApiErrorType, HttpStatus } from '@/server/http/types';
 import {
   ResponseService,
   type ServerResponse,
@@ -31,37 +31,55 @@ export async function login(
   username: string,
   password: string,
 ): ServerResponse<{ userId: string }> {
-  const user = await prisma.user.findUnique({
-    where: {
-      username,
-    },
-  });
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        username,
+      },
+    });
 
-  if (!user) {
+    if (!user) {
+      return ResponseService.error({
+        message: 'Invalid username or password',
+        status: HttpStatus.BAD_REQUEST,
+      });
+    }
+
+    const isPasswordValid = verifyPassword(password, user.passwordHash);
+
+    if (!isPasswordValid) {
+      return ResponseService.error({
+        message: 'Invalid username or password',
+        status: HttpStatus.BAD_REQUEST,
+      });
+    }
+
+    return ResponseService.success({
+      data: { userId: user.id },
+      message: 'Login successful',
+    });
+  } catch (error: unknown) {
+    console.error('Login error:', error);
+
     return ResponseService.error({
-      message: 'Invalid username or password',
-      status: HttpStatus.BAD_REQUEST,
+      message: ApiErrorType.INTERNAL_SERVER_ERROR,
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
     });
   }
-
-  const isPasswordValid = verifyPassword(password, user.passwordHash);
-
-  if (!isPasswordValid) {
-    return ResponseService.error({
-      message: 'Invalid username or password',
-      status: HttpStatus.BAD_REQUEST,
-    });
-  }
-
-  return ResponseService.success({
-    data: { userId: user.id },
-    message: 'Login successful',
-  });
 }
 
 export async function logout() {
-  return ResponseService.success({
-    data: null,
-    message: 'Logout successful',
-  });
+  try {
+    return ResponseService.success({
+      data: null,
+      message: 'Logout successful',
+    });
+  } catch (error: unknown) {
+    console.error('Logout error:', error);
+
+    return ResponseService.error({
+      message: ApiErrorType.INTERNAL_SERVER_ERROR,
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
 }

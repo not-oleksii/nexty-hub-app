@@ -29,145 +29,181 @@ function includesUserId(userId: string | null, array: Array<{ id: string }>) {
 }
 
 export async function getDiscoverItems(): ServerResponse<DiscoverItemData[]> {
-  const userId = await getUserId();
-  const items = await prisma.discoverItem.findMany({
-    orderBy: { createdAt: 'desc' },
-    include: {
-      usersSaved: { select: { id: true } },
-      usersCompleted: { select: { id: true } },
-    },
-  });
+  try {
+    const userId = await getUserId();
+    const items = await prisma.discoverItem.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        usersSaved: { select: { id: true } },
+        usersCompleted: { select: { id: true } },
+      },
+    });
 
-  const discoverItems = items.map((item) => ({
-    id: item.id,
-    type: item.type,
-    title: item.title,
-    category: item.category,
-    imageUrl: item.imageUrl,
-    isSaved: includesUserId(userId, item.usersSaved),
-    isCompleted: includesUserId(userId, item.usersCompleted),
-  }));
+    const discoverItems = items.map((item) => ({
+      id: item.id,
+      type: item.type,
+      title: item.title,
+      category: item.category,
+      imageUrl: item.imageUrl,
+      isSaved: includesUserId(userId, item.usersSaved),
+      isCompleted: includesUserId(userId, item.usersCompleted),
+    }));
 
-  return ResponseService.success({
-    data: discoverItems,
-    message: 'Discover items fetched successfully',
-  });
+    return ResponseService.success({
+      data: discoverItems,
+      message: 'Discover items fetched successfully',
+    });
+  } catch (error: unknown) {
+    console.error('Error fetching discover items:', error);
+
+    return ResponseService.error({
+      message: ApiErrorType.INTERNAL_SERVER_ERROR,
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
 }
 
 export async function getDiscoverItemsByType(
   type: ItemType,
 ): ServerResponse<DiscoverItemData[]> {
-  const userId = await getUserId();
-  const items = await prisma.discoverItem.findMany({
-    where: { type },
-    orderBy: { createdAt: 'desc' },
-    include: {
-      usersSaved: { select: { id: true } },
-      usersCompleted: { select: { id: true } },
-    },
-  });
+  try {
+    const userId = await getUserId();
+    const items = await prisma.discoverItem.findMany({
+      where: { type },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        usersSaved: { select: { id: true } },
+        usersCompleted: { select: { id: true } },
+      },
+    });
 
-  const discoverItems = items.map((item) => ({
-    id: item.id,
-    type: item.type,
-    title: item.title,
-    category: item.category,
-    imageUrl: item.imageUrl,
-    isSaved: includesUserId(userId, item.usersSaved),
-    isCompleted: includesUserId(userId, item.usersCompleted),
-  }));
+    const discoverItems = items.map((item) => ({
+      id: item.id,
+      type: item.type,
+      title: item.title,
+      category: item.category,
+      imageUrl: item.imageUrl,
+      isSaved: includesUserId(userId, item.usersSaved),
+      isCompleted: includesUserId(userId, item.usersCompleted),
+    }));
 
-  return ResponseService.success({
-    data: discoverItems,
-    message: 'Discover items fetched successfully',
-  });
+    return ResponseService.success({
+      data: discoverItems,
+      message: 'Discover items fetched successfully',
+    });
+  } catch (error: unknown) {
+    console.error('Error fetching discover items by type:', error);
+
+    return ResponseService.error({
+      message: ApiErrorType.INTERNAL_SERVER_ERROR,
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
 }
 
 export async function getDiscoverItemById(
   id: string,
 ): ServerResponse<DiscoverItemData> {
-  const userId = await getUserId();
-  const item = await prisma.discoverItem.findUnique({
-    where: { id },
-    include: {
-      usersSaved: { select: { id: true } },
-      usersCompleted: { select: { id: true } },
-    },
-  });
+  try {
+    const userId = await getUserId();
+    const item = await prisma.discoverItem.findUnique({
+      where: { id },
+      include: {
+        usersSaved: { select: { id: true } },
+        usersCompleted: { select: { id: true } },
+      },
+    });
 
-  if (!item) {
+    if (!item) {
+      return ResponseService.error({
+        message: 'Discover item not found',
+        status: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    const discoverItem = {
+      id: item.id,
+      type: item.type,
+      title: item.title,
+      category: item.category,
+      imageUrl: item.imageUrl,
+      isSaved: includesUserId(userId, item.usersSaved),
+      isCompleted: includesUserId(userId, item.usersCompleted),
+    };
+
+    return ResponseService.success({
+      data: discoverItem,
+      message: 'Discover items fetched successfully',
+    });
+  } catch (error: unknown) {
+    console.error('Error fetching discover item by id:', error);
+
     return ResponseService.error({
-      message: 'Discover item not found',
-      status: HttpStatus.NOT_FOUND,
+      message: ApiErrorType.INTERNAL_SERVER_ERROR,
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
     });
   }
-
-  const discoverItem = {
-    id: item.id,
-    type: item.type,
-    title: item.title,
-    category: item.category,
-    imageUrl: item.imageUrl,
-    isSaved: includesUserId(userId, item.usersSaved),
-    isCompleted: includesUserId(userId, item.usersCompleted),
-  };
-
-  return ResponseService.success({
-    data: discoverItem,
-    message: 'Discover items fetched successfully',
-  });
 }
 
 export async function createDiscoverItem(
   body: DiscoverItemSchema,
 ): ServerResponse<DiscoverItem> {
-  const userId = await getUserId();
+  try {
+    const userId = await getUserId();
 
-  if (!userId) {
+    if (!userId) {
+      return ResponseService.error({
+        message: ApiErrorType.UNAUTHORIZED,
+        status: HttpStatus.UNAUTHORIZED,
+      });
+    }
+
+    const validationResult = discoverItemSchema.safeParse(body);
+
+    if (!validationResult.success) {
+      const firstError =
+        validationResult.error.issues[0]?.message ?? ApiErrorType.BAD_REQUEST;
+
+      return ResponseService.error({
+        message: firstError,
+        status: HttpStatus.BAD_REQUEST,
+      });
+    }
+
+    const { title } = validationResult.data;
+
+    const existingItem = await prisma.discoverItem.findFirst({
+      where: { title },
+      select: { id: true },
+    });
+
+    if (existingItem) {
+      return ResponseService.error({
+        message: 'Title must be unique',
+        status: HttpStatus.CONFLICT,
+      });
+    }
+
+    const discoverItem = await prisma.discoverItem.create({
+      data: {
+        ...validationResult.data,
+        ...(validationResult.data.completed && userId
+          ? { usersCompleted: { connect: { id: userId } } }
+          : {}),
+      },
+    });
+
+    return ResponseService.success({
+      data: discoverItem,
+      message: 'Discover item created successfully',
+      status: HttpStatus.CREATED,
+    });
+  } catch (error: unknown) {
+    console.error('Error creating discover item:', error);
+
     return ResponseService.error({
-      message: ApiErrorType.UNAUTHORIZED,
-      status: HttpStatus.UNAUTHORIZED,
+      message: ApiErrorType.INTERNAL_SERVER_ERROR,
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
     });
   }
-
-  const validationResult = discoverItemSchema.safeParse(body);
-
-  if (!validationResult.success) {
-    const firstError =
-      validationResult.error.issues[0]?.message ?? ApiErrorType.BAD_REQUEST;
-
-    return ResponseService.error({
-      message: firstError,
-      status: HttpStatus.BAD_REQUEST,
-    });
-  }
-
-  const { title } = validationResult.data;
-
-  const existingItem = await prisma.discoverItem.findFirst({
-    where: { title },
-    select: { id: true },
-  });
-
-  if (existingItem) {
-    return ResponseService.error({
-      message: 'Title must be unique',
-      status: HttpStatus.CONFLICT,
-    });
-  }
-
-  const discoverItem = await prisma.discoverItem.create({
-    data: {
-      ...validationResult.data,
-      ...(validationResult.data.completed && userId
-        ? { usersCompleted: { connect: { id: userId } } }
-        : {}),
-    },
-  });
-
-  return ResponseService.success({
-    data: discoverItem,
-    message: 'Discover item created successfully',
-    status: HttpStatus.CREATED,
-  });
 }
