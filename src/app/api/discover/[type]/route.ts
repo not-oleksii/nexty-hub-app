@@ -28,8 +28,8 @@ export async function GET(request: Request, { params }: Params) {
 
     const item = await prisma.discoverItem.findFirst({
       where: { type: prismaType },
-      orderBy: { id: 'asc' },
       skip: Math.floor(Math.random() * count),
+      take: 1,
     });
 
     return NextResponse.json({ item });

@@ -5,8 +5,8 @@ import type { DiscoverItemDto } from '@/server/api/discover';
 import { getDiscoverListByType } from '@/server/api/discover';
 import { mapItemTypeToPrisma } from '@/server/lib/utils';
 
+import { RandomPickButton } from '../../../../components/random-pick-button';
 import { DiscoverItem } from './_components/discover-item';
-import { RandomPickButton } from '../_components/random-pick-button';
 import { DiscoverListPageProps } from './types';
 
 export default async function DiscoverMoviesPage({

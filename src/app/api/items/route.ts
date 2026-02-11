@@ -15,7 +15,10 @@ export async function POST(req: Request) {
   const body = (await req.json()) as CreateItemBody;
 
   if (!body?.type || !body?.title) {
-    return NextResponse.json({ error: 'type and title are required' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'type and title are required' },
+      { status: 400 },
+    );
   }
 
   const item = await prisma.discoverItem.create({

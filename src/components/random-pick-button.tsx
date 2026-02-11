@@ -1,15 +1,17 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { useCallback, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+
+import type { ItemType } from '@generated/prisma/enums';
 
 import { Button } from '@/components/ui/button';
-import type { ItemType } from '@generated/prisma/enums';
 import {
   getRandomDiscoverItem,
   getRandomDiscoverItemByType,
 } from '@/server/api/discover';
+
+import { Spinner } from './ui/spinner';
 
 type RandomPickButtonProps = {
   type?: ItemType;
@@ -21,35 +23,43 @@ export function RandomPickButton({
   currentItemId,
 }: RandomPickButtonProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handlePickRandom = async () => {
+  const handlePickRandom = useCallback(async () => {
     setIsLoading(true);
     try {
       let item;
       let attempts = 0;
       const maxAttempts = 10;
 
+      // If `random_scope=all` is present in the URL, keep picking across the whole list
+      const preserveGlobalRandom =
+        !!searchParams && searchParams.get('random_scope') === 'all';
+
       // Keep fetching until we get a different item (if currentItemId is provided)
       do {
-        item = type
-          ? await getRandomDiscoverItemByType(type)
-          : await getRandomDiscoverItem();
+        item =
+          !type || preserveGlobalRandom
+            ? await getRandomDiscoverItem()
+            : await getRandomDiscoverItemByType(type);
         attempts++;
       } while (
         currentItemId &&
         item.id === currentItemId &&
         attempts < maxAttempts
       );
+      const shouldPreserveScope = preserveGlobalRandom || !type;
+      const scopeParam = shouldPreserveScope ? '&random_scope=all' : '';
 
       router.push(
-        `/discover-list/${item.type.toLowerCase()}/${item.id}?isRandom=true`,
+        `/discover-list/${item.type.toLowerCase()}/${item.id}?random=true${scopeParam}`,
       );
     } catch (error) {
       console.error('Error picking random item:', error);
       setIsLoading(false);
     }
-  };
+  }, [router, type, currentItemId, searchParams]);
 
   return (
     <Button
@@ -60,7 +70,7 @@ export function RandomPickButton({
     >
       {isLoading ? (
         <>
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          <Spinner className="mr-2 h-4 w-4 animate-spin" />
           Picking...
         </>
       ) : (

@@ -14,7 +14,9 @@ describe('Input', () => {
   const getView = () => {
     const user = userEvent.setup();
 
-    render(<Input data-testid={testId} placeholder="Search…" defaultValue="" />);
+    render(
+      <Input data-testid={testId} placeholder="Search…" defaultValue="" />,
+    );
 
     const getSearchInput = async () => {
       return screen.findByTestId(testId) as Promise<HTMLInputElement>;

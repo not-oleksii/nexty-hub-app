@@ -7,8 +7,8 @@ import { Header1 } from '@/components/typography/header1';
 import type { DiscoverItemDto } from '@/server/api/discover';
 import { getDiscoverListByType } from '@/server/api/discover';
 
+import { RandomPickButton } from '../../../components/random-pick-button';
 import { DiscoverListCard } from './_components/discover-list-card';
-import { RandomPickButton } from './_components/random-pick-button';
 
 export default async function DiscoverListPage() {
   const [

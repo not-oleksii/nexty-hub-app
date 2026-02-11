@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/server/db/prisma';
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const isRandom = searchParams.get('random') === 'true';
+export async function GET(request: NextRequest) {
+  const { searchParams } = request.nextUrl;
+  const isRandom = Boolean(searchParams.get('random'));
 
   if (isRandom) {
     const count = await prisma.discoverItem.count();
@@ -14,8 +14,8 @@ export async function GET(request: Request) {
     }
 
     const item = await prisma.discoverItem.findFirst({
-      orderBy: { id: 'asc' },
       skip: Math.floor(Math.random() * count),
+      take: 1,
     });
 
     return NextResponse.json({ item });

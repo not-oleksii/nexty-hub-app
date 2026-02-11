@@ -5,7 +5,6 @@ import { ContentWrapper } from '@/components/layout/content';
 import { Body } from '@/components/typography/body';
 import { Caption1 } from '@/components/typography/caption1';
 import { Header1 } from '@/components/typography/header1';
-import { Title } from '@/components/typography/title';
 import { AlbumImage } from '@/components/ui/album-image';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -13,8 +12,8 @@ import { DetailsList } from '@/components/ui/details-list';
 import { getDiscoverItemById } from '@/server/api/discover';
 import { mapItemTypeToPrisma } from '@/server/lib/utils';
 
+import { RandomPickButton } from '../../../../../components/random-pick-button';
 import { ItemCardActions } from './_components/item-card-actions';
-import { RandomPickButton } from '../../_components/random-pick-button';
 import { DiscoverItemPageProps } from './types';
 
 export default async function DiscoverItemPage({
@@ -42,7 +41,6 @@ export default async function DiscoverItemPage({
             <div className="flex justify-between gap-6 max-md:flex-col max-md:gap-4">
               <div className="flex max-w-sm flex-col gap-3">
                 <div className="flex items-center gap-2">
-                  <Title>{title}</Title>{' '}
                   <Badge
                     variant={status === ItemStatus.DONE ? 'default' : 'outline'}
                   >
