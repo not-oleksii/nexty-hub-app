@@ -46,6 +46,7 @@ export function SignupForm() {
         await mutateAsync({
           username: value.username.trim(),
           password: value.password,
+          confirmPassword: value.confirmPassword,
         });
       } catch (error) {
         console.error(error);

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 
+import { ErrorResponse } from '@/server/http/error-response';
 import { ApiErrorType, HttpStatus } from '@/server/http/types';
 import { getCurrentUser } from '@/server/lib/users';
 
@@ -8,7 +9,7 @@ export async function GET() {
     const { data, status, error } = await getCurrentUser();
 
     if (error) {
-      return NextResponse.json(error, { status });
+      return ErrorResponse(error, status);
     }
 
     return NextResponse.json(data, { status });

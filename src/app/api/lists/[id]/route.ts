@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 
+import { ErrorResponse } from '@/server/http/error-response';
 import { ApiErrorType, HttpStatus } from '@/server/http/types';
 import { addOrRemoveDiscoverItemToList } from '@/server/lib/lists';
 
@@ -17,7 +18,7 @@ export async function PATCH(req: Request, { params }: Params) {
     );
 
     if (error) {
-      return NextResponse.json(error, { status });
+      return ErrorResponse(error, status);
     }
 
     return NextResponse.json(data, { status });

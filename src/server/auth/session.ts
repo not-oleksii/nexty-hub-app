@@ -2,8 +2,9 @@ import 'server-only';
 
 import { cookies } from 'next/headers';
 
-export const AUTH_COOKIE_NAME =
-  process.env.NEXTY_AUTH_COOKIE_NAME ?? 'nexty_auth';
+import { AUTH_COOKIE } from '@/constants/auth';
+
+export const AUTH_COOKIE_NAME = AUTH_COOKIE;
 
 export async function getUserId() {
   const cookieStore = await cookies();

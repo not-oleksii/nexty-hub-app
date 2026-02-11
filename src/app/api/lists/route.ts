@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { getUserId } from '@/server/auth/session';
 import { prisma } from '@/server/db/prisma';
+import { ErrorResponse } from '@/server/http/error-response';
 import { ApiErrorType, HttpStatus } from '@/server/http/types';
 import { getUserLists } from '@/server/lib/lists';
 
@@ -15,7 +16,7 @@ export async function GET(_req: Request) {
     const { data, status, error } = await getUserLists();
 
     if (error) {
-      return NextResponse.json(error, { status });
+      return ErrorResponse(error, status);
     }
 
     return NextResponse.json(data, { status });

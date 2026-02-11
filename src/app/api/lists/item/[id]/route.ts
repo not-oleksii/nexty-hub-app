@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 
+import { ErrorResponse } from '@/server/http/error-response';
 import { ApiErrorType, HttpStatus } from '@/server/http/types';
 import { getUserListsByItem } from '@/server/lib/lists';
 
@@ -13,7 +14,7 @@ export async function GET(_req: Request, { params }: Params) {
     const { data, status, error } = await getUserListsByItem(id);
 
     if (error) {
-      return NextResponse.json(error, { status });
+      return ErrorResponse(error, status);
     }
 
     return NextResponse.json(data, { status });
