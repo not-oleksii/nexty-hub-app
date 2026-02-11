@@ -12,7 +12,7 @@ import {
   type ServerResponse,
 } from '../services/response-service';
 
-type CurrentUserResponse = Prisma.UserGetPayload<{
+export type CurrentUserResponse = Prisma.UserGetPayload<{
   include: {
     lists: { include: { items: true } };
     ownedLists: { include: { items: true } };

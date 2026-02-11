@@ -14,21 +14,15 @@ export type DiscoverItemDto = Prisma.DiscoverItemGetPayload<{
   isCompleted: boolean;
 };
 
-type DiscoverItemBase = Prisma.DiscoverItemGetPayload<{}>;
-
-type CreateDiscoverItemResponse = {
-  item: DiscoverItemBase;
-};
-
 export const discoverApi = {
-  getAll: () => getJson<{ items: DiscoverItemDto[] }>('/api/discover'),
+  getAll: () => getJson<DiscoverItemDto[]>('/api/discover'),
 
   getByType: (type: ItemType) =>
-    getJson<{ items: DiscoverItemDto[] }>(`/api/discover/${type}`),
+    getJson<DiscoverItemDto[]>(`/api/discover/${type}`),
 
   getById: (id: string) =>
-    getJson<{ item: DiscoverItemDto | null }>(`/api/discover/item/${id}`),
+    getJson<DiscoverItemDto | null>(`/api/discover/item/${id}`),
 
   create: (payload: DiscoverItemSchema) =>
-    postJson<CreateDiscoverItemResponse>('/api/discover/item', payload),
+    postJson<{ item: DiscoverItemDto }>('/api/discover/item', payload),
 };

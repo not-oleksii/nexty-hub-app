@@ -31,7 +31,7 @@ import {
   DiscoverItemSchema,
   discoverItemSchema,
 } from '@/lib/validators/discovery-item';
-import { createDiscoverItem } from '@/server/api/discover';
+import { discoverMutations } from '@/server/api/queries/discover.queries';
 
 const toOptionalTrimmed = (value: string) => {
   const trimmed = value.trim();
@@ -50,9 +50,9 @@ const DEFAULT_VALUES: DiscoverItemSchema = {
 
 export function AddDiscoverItemForm() {
   const router = useRouter();
-  const { mutateAsync, isPending, error, isSuccess, isError } = useMutation({
-    mutationFn: createDiscoverItem,
-  });
+  const { mutateAsync, isPending, error, isSuccess, isError } = useMutation(
+    discoverMutations.create(),
+  );
 
   const form = useForm({
     defaultValues: DEFAULT_VALUES,
@@ -65,9 +65,9 @@ export function AddDiscoverItemForm() {
         await mutateAsync({
           type: value.type,
           title: value.title.trim(),
-          category: toOptionalTrimmed(value.category),
-          description: toOptionalTrimmed(value.description),
-          imageUrl: toOptionalTrimmed(value.imageUrl),
+          category: toOptionalTrimmed(value.category) ?? '',
+          description: toOptionalTrimmed(value.description) ?? '',
+          imageUrl: toOptionalTrimmed(value.imageUrl) ?? '',
           completed: value.completed,
         });
 
