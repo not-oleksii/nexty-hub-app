@@ -30,10 +30,6 @@ export function ListsGrid() {
     return <Body>There was an error loading your lists.</Body>;
   }
 
-  if (data.length === 0) {
-    return <Body>You do not have any lists yet.</Body>;
-  }
-
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       <CreateListCard />
