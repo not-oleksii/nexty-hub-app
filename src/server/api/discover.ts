@@ -21,14 +21,14 @@ type CreateDiscoverItemResponse = {
 };
 
 export const discoverApi = {
-  getDiscoverList: () => getJson<{ items: DiscoverItemDto[] }>('/api/discover'),
+  getAll: () => getJson<{ items: DiscoverItemDto[] }>('/api/discover'),
 
-  getDiscoverListByType: (type: ItemType) =>
+  getByType: (type: ItemType) =>
     getJson<{ items: DiscoverItemDto[] }>(`/api/discover/${type}`),
 
-  getDiscoverItemById: (id: string) =>
+  getById: (id: string) =>
     getJson<{ item: DiscoverItemDto | null }>(`/api/discover/item/${id}`),
 
-  createDiscoverItem: (payload: DiscoverItemSchema) =>
+  create: (payload: DiscoverItemSchema) =>
     postJson<CreateDiscoverItemResponse>('/api/discover/item', payload),
 };

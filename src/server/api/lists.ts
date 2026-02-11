@@ -28,14 +28,14 @@ type UserListsResponse<TList> = {
 };
 
 export const listsApi = {
-  addDiscoverItemToList: (payload: AddDiscoverItemToListPayload) =>
+  addOrRemoveDiscoverItemToList: (payload: AddDiscoverItemToListPayload) =>
     postJson<{ listIds?: string[] }>('/api/lists', payload),
 
-  getUserListsByItem: (itemId: string) =>
+  getById: (itemId: string) =>
     getJson<UserListsResponse<UserListItemDto>>(
       `/api/lists/item/${encodeURIComponent(itemId)}`,
     ),
 
-  getUserListsOverview: () =>
+  getOverview: () =>
     getJson<UserListsResponse<UserListSummaryDto>>('/api/lists'),
 };

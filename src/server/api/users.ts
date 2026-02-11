@@ -26,5 +26,5 @@ type CurrentUserResponse = Omit<
 export const usersApi = {
   create: (payload: CreateUserPayload) =>
     postJson<CreateUserResponse>('/api/users', payload),
-  getCurrent: () => getJson<CurrentUserResponse>('/api/users/current'),
+  getCurrentUser: () => getJson<CurrentUserResponse>('/api/users/current'),
 };

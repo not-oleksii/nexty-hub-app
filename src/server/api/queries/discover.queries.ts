@@ -1,12 +1,7 @@
 import { ItemType } from '@generated/prisma/enums';
 import { mutationOptions, queryOptions } from '@tanstack/react-query';
 
-import {
-  createDiscoverItem,
-  getDiscoverItemById,
-  getDiscoverList,
-  getDiscoverListByType,
-} from '../discover';
+import { discoverApi } from '../discover';
 
 export const discoverKeys = {
   all: ['discover'] as const,
@@ -22,19 +17,19 @@ export const discoverQueries = {
   all: () =>
     queryOptions({
       queryKey: discoverKeys.lists(),
-      queryFn: getDiscoverList,
+      queryFn: discoverApi.getAll,
     }),
 
   type: (type: ItemType) =>
     queryOptions({
       queryKey: discoverKeys.type(type),
-      queryFn: () => getDiscoverListByType(type),
+      queryFn: () => discoverApi.getByType(type),
     }),
 
   detail: (type: ItemType, id: string) =>
     queryOptions({
       queryKey: discoverKeys.detail(id),
-      queryFn: () => getDiscoverItemById(type, id),
+      queryFn: () => discoverApi.getById(id),
     }),
 };
 
@@ -42,6 +37,6 @@ export const discoverMutations = {
   create: () =>
     mutationOptions({
       mutationKey: discoverKeys.mutations.create(),
-      mutationFn: createDiscoverItem,
+      mutationFn: discoverApi.create,
     }),
 };
