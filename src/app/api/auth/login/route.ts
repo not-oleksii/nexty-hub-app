@@ -1,62 +1,31 @@
 import { NextResponse } from 'next/server';
 
-import { scryptSync, timingSafeEqual } from 'crypto';
-
-import { ApiErrorType } from '@/app/api/error-types';
-import { AUTH_COOKIE } from '@/constants/auth';
-import { prisma } from '@/server/db/prisma';
-
-function verifyPassword(password: string, storedHash: string) {
-  const [salt, expectedHex] = storedHash.split(':');
-
-  if (!salt || !expectedHex) {
-    return false;
-  }
-
-  const actualHex = scryptSync(password, salt, 64).toString('hex');
-  const expected = Buffer.from(expectedHex, 'hex');
-  const actual = Buffer.from(actualHex, 'hex');
-
-  if (expected.length !== actual.length) {
-    return false;
-  }
-
-  return timingSafeEqual(expected, actual);
-}
+import { AUTH_COOKIE_NAME } from '@/server/auth/session';
+import { ApiErrorType, HttpStatus } from '@/server/http/types';
+import { login } from '@/server/lib/auth';
 
 export async function POST(request: Request) {
   try {
     const { username, password } = await request.json();
-    const user = await prisma.user.findUnique({
-      where: {
-        username,
-      },
-    });
 
-    if (!user) {
+    const { error, status, message, data } = await login(username, password);
+
+    if (error) {
+      return NextResponse.json({ error: error?.message }, { status: status });
+    }
+
+    if (!data) {
       return NextResponse.json(
-        { error: 'Invalid username or password' },
-        { status: 401 },
+        { error: ApiErrorType.BAD_REQUEST },
+        { status: status },
       );
     }
 
-    const isPasswordValid = verifyPassword(password, user.passwordHash);
-
-    if (!isPasswordValid) {
-      return NextResponse.json(
-        { error: 'Invalid username or password' },
-        { status: 401 },
-      );
-    }
-
-    const response = NextResponse.json(
-      { message: 'Login successful' },
-      { status: 200 },
-    );
+    const response = NextResponse.json({ message }, { status: status });
 
     response.cookies.set({
-      name: AUTH_COOKIE,
-      value: user.id,
+      name: AUTH_COOKIE_NAME,
+      value: data.userId,
       httpOnly: true,
       sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',
@@ -70,7 +39,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       { error: ApiErrorType.INTERNAL_SERVER_ERROR },
-      { status: 500 },
+      { status: HttpStatus.INTERNAL_SERVER_ERROR },
     );
   }
 }

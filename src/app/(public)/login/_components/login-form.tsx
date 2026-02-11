@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation';
 import { useForm } from '@tanstack/react-form-nextjs';
 import { useMutation } from '@tanstack/react-query';
 import { ArrowRightIcon } from 'lucide-react';
-import { z } from 'zod';
 
 import { Body } from '@/components/typography/body';
 import { Button } from '@/components/ui/button';
@@ -22,17 +21,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/constants/routes';
+import { getErrorMessage } from '@/lib/utils/common';
+import { type LoginSchema, loginSchema } from '@/lib/validators/login';
 import { authMutations } from '@/server/api/queries/auth.queries';
-import { getErrorMessage } from '@/utils/common';
 
-const formSchema = z.object({
-  username: z.string().trim().min(1, 'Username is required.'),
-  password: z.string().trim().min(1, 'Password is required.'),
-});
-
-type LoginFormValues = z.infer<typeof formSchema>;
-
-const DEFAULT_VALUES: LoginFormValues = {
+const DEFAULT_VALUES: LoginSchema = {
   username: '',
   password: '',
 };
@@ -45,7 +38,8 @@ export function LoginForm() {
   const form = useForm({
     defaultValues: DEFAULT_VALUES,
     validators: {
-      onSubmit: formSchema,
+      onSubmit: loginSchema,
+      onChange: loginSchema,
     },
     onSubmit: async ({ value }) => {
       try {

@@ -23,10 +23,8 @@ type CurrentUserResponse = Omit<
   discoverItems: DiscoverItem[];
 };
 
-export async function createUser(payload: CreateUserPayload) {
-  return postJson<CreateUserResponse>('/api/users', payload);
-}
-
-export async function getCurrentUser() {
-  return getJson<CurrentUserResponse>('/api/users/current');
-}
+export const usersApi = {
+  create: (payload: CreateUserPayload) =>
+    postJson<CreateUserResponse>('/api/users', payload),
+  getCurrent: () => getJson<CurrentUserResponse>('/api/users/current'),
+};

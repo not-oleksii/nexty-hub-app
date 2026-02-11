@@ -26,7 +26,7 @@ import {
 import { ROUTES } from '@/constants/routes';
 import { authMutations } from '@/server/api/queries/auth.queries';
 import { usersQueries } from '@/server/api/queries/users.queries';
-import { getErrorMessage } from '@/utils/common';
+import { getErrorMessage } from '@/lib/utils/common';
 
 const MenuItemWithLink = ({
   href,

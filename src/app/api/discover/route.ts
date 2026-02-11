@@ -1,38 +1,19 @@
 import { NextResponse } from 'next/server';
 
-import { getUserId } from '@/server/auth/session';
-import { prisma } from '@/server/db/prisma';
-
-import { ApiErrorType } from '../error-types';
+import { ApiErrorType, HttpStatus } from '@/server/http/types';
+import { getDiscoverItems } from '@/server/lib/discover';
 
 export async function GET() {
   try {
-    const userId = await getUserId();
-    const items = await prisma.discoverItem.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: {
-        usersSaved: { select: { id: true } },
-        usersCompleted: { select: { id: true } },
-      },
-    });
+    const { data, status } = await getDiscoverItems();
 
-    const itemsWithStatus = items.map((item) => ({
-      ...item,
-      isSaved: userId
-        ? item.usersSaved.some((user) => user.id === userId)
-        : false,
-      isCompleted: userId
-        ? item.usersCompleted.some((user) => user.id === userId)
-        : false,
-    }));
-
-    return NextResponse.json({ items: itemsWithStatus }, { status: 200 });
+    return NextResponse.json(data ?? [], { status });
   } catch (error: unknown) {
     console.error('Error fetching discover items:', error);
 
     return NextResponse.json(
       { error: ApiErrorType.INTERNAL_SERVER_ERROR },
-      { status: 500 },
+      { status: HttpStatus.INTERNAL_SERVER_ERROR },
     );
   }
 }

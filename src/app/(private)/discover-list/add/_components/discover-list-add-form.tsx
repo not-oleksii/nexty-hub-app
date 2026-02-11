@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { ItemType } from '@generated/prisma/enums';
 import { useForm } from '@tanstack/react-form-nextjs';
 import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { CardContent } from '@/components/ui/card';
@@ -27,8 +26,12 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { getErrorMessage } from '@/lib/utils/common';
+import {
+  DiscoverItemSchema,
+  discoverItemSchema,
+} from '@/lib/validators/discovery-item';
 import { createDiscoverItem } from '@/server/api/discover';
-import { getErrorMessage } from '@/utils/common';
 
 const toOptionalTrimmed = (value: string) => {
   const trimmed = value.trim();
@@ -36,25 +39,7 @@ const toOptionalTrimmed = (value: string) => {
   return trimmed.length === 0 ? null : trimmed;
 };
 
-const formSchema = z.object({
-  type: z.enum(ItemType),
-  completed: z.boolean(),
-  category: z.string().max(50, 'Category is too long.'),
-  title: z
-    .string()
-    .trim()
-    .min(1, 'Title is required.')
-    .regex(
-      /^[A-Za-z0-9][A-Za-z0-9\s'’\-:.,!?()&/+#]*$/,
-      'Title can only include letters, numbers, spaces, and common title symbols.',
-    ),
-  description: z.string().max(1000, 'Description is too long.'),
-  imageUrl: z.union([z.url('Enter a valid URL.'), z.literal('')]),
-});
-
-type AddItemFormValues = z.infer<typeof formSchema>;
-
-const DEFAULT_VALUES: AddItemFormValues = {
+const DEFAULT_VALUES: DiscoverItemSchema = {
   type: ItemType.MOVIE,
   completed: false,
   category: '',
@@ -72,8 +57,8 @@ export function AddDiscoverItemForm() {
   const form = useForm({
     defaultValues: DEFAULT_VALUES,
     validators: {
-      onSubmit: formSchema,
-      onChange: formSchema,
+      onSubmit: discoverItemSchema,
+      onChange: discoverItemSchema,
     },
     onSubmit: async ({ value }) => {
       try {

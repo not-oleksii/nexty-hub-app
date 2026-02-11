@@ -1,6 +1,6 @@
 import * as TabsPrimitive from '@radix-ui/react-tabs';
 
-import { cn } from '@/utils/common';
+import { cn } from '@/lib/utils/common';
 
 export const Tabs = TabsPrimitive.Root;
 

@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import Image from 'next/image';
 
-import { cn } from '@/utils/common';
+import { cn } from '@/lib/utils/common';
 
 const ALBUM_PALETTE = [
   { bg: '#3B82F6', gradient: ['#60A5FA', '#1D4ED8'], text: '#FFFFFF' },

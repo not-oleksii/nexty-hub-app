@@ -1,17 +1,17 @@
 import { NextResponse } from 'next/server';
 
-import { ApiErrorType } from '@/app/api/error-types';
-import { AUTH_COOKIE } from '@/constants/auth';
+import { AUTH_COOKIE_NAME } from '@/server/auth/session';
+import { ApiErrorType, HttpStatus } from '@/server/http/types';
 
 export async function POST() {
   try {
     const response = NextResponse.json(
       { message: 'Logged out' },
-      { status: 200 },
+      { status: HttpStatus.OK },
     );
 
     response.cookies.set({
-      name: AUTH_COOKIE,
+      name: AUTH_COOKIE_NAME,
       value: '',
       httpOnly: true,
       sameSite: 'lax',
@@ -26,7 +26,7 @@ export async function POST() {
 
     return NextResponse.json(
       { error: ApiErrorType.INTERNAL_SERVER_ERROR },
-      { status: 500 },
+      { status: HttpStatus.INTERNAL_SERVER_ERROR },
     );
   }
 }

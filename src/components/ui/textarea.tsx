@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 
-import { cn } from '@/utils/common';
+import { cn } from '@/lib/utils/common';
 
 export type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 

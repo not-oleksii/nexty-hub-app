@@ -1,89 +1,30 @@
 import { NextResponse } from 'next/server';
 
-import { User, UserList } from '@generated/prisma/client';
-
-import { ApiErrorType } from '@/app/api/error-types';
 import { getUserId } from '@/server/auth/session';
 import { prisma } from '@/server/db/prisma';
+import { ApiErrorType, HttpStatus } from '@/server/http/types';
+import { getUserLists } from '@/server/lib/lists';
 
 type AddDiscoverItemToListBody = {
   listIds?: string[];
   itemId: string;
 };
 
-type UserListSummaryDto = Pick<UserList, 'id' | 'name' | 'createdAt'> & {
-  owner: Pick<User, 'id' | 'username'>;
-  totalItems: number;
-  completedItems: number;
-};
-
-type UserListResponse = {
-  lists: UserListSummaryDto[];
-};
-
 export async function GET(_req: Request) {
   try {
-    const userId = await getUserId();
+    const { data, status, error } = await getUserLists();
 
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (error) {
+      return NextResponse.json(error, { status });
     }
 
-    const lists = await prisma.userList.findMany({
-      where: { users: { some: { id: userId } } },
-      select: {
-        id: true,
-        name: true,
-        createdAt: true,
-        owner: {
-          select: {
-            id: true,
-            username: true,
-          },
-        },
-        items: {
-          select: {
-            id: true,
-            usersCompleted: {
-              select: { id: true },
-            },
-          },
-        },
-      },
-      orderBy: { createdAt: 'asc' },
-    });
-
-    const listsWithProgress = lists.map((list) => {
-      const totalItems = list.items.length;
-      const completedItems = list.items.filter((item) =>
-        item.usersCompleted.some((user) => user.id === userId),
-      ).length;
-      const owner = list.owner;
-
-      if (owner.id === userId) {
-        owner.username = 'You';
-      }
-
-      return {
-        id: list.id,
-        name: list.name,
-        createdAt: list.createdAt,
-        owner,
-        totalItems,
-        completedItems,
-      };
-    });
-
-    return NextResponse.json<UserListResponse>(
-      { lists: listsWithProgress },
-      { status: 200 },
-    );
+    return NextResponse.json(data, { status });
   } catch (error: unknown) {
     console.error('Error fetching user lists:', error);
 
     return NextResponse.json(
       { error: ApiErrorType.INTERNAL_SERVER_ERROR },
-      { status: 500 },
+      { status: HttpStatus.INTERNAL_SERVER_ERROR },
     );
   }
 }

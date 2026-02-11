@@ -13,10 +13,9 @@ type LogoutResponse = {
   message: string;
 };
 
-export async function login(payload: LoginPayload) {
-  return postJson<LoginResponse>('/api/auth/login', payload);
-}
+export const authApi = {
+  login: (payload: LoginPayload) =>
+    postJson<LoginResponse>('/api/auth/login', payload),
 
-export async function logout() {
-  return postJson<LogoutResponse>('/api/auth/logout');
-}
+  logout: () => postJson<LogoutResponse>('/api/auth/logout'),
+};

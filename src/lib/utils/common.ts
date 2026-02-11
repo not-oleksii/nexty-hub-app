@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-import { ApiErrorType } from '@/app/api/error-types';
+import { ApiErrorType } from '@/server/http/types';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

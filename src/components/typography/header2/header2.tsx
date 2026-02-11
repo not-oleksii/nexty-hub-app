@@ -1,4 +1,4 @@
-import { cn } from '@/utils/common';
+import { cn } from '@/lib/utils/common';
 
 import type { Header2Props } from './types';
 
