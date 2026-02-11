@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { useForm } from '@tanstack/react-form-nextjs';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ArrowRightIcon } from 'lucide-react';
 
 import { Body } from '@/components/typography/body';
@@ -24,6 +24,7 @@ import { ROUTES } from '@/constants/routes';
 import { getErrorMessage } from '@/lib/utils/common';
 import { type LoginSchema, loginSchema } from '@/lib/validators/login';
 import { authMutations } from '@/server/api/queries/auth.queries';
+import { clearSessionCache } from '@/server/api/queries/session-cache';
 
 const DEFAULT_VALUES: LoginSchema = {
   username: '',
@@ -32,6 +33,7 @@ const DEFAULT_VALUES: LoginSchema = {
 
 export function LoginForm() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { mutateAsync, isPending, error, isError, isSuccess } = useMutation(
     authMutations.login(),
   );
@@ -47,6 +49,8 @@ export function LoginForm() {
           username: value.username.trim(),
           password: value.password,
         });
+
+        clearSessionCache(queryClient);
 
         router.push(ROUTES.discoverList.root);
         router.refresh();
