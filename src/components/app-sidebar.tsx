@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   BookmarkIcon,
   CirclePlusIcon,
@@ -24,9 +24,10 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { ROUTES } from '@/constants/routes';
+import { getErrorMessage } from '@/lib/utils/common';
 import { authMutations } from '@/server/api/queries/auth.queries';
+import { clearSessionCache } from '@/server/api/queries/session-cache';
 import { usersQueries } from '@/server/api/queries/users.queries';
-import { getErrorMessage } from '@/utils/common';
 
 const MenuItemWithLink = ({
   href,
@@ -46,6 +47,7 @@ const MenuItemWithLink = ({
 
 export function AppSidebar() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const {
     mutateAsync: logoutAsync,
     isPending: isLogoutPending,
@@ -59,18 +61,18 @@ export function AppSidebar() {
     error: userError,
   } = useQuery(usersQueries.current());
 
-  console.log(user);
-
   const handleLogout = useCallback(async () => {
     try {
       await logoutAsync();
+
+      clearSessionCache(queryClient);
 
       router.push(ROUTES.login);
       router.refresh();
     } catch (error) {
       console.error('Error logging out:', error);
     }
-  }, [logoutAsync, router]);
+  }, [logoutAsync, queryClient, router]);
 
   return (
     <Sidebar variant="floating" collapsible="icon">

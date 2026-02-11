@@ -2,7 +2,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 
 import type { Metadata } from 'next';
 
-import { cn } from '@/utils/common';
+import { cn } from '@/lib/utils/common';
 
 import { Providers } from './providers';
 

@@ -30,17 +30,13 @@ export function ListsGrid() {
     return <Body>There was an error loading your lists.</Body>;
   }
 
-  if (data.length === 0) {
-    return <Body>You do not have any lists yet.</Body>;
-  }
-
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       <CreateListCard />
       {data.map((list) => {
         const progress =
-          list.totalItems > 0
-            ? (list.completedItems / list.totalItems) * 100
+          list.totalDiscoverItems > 0
+            ? (list.completedDiscoverItems / list.totalDiscoverItems) * 100
             : 0;
 
         return (
@@ -60,7 +56,8 @@ export function ListsGrid() {
             </CardHeader>
             <CardFooter className="flex flex-col gap-2">
               <Body className="w-full text-left">
-                Your progress: {list.completedItems} / {list.totalItems}
+                Your progress: {list.completedDiscoverItems} /{' '}
+                {list.totalDiscoverItems}
               </Body>
               <Progress value={progress} />
             </CardFooter>

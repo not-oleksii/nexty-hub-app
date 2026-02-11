@@ -1,5 +1,23 @@
 interface FetchConfig extends RequestInit {}
 
+function getErrorMessageFromBody(body: unknown, fallback: string): string {
+  if (typeof body !== 'object' || body === null) {
+    return fallback;
+  }
+
+  const obj = body as Record<string, unknown>;
+
+  if (typeof obj.error === 'string') {
+    return obj.error;
+  }
+
+  if (typeof obj.message === 'string') {
+    return obj.message;
+  }
+
+  return fallback;
+}
+
 async function resolveRequestUrl(path: string) {
   if (/^https?:\/\//i.test(path)) {
     return path;
@@ -31,12 +49,13 @@ export async function getJson<T>(
   });
 
   if (!res.ok) {
-    const errorBody = await res.json().catch(() => null);
-
-    throw new Error(
-      errorBody?.message ||
-        `GET Request failed: ${res.status} ${res.statusText}`,
+    const responseBody = await res.json().catch(() => ({}));
+    const message = getErrorMessageFromBody(
+      responseBody,
+      `Request failed: ${res.status} ${res.statusText}`,
     );
+
+    throw new Error(message);
   }
 
   return res.json() as Promise<T>;
@@ -61,11 +80,42 @@ export async function postJson<T>(
   });
 
   if (!res.ok) {
-    const error = await res.json().catch(() => ({}));
-    const message =
-      typeof error?.error === 'string'
-        ? error.error
-        : `POST Request failed: ${res.status} ${res.statusText}`;
+    const responseBody = await res.json().catch(() => ({}));
+    const message = getErrorMessageFromBody(
+      responseBody,
+      `Request failed: ${res.status} ${res.statusText}`,
+    );
+
+    throw new Error(message);
+  }
+
+  return res.json() as Promise<T>;
+}
+
+export async function patchJson<T>(
+  path: string,
+  body: unknown = {},
+  config?: FetchConfig,
+): Promise<T> {
+  const url = await resolveRequestUrl(path);
+
+  const res = await fetch(url, {
+    method: 'PATCH',
+    cache: 'no-store',
+    ...config,
+    headers: {
+      'Content-Type': 'application/json',
+      ...config?.headers,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const responseBody = await res.json().catch(() => ({}));
+    const message = getErrorMessageFromBody(
+      responseBody,
+      `Request failed: ${res.status} ${res.statusText}`,
+    );
 
     throw new Error(message);
   }

@@ -1,6 +1,7 @@
 import type { Prisma } from '@generated/prisma/client';
 import type { ItemType } from '@generated/prisma/enums';
 
+import { DiscoverItemSchema } from '@/lib/validators/discovery-item';
 import { getJson, postJson } from '@/server/utils/fetch-json';
 
 export type DiscoverItemDto = Prisma.DiscoverItemGetPayload<{
@@ -13,43 +14,15 @@ export type DiscoverItemDto = Prisma.DiscoverItemGetPayload<{
   isCompleted: boolean;
 };
 
-type DiscoverItemBase = Prisma.DiscoverItemGetPayload<{}>;
+export const discoverApi = {
+  getAll: () => getJson<DiscoverItemDto[]>('/api/discover'),
 
-type CreateDiscoverItemPayload = {
-  type: ItemType;
-  category?: string | null;
-  title: string;
-  description?: string | null;
-  imageUrl?: string | null;
-  completed?: boolean;
+  getByType: (type: ItemType) =>
+    getJson<DiscoverItemDto[]>(`/api/discover/${type}`),
+
+  getById: (id: string) =>
+    getJson<DiscoverItemDto | null>(`/api/discover/item/${id}`),
+
+  create: (payload: DiscoverItemSchema) =>
+    postJson<{ item: DiscoverItemDto }>('/api/discover/item', payload),
 };
-
-type CreateDiscoverItemResponse = {
-  item: DiscoverItemBase;
-};
-
-export async function getDiscoverList() {
-  const data = await getJson<{ items: DiscoverItemDto[] }>('/api/discover');
-
-  return data.items;
-}
-
-export async function getDiscoverListByType(type: ItemType) {
-  const data = await getJson<{ items: DiscoverItemDto[] }>(
-    `/api/discover/${type}`,
-  );
-
-  return data.items;
-}
-
-export async function getDiscoverItemById(type: ItemType, id: string) {
-  const data = await getJson<{ item: DiscoverItemDto | null }>(
-    `/api/discover/${type}/${id}`,
-  );
-
-  return data.item;
-}
-
-export async function createDiscoverItem(payload: CreateDiscoverItemPayload) {
-  return postJson<CreateDiscoverItemResponse>('/api/items', payload);
-}

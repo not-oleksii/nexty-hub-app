@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 
-import { ApiErrorType } from '@/app/api/error-types';
-import { getUserId } from '@/server/auth/session';
-import { prisma } from '@/server/db/prisma';
-import { mapItemTypeToPrisma } from '@/server/utils/prisma-maps';
+import { ItemType } from '@generated/prisma/enums';
+
+import { ApiErrorType, HttpStatus } from '@/server/http/types';
+import { getDiscoverItemsByType } from '@/server/lib/discover';
 
 type Params = {
   params: Promise<{ type: string }>;
@@ -11,37 +11,16 @@ type Params = {
 
 export async function GET(_request: Request, { params }: Params) {
   try {
-    const userId = await getUserId();
     const { type } = await params;
+    const { data, status } = await getDiscoverItemsByType(type as ItemType);
 
-    const prismaType = mapItemTypeToPrisma(type);
-
-    const items = await prisma.discoverItem.findMany({
-      where: { type: prismaType },
-      include: {
-        usersSaved: { select: { id: true } },
-        usersCompleted: { select: { id: true } },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    const itemsWithStatus = items.map((item) => ({
-      ...item,
-      isSaved: userId
-        ? item.usersSaved.some((user) => user.id === userId)
-        : false,
-      isCompleted: userId
-        ? item.usersCompleted.some((user) => user.id === userId)
-        : false,
-    }));
-
-    return NextResponse.json({ items: itemsWithStatus }, { status: 200 });
+    return NextResponse.json(data ?? [], { status });
   } catch (error: unknown) {
     console.error('Error fetching discover items:', error);
 
     return NextResponse.json(
       { error: ApiErrorType.INTERNAL_SERVER_ERROR },
-      { status: 500 },
+      { status: HttpStatus.INTERNAL_SERVER_ERROR },
     );
   }
 }

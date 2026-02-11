@@ -1,6 +1,6 @@
 import { mutationOptions } from '@tanstack/react-query';
 
-import { login, logout } from '../auth';
+import { authApi } from '../auth';
 
 export const authKeys = {
   all: ['auth'] as const,
@@ -16,11 +16,11 @@ export const authMutations = {
   login: () =>
     mutationOptions({
       mutationKey: authKeys.mutations.login(),
-      mutationFn: login,
+      mutationFn: authApi.login,
     }),
   logout: () =>
     mutationOptions({
       mutationKey: authKeys.mutations.logout(),
-      mutationFn: logout,
+      mutationFn: authApi.logout,
     }),
 };

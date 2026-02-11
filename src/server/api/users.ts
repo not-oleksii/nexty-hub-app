@@ -1,32 +1,10 @@
-import { DiscoverItem, User, UserList } from '@generated/prisma/client';
-
+import { SignupSchema } from '@/lib/validators/signup';
+import type { CurrentUserResponse } from '@/server/lib/users';
 import { getJson, postJson } from '@/server/utils/fetch-json';
 
-type CreateUserPayload = {
-  username: string;
-  password: string;
-  lists?: DiscoverItem[];
+export const usersApi = {
+  create: (payload: SignupSchema) =>
+    postJson<CurrentUserResponse>('/api/users', payload),
+
+  getCurrentUser: () => getJson<CurrentUserResponse>('/api/users/current'),
 };
-
-type CreateUserResponse = {
-  user: unknown;
-};
-
-type CurrentUserResponse = Omit<
-  User,
-  'passwordHash' | 'createdAt' | 'updatedAt'
-> & {
-  lists: UserList[];
-  ownedLists: UserList[];
-  savedItems: DiscoverItem[];
-  completedItems: DiscoverItem[];
-  discoverItems: DiscoverItem[];
-};
-
-export async function createUser(payload: CreateUserPayload) {
-  return postJson<CreateUserResponse>('/api/users', payload);
-}
-
-export async function getCurrentUser() {
-  return getJson<CurrentUserResponse>('/api/users/current');
-}

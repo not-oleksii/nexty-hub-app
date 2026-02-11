@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useForm } from '@tanstack/react-form-nextjs';
 import { useMutation } from '@tanstack/react-query';
 import { ArrowRightIcon } from 'lucide-react';
-import { z } from 'zod';
 
 import { Body } from '@/components/typography/body';
 import { Button } from '@/components/ui/button';
@@ -21,40 +20,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/constants/routes';
+import { getErrorMessage } from '@/lib/utils/common';
+import { type SignupSchema, signupSchema } from '@/lib/validators/signup';
 import { usersMutations } from '@/server/api/queries/users.queries';
-import { getErrorMessage } from '@/utils/common';
 
-const formSchema = z
-  .object({
-    username: z
-      .string()
-      .trim()
-      .min(3, 'Username must be at least 3 characters long.')
-      .max(20, 'Username must be less than 20 characters long.')
-      .regex(
-        /^[a-zA-Z0-9]+$/,
-        'Username must contain only letters and numbers.',
-      ),
-    password: z
-      .string()
-      .trim()
-      .min(8, 'Password must be at least 8 characters long.')
-      .max(30, 'Password must be less than 20 characters long.'),
-    confirmPassword: z.string().trim().min(1, 'Confirm password is required.'),
-  })
-  .superRefine(({ password, confirmPassword }, ctx) => {
-    if (password !== confirmPassword) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Passwords do not match.',
-        path: ['confirmPassword'],
-      });
-    }
-  });
-
-type SignupFormValues = z.infer<typeof formSchema>;
-
-const DEFAULT_VALUES: SignupFormValues = {
+const DEFAULT_VALUES: SignupSchema = {
   username: '',
   password: '',
   confirmPassword: '',
@@ -68,14 +38,15 @@ export function SignupForm() {
   const form = useForm({
     defaultValues: DEFAULT_VALUES,
     validators: {
-      onSubmit: formSchema,
-      onChange: formSchema,
+      onSubmit: signupSchema,
+      onChange: signupSchema,
     },
     onSubmit: async ({ value }) => {
       try {
         await mutateAsync({
           username: value.username.trim(),
           password: value.password,
+          confirmPassword: value.confirmPassword,
         });
       } catch (error) {
         console.error(error);

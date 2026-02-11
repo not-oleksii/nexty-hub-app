@@ -1,4 +1,4 @@
-import { cn } from '@/utils/common';
+import { cn } from '@/lib/utils/common';
 
 import type { Caption2Props } from './types';
 
