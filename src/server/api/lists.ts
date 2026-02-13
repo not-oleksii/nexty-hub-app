@@ -1,3 +1,6 @@
+import { Prisma } from '@generated/prisma/client';
+
+import { ListSchema } from '@/lib/validators/list';
 import type {
   UserListWithItemStatus,
   UserListWithProgress,
@@ -8,16 +11,25 @@ export type UserListSummaryDto = Omit<UserListWithProgress, 'createdAt'> & {
   createdAt: string;
 };
 
+export type UserListDto = Prisma.UserListGetPayload<{
+  include: {
+    users: { select: { id: true } };
+    items: { select: { id: true } };
+  };
+}>;
+
 export const listsApi = {
+  getAll: () => getJson<UserListSummaryDto[]>('/api/lists'),
+
+  create: (payload: ListSchema) => postJson<UserListDto>('/api/lists', payload),
+
   addOrRemoveDiscoverItemToList: (payload: {
-    itemId: string;
-    listIds?: string[];
-  }) => postJson<{ listIds?: string[] }>('/api/lists', payload),
+    discoverItemId: string;
+    listId?: string;
+  }) => postJson<{ listId: string[] }>('/api/lists/discoverItem', payload),
 
-  getById: (itemId: string) =>
+  getByDiscoverItemId: (discoverItemId: string) =>
     getJson<UserListWithItemStatus[]>(
-      `/api/lists/item/${encodeURIComponent(itemId)}`,
+      `/api/lists/item/${encodeURIComponent(discoverItemId)}`,
     ),
-
-  getOverview: () => getJson<UserListSummaryDto[]>('/api/lists'),
 };

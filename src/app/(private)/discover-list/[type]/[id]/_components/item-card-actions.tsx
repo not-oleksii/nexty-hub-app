@@ -3,13 +3,13 @@
 import { AddToListButton } from '@/components/add-to-list-button';
 
 interface ItemCardActionsProps {
-  itemId: string;
+  discoverItemId: string;
 }
 
-export function ItemCardActions({ itemId }: ItemCardActionsProps) {
+export function ItemCardActions({ discoverItemId }: ItemCardActionsProps) {
   return (
     <div className="flex w-full gap-2">
-      <AddToListButton itemId={itemId} />
+      <AddToListButton discoverItemId={discoverItemId} />
     </div>
   );
 }

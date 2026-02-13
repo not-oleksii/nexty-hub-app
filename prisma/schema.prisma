@@ -13,7 +13,7 @@ datasource db {
   provider = "postgresql"
 }
 
-enum ItemType {
+enum DiscoverItemType {
   MOVIE
   SERIES
   GAME
@@ -23,18 +23,18 @@ enum ItemType {
 }
 
 model DiscoverItem {
-  id             String     @id @default(uuid())
-  type           ItemType
+  id             String           @id @default(uuid())
+  type           DiscoverItemType
   category       String?
   title          String
   description    String?
   imageUrl       String?
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
-  userLists      UserList[] @relation("UserListItems")
-  usersSaved     User[]     @relation("UserSavedItems")
-  usersCompleted User[]     @relation("UserCompletedItems")
-  owner          User?      @relation(fields: [ownerId], references: [id])
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  userLists      UserList[]       @relation("UserListItems")
+  usersSaved     User[]           @relation("UserSavedItems")
+  usersCompleted User[]           @relation("UserCompletedItems")
+  owner          User?            @relation(fields: [ownerId], references: [id])
   ownerId        String?
 
   @@index([type])
@@ -43,29 +43,29 @@ model DiscoverItem {
 }
 
 model User {
-  id             String         @id @default(uuid())
-  username       String         @unique
-  passwordHash   String
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  lists          UserList[]     @relation("UserListUsers")
-  ownedLists     UserList[]     @relation("Owner")
-  savedItems     DiscoverItem[] @relation("UserSavedItems")
-  completedItems DiscoverItem[] @relation("UserCompletedItems")
-  discoverItems  DiscoverItem[]
+  id                     String         @id @default(uuid())
+  username               String         @unique
+  passwordHash           String
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  lists                  UserList[]     @relation("UserListUsers")
+  ownedLists             UserList[]     @relation("Owner")
+  savedDiscoverItems     DiscoverItem[] @relation("UserSavedItems")
+  completedDiscoverItems DiscoverItem[] @relation("UserCompletedItems")
+  discoverItems          DiscoverItem[]
 
   @@index([username])
 }
 
 model UserList {
-  id        String         @id @default(uuid())
-  name      String
-  users     User[]         @relation("UserListUsers")
-  items     DiscoverItem[] @relation("UserListItems")
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
-  owner     User           @relation(name: "Owner", fields: [ownerId], references: [id])
-  ownerId   String
+  id            String         @id @default(uuid())
+  name          String
+  users         User[]         @relation("UserListUsers")
+  discoverItems DiscoverItem[] @relation("UserListItems")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  owner         User           @relation(name: "Owner", fields: [ownerId], references: [id])
+  ownerId       String
 
   @@index([name])
 }

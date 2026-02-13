@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { ItemType } from '@generated/prisma/enums';
+import { DiscoverItemType } from '@generated/prisma/enums';
 
 import { ApiErrorType, HttpStatus } from '@/server/http/types';
 import { getDiscoverItemsByType } from '@/server/lib/discover';
@@ -12,7 +12,9 @@ type Params = {
 export async function GET(_request: Request, { params }: Params) {
   try {
     const { type } = await params;
-    const { data, status } = await getDiscoverItemsByType(type as ItemType);
+    const { data, status } = await getDiscoverItemsByType(
+      type as DiscoverItemType,
+    );
 
     return NextResponse.json(data ?? [], { status });
   } catch (error: unknown) {

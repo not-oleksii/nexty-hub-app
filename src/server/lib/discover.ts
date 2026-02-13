@@ -1,5 +1,5 @@
 import { DiscoverItem } from '@generated/prisma/client';
-import { ItemType } from '@generated/prisma/enums';
+import { DiscoverItemType } from '@generated/prisma/enums';
 
 import {
   type DiscoverItemSchema,
@@ -64,7 +64,7 @@ export async function getDiscoverItems(): ServerResponse<DiscoverItemData[]> {
 }
 
 export async function getDiscoverItemsByType(
-  type: ItemType,
+  type: DiscoverItemType,
 ): ServerResponse<DiscoverItemData[]> {
   try {
     const userId = await getUserId();

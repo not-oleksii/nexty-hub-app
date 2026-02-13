@@ -1,6 +1,5 @@
 import type { Prisma } from '@generated/prisma/client';
 import { User } from '@generated/prisma/client';
-import { randomBytes, scryptSync } from 'crypto';
 
 import { SignupSchema, signupSchema } from '@/lib/validators/signup';
 
@@ -11,23 +10,17 @@ import {
   ResponseService,
   type ServerResponse,
 } from '../services/response-service';
+import { hashPassword } from '../utils/password';
 
 export type CurrentUserResponse = Prisma.UserGetPayload<{
   include: {
-    lists: { include: { items: true } };
-    ownedLists: { include: { items: true } };
-    savedItems: true;
-    completedItems: true;
+    lists: { include: { discoverItems: true } };
+    ownedLists: { include: { discoverItems: true } };
+    savedDiscoverItems: true;
+    completedDiscoverItems: true;
     discoverItems: true;
   };
 }>;
-
-export function hashPassword(password: string) {
-  const salt = randomBytes(16).toString('hex');
-  const hash = scryptSync(password, salt, 64).toString('hex');
-
-  return `${salt}:${hash}`;
-}
 
 export async function createUser(body: SignupSchema): ServerResponse<User> {
   try {
@@ -61,7 +54,11 @@ export async function createUser(body: SignupSchema): ServerResponse<User> {
         passwordHash: hashPassword(validationResult.data.password),
       },
       include: {
-        lists: { include: { items: true } },
+        lists: { include: { discoverItems: true } },
+        ownedLists: { include: { discoverItems: true } },
+        savedDiscoverItems: true,
+        completedDiscoverItems: true,
+        discoverItems: true,
       },
     });
 
@@ -94,10 +91,10 @@ export async function getCurrentUser(): ServerResponse<CurrentUserResponse> {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
-        lists: { include: { items: true } },
-        ownedLists: { include: { items: true } },
-        savedItems: true,
-        completedItems: true,
+        lists: { include: { discoverItems: true } },
+        ownedLists: { include: { discoverItems: true } },
+        savedDiscoverItems: true,
+        completedDiscoverItems: true,
         discoverItems: true,
       },
     });

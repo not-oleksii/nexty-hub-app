@@ -1,8 +1,8 @@
-import { ItemType } from '@generated/prisma/enums';
+import { DiscoverItemType } from '@generated/prisma/enums';
 import { z } from 'zod';
 
 export const discoverItemSchema = z.object({
-  type: z.enum(ItemType),
+  type: z.enum(DiscoverItemType),
   completed: z.boolean(),
   category: z.string().max(50, 'Category is too long.'),
   title: z

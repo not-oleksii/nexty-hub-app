@@ -1,4 +1,4 @@
-import { ItemType } from '@generated/prisma/enums';
+import { DiscoverItemType } from '@generated/prisma/enums';
 import {
   dehydrate,
   HydrationBoundary,
@@ -12,14 +12,14 @@ import { discoverQueries } from '@/server/api/queries/discover.queries';
 
 import { DiscoverListCard } from './_components/discover-list-card';
 
-const types: ItemType[] = [
-  ItemType.MOVIE,
-  ItemType.SERIES,
-  ItemType.GAME,
-  ItemType.BOOK,
-  ItemType.COURSE,
-  ItemType.OTHER,
-] as const;
+const types: DiscoverItemType[] = [
+  DiscoverItemType.MOVIE,
+  DiscoverItemType.SERIES,
+  DiscoverItemType.GAME,
+  DiscoverItemType.BOOK,
+  DiscoverItemType.COURSE,
+  DiscoverItemType.OTHER,
+];
 
 export default async function DiscoverListPage() {
   const queryClient = new QueryClient();
@@ -37,12 +37,12 @@ export default async function DiscoverListPage() {
         </div>
 
         <div className="3xl:grid-cols-4 mt-8 grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
-          <DiscoverListCard type={ItemType.MOVIE} />
-          <DiscoverListCard type={ItemType.SERIES} />
-          <DiscoverListCard type={ItemType.GAME} />
-          <DiscoverListCard type={ItemType.BOOK} />
-          <DiscoverListCard type={ItemType.COURSE} />
-          <DiscoverListCard type={ItemType.OTHER} />
+          <DiscoverListCard type={DiscoverItemType.MOVIE} />
+          <DiscoverListCard type={DiscoverItemType.SERIES} />
+          <DiscoverListCard type={DiscoverItemType.GAME} />
+          <DiscoverListCard type={DiscoverItemType.BOOK} />
+          <DiscoverListCard type={DiscoverItemType.COURSE} />
+          <DiscoverListCard type={DiscoverItemType.OTHER} />
         </div>
       </ContentWrapper>
     </HydrationBoundary>

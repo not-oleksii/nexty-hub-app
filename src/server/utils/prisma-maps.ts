@@ -1,27 +1,27 @@
-import { ItemType } from '@generated/prisma/enums';
+import { DiscoverItemType } from '@generated/prisma/enums';
 
-const itemTypeMap: Record<string, ItemType> = {
-  movie: ItemType.MOVIE,
-  series: ItemType.SERIES,
-  game: ItemType.GAME,
-  book: ItemType.BOOK,
-  course: ItemType.COURSE,
-  other: ItemType.OTHER,
+const itemTypeMap: Record<string, DiscoverItemType> = {
+  movie: DiscoverItemType.MOVIE,
+  series: DiscoverItemType.SERIES,
+  game: DiscoverItemType.GAME,
+  book: DiscoverItemType.BOOK,
+  course: DiscoverItemType.COURSE,
+  other: DiscoverItemType.OTHER,
 };
 
-const PrismaItemTypeMap: Record<ItemType, string> = {
-  [ItemType.MOVIE]: 'movie',
-  [ItemType.SERIES]: 'series',
-  [ItemType.GAME]: 'game',
-  [ItemType.BOOK]: 'book',
-  [ItemType.COURSE]: 'course',
-  [ItemType.OTHER]: 'other',
+const PrismaItemTypeMap: Record<DiscoverItemType, string> = {
+  [DiscoverItemType.MOVIE]: 'movie',
+  [DiscoverItemType.SERIES]: 'series',
+  [DiscoverItemType.GAME]: 'game',
+  [DiscoverItemType.BOOK]: 'book',
+  [DiscoverItemType.COURSE]: 'course',
+  [DiscoverItemType.OTHER]: 'other',
 };
 
-export function mapItemTypeToPrisma(type: string): ItemType {
+export function mapItemTypeToPrisma(type: string): DiscoverItemType {
   return itemTypeMap[type.toLowerCase()];
 }
 
-export function mapPrismaToItemType(type: ItemType): string {
+export function mapPrismaToItemType(type: DiscoverItemType): string {
   return PrismaItemTypeMap[type];
 }

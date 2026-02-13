@@ -1,9 +1,9 @@
 import 'dotenv/config';
 
-import { ItemType, PrismaClient } from '@generated/prisma/client';
+import { DiscoverItemType, PrismaClient } from '@generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 
-import { hashPassword } from '@/server/lib/users';
+import { hashPassword } from '@/server/utils/password';
 
 const connectionString = process.env.DATABASE_URL ?? '';
 const adapter = new PrismaPg({ connectionString });
@@ -16,7 +16,7 @@ async function main() {
     await prisma.discoverItem.createMany({
       data: [
         {
-          type: ItemType.MOVIE,
+          type: DiscoverItemType.MOVIE,
           category: 'Sci-Fi',
           title: 'Interstellar',
           description:
@@ -24,7 +24,7 @@ async function main() {
           imageUrl: 'https://i.imgur.com/bVXo3zK.jpeg',
         },
         {
-          type: ItemType.MOVIE,
+          type: DiscoverItemType.MOVIE,
           category: 'Drama',
           title: 'Lost in Translation',
           description:
@@ -32,7 +32,7 @@ async function main() {
           imageUrl: 'https://broken.url/not-found.png',
         },
         {
-          type: ItemType.MOVIE,
+          type: DiscoverItemType.MOVIE,
           category: 'Drama',
           title: 'Whiplash',
           description:
@@ -41,7 +41,7 @@ async function main() {
             'https://images.unsplash.com/photo-1485579149621-3123dd979885?auto=format&fit=crop&w=600&q=80',
         },
         {
-          type: ItemType.SERIES,
+          type: DiscoverItemType.SERIES,
           category: 'Crime',
           title: 'True Detective (S1)',
           description:
@@ -49,7 +49,7 @@ async function main() {
           imageUrl: 'https://i.imgur.com/IE7Af0Z.png',
         },
         {
-          type: ItemType.GAME,
+          type: DiscoverItemType.GAME,
           category: 'RPG',
           title: 'Disco Elysium',
           description: 'A detective RPG with deep dialogue and choices.',
@@ -57,7 +57,7 @@ async function main() {
             'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=600&q=80',
         },
         {
-          type: ItemType.BOOK,
+          type: DiscoverItemType.BOOK,
           category: 'Non-fiction',
           title: 'Atomic Habits',
           description:
