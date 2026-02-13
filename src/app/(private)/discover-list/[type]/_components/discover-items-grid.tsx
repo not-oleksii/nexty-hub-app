@@ -29,7 +29,7 @@ export function DiscoverItemsGrid({ type }: DiscoverItemsGridProps) {
     <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
       {isError && <Title>Error loading items</Title>}
       {data?.map((item) => (
-        <DiscoverItem key={item.id} item={item} isLoading={isLoading} />
+        <DiscoverItem key={item.id} discoverItem={item} isLoading={isLoading} />
       ))}
     </div>
   );

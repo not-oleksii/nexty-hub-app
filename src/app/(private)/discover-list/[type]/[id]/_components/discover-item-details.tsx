@@ -49,7 +49,7 @@ export function DiscoverItemDetails({ type, id }: DiscoverItemDetailsProps) {
           <Caption1>Description</Caption1>
           <Body>{data?.description}</Body>
         </div>
-        <ItemCardActions itemId={id} />
+        <ItemCardActions discoverItemId={id} />
       </div>
       <div className="flex max-md:justify-center">
         <AlbumImage

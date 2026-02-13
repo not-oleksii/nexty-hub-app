@@ -1,11 +1,10 @@
 'use client';
 
-import { type MouseEvent, useCallback } from 'react';
+import { type MouseEvent, useCallback, useMemo } from 'react';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { BookmarkIcon, PlusIcon } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   DropdownMenu,
@@ -19,8 +18,17 @@ import {
   listsQueries,
 } from '@/server/api/queries/lists.queries';
 
+import { Button } from './ui/button';
+
 interface AddToListButtonProps {
   discoverItemId: string;
+}
+
+interface AddToListButtonContentProps {
+  isSaved: boolean;
+  isLoading: boolean;
+  onClick: (event: MouseEvent) => void;
+  children?: React.ReactNode;
 }
 
 export function AddToListButton({ discoverItemId }: AddToListButtonProps) {
@@ -33,11 +41,13 @@ export function AddToListButton({ discoverItemId }: AddToListButtonProps) {
     listsMutations.addOrRemoveDiscoverItemToList(),
   );
 
-  const isSaved = listsWithSelectedDiscoverItem.data?.some((list) =>
-    list.discoverItems.some((item) => item.id === discoverItemId),
+  const isSaved = Boolean(
+    listsWithSelectedDiscoverItem.data?.some((list) =>
+      list.discoverItems.some((item) => item.id === discoverItemId),
+    ),
   );
 
-  const onMenuItemClick = useCallback(
+  const handleAddItemToList = useCallback(
     async (listId?: string) => {
       try {
         await addItemToList.mutateAsync({ discoverItemId, listId });
@@ -49,10 +59,47 @@ export function AddToListButton({ discoverItemId }: AddToListButtonProps) {
     [addItemToList, discoverItemId, queryClient],
   );
 
-  const handleButtonClick = useCallback((event: MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
-  }, []);
+  const handleButtonClick = useCallback(
+    (event: MouseEvent) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (!allLists.data || allLists.data.length === 0) {
+        handleAddItemToList();
+      }
+    },
+    [allLists.data, handleAddItemToList],
+  );
+
+  const buttonContent = useMemo(() => {
+    return (
+      <>
+        {isSaved ? (
+          <>
+            <BookmarkIcon className="h-4 w-4" />
+            Saved
+          </>
+        ) : (
+          <>
+            <PlusIcon className="h-4 w-4" />
+            Add To List
+          </>
+        )}
+      </>
+    );
+  }, [isSaved]);
+
+  if (!allLists.data || allLists.data.length === 0) {
+    return (
+      <Button
+        variant={isSaved ? 'default' : 'secondary'}
+        disabled={allLists.isLoading || addItemToList.isPending}
+        onClick={handleButtonClick}
+      >
+        {buttonContent}
+      </Button>
+    );
+  }
 
   return (
     <DropdownMenu>
@@ -62,17 +109,7 @@ export function AddToListButton({ discoverItemId }: AddToListButtonProps) {
           disabled={allLists.isLoading || addItemToList.isPending}
           onClick={handleButtonClick}
         >
-          {isSaved ? (
-            <>
-              <BookmarkIcon className="h-4 w-4" />
-              Saved
-            </>
-          ) : (
-            <>
-              <PlusIcon className="h-4 w-4" />
-              Add To List
-            </>
-          )}
+          {buttonContent}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
@@ -83,7 +120,7 @@ export function AddToListButton({ discoverItemId }: AddToListButtonProps) {
             // eslint-disable-next-line react/jsx-no-bind
             onSelect={(event) => {
               event.preventDefault();
-              onMenuItemClick(list.id);
+              handleAddItemToList(list.id);
             }}
           >
             <div className="flex items-center gap-2">

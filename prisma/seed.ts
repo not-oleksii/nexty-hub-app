@@ -3,7 +3,7 @@ import 'dotenv/config';
 import { DiscoverItemType, PrismaClient } from '@generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 
-import { hashPassword } from '@/server/lib/users';
+import { hashPassword } from '@/server/utils/password';
 
 const connectionString = process.env.DATABASE_URL ?? '';
 const adapter = new PrismaPg({ connectionString });

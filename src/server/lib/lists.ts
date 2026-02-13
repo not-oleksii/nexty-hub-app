@@ -174,6 +174,17 @@ export async function createList(body: ListSchema): ServerResponse<UserList> {
       });
     }
 
+    const existingList = await prisma.userList.findFirst({
+      where: { name: validationResult.data.name.toLowerCase() },
+    });
+
+    if (existingList) {
+      return ResponseService.error({
+        message: `List with name "${validationResult.data.name}" already exists`,
+        status: HttpStatus.BAD_REQUEST,
+      });
+    }
+
     const list = await prisma.userList.create({
       data: {
         name: validationResult.data.name,

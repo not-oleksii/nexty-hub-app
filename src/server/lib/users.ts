@@ -1,6 +1,5 @@
 import type { Prisma } from '@generated/prisma/client';
 import { User } from '@generated/prisma/client';
-import { randomBytes, scryptSync } from 'crypto';
 
 import { SignupSchema, signupSchema } from '@/lib/validators/signup';
 
@@ -11,6 +10,7 @@ import {
   ResponseService,
   type ServerResponse,
 } from '../services/response-service';
+import { hashPassword } from '../utils/password';
 
 export type CurrentUserResponse = Prisma.UserGetPayload<{
   include: {
@@ -21,13 +21,6 @@ export type CurrentUserResponse = Prisma.UserGetPayload<{
     discoverItems: true;
   };
 }>;
-
-export function hashPassword(password: string) {
-  const salt = randomBytes(16).toString('hex');
-  const hash = scryptSync(password, salt, 64).toString('hex');
-
-  return `${salt}:${hash}`;
-}
 
 export async function createUser(body: SignupSchema): ServerResponse<User> {
   try {
