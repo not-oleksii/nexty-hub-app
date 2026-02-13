@@ -14,10 +14,10 @@ import {
 
 export type CurrentUserResponse = Prisma.UserGetPayload<{
   include: {
-    lists: { include: { items: true } };
-    ownedLists: { include: { items: true } };
-    savedItems: true;
-    completedItems: true;
+    lists: { include: { discoverItems: true } };
+    ownedLists: { include: { discoverItems: true } };
+    savedDiscoverItems: true;
+    completedDiscoverItems: true;
     discoverItems: true;
   };
 }>;
@@ -61,7 +61,11 @@ export async function createUser(body: SignupSchema): ServerResponse<User> {
         passwordHash: hashPassword(validationResult.data.password),
       },
       include: {
-        lists: { include: { items: true } },
+        lists: { include: { discoverItems: true } },
+        ownedLists: { include: { discoverItems: true } },
+        savedDiscoverItems: true,
+        completedDiscoverItems: true,
+        discoverItems: true,
       },
     });
 
@@ -94,10 +98,10 @@ export async function getCurrentUser(): ServerResponse<CurrentUserResponse> {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
-        lists: { include: { items: true } },
-        ownedLists: { include: { items: true } },
-        savedItems: true,
-        completedItems: true,
+        lists: { include: { discoverItems: true } },
+        ownedLists: { include: { discoverItems: true } },
+        savedDiscoverItems: true,
+        completedDiscoverItems: true,
         discoverItems: true,
       },
     });

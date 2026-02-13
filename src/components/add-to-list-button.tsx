@@ -20,27 +20,33 @@ import {
 } from '@/server/api/queries/lists.queries';
 
 interface AddToListButtonProps {
-  itemId: string;
+  discoverItemId: string;
 }
 
-export function AddToListButton({ itemId }: AddToListButtonProps) {
+export function AddToListButton({ discoverItemId }: AddToListButtonProps) {
   const queryClient = useQueryClient();
-  const { data: lists = [], isLoading } = useQuery(listsQueries.byItem(itemId));
-  const { mutateAsync, isPending } = useMutation(
-    listsMutations.addDiscoverItemToList(),
+  const listsWithSelectedDiscoverItem = useQuery(
+    listsQueries.byDiscoverItemId(discoverItemId),
   );
-  const isSaved = lists.some((list) => list.hasItems);
+  const allLists = useQuery(listsQueries.all());
+  const addItemToList = useMutation(
+    listsMutations.addOrRemoveDiscoverItemToList(),
+  );
 
-  const handleUpdateLists = useCallback(
-    async (listIds?: string[]) => {
+  const isSaved = listsWithSelectedDiscoverItem.data?.some((list) =>
+    list.discoverItems.some((item) => item.id === discoverItemId),
+  );
+
+  const onMenuItemClick = useCallback(
+    async (listId?: string) => {
       try {
-        await mutateAsync({ itemId, listIds });
+        await addItemToList.mutateAsync({ discoverItemId, listId });
         await queryClient.invalidateQueries({ queryKey: listsKeys.all });
       } catch (error) {
         console.error('Error adding item to list:', error);
       }
     },
-    [itemId, mutateAsync, queryClient],
+    [addItemToList, discoverItemId, queryClient],
   );
 
   const handleButtonClick = useCallback((event: MouseEvent) => {
@@ -48,51 +54,12 @@ export function AddToListButton({ itemId }: AddToListButtonProps) {
     event.stopPropagation();
   }, []);
 
-  const handleQuickAdd = useCallback(
-    async (event: MouseEvent) => {
-      handleButtonClick(event);
-
-      await handleUpdateLists();
-    },
-    [handleButtonClick, handleUpdateLists],
-  );
-
-  const getSelectedListIds = useCallback(
-    () => lists.filter((list) => list.hasItems).map((list) => list.id),
-    [lists],
-  );
-
-  const handleToggleList = useCallback(
-    (listId: string, checked: boolean | 'indeterminate') => {
-      const selectedIds = getSelectedListIds();
-      const nextIds = Boolean(checked)
-        ? Array.from(new Set([...selectedIds, listId]))
-        : selectedIds.filter((id) => id !== listId);
-
-      void handleUpdateLists(nextIds);
-    },
-    [getSelectedListIds, handleUpdateLists],
-  );
-
-  if (lists.length === 0) {
-    return (
-      <Button
-        variant="secondary"
-        disabled={isLoading || isPending}
-        onClick={handleQuickAdd}
-      >
-        <PlusIcon className="h-4 w-4" />
-        Add To List
-      </Button>
-    );
-  }
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant={isSaved ? 'default' : 'secondary'}
-          disabled={isLoading || isPending}
+          disabled={allLists.isLoading || addItemToList.isPending}
           onClick={handleButtonClick}
         >
           {isSaved ? (
@@ -109,24 +76,22 @@ export function AddToListButton({ itemId }: AddToListButtonProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
-        {lists.map((list) => (
+        {allLists.data?.map((list) => (
           <DropdownMenuItem
             className="cursor-pointer"
             key={list.id}
             // eslint-disable-next-line react/jsx-no-bind
             onSelect={(event) => {
               event.preventDefault();
-              handleToggleList(list.id, !list.hasItems);
+              onMenuItemClick(list.id);
             }}
           >
             <div className="flex items-center gap-2">
               <Checkbox
-                checked={Boolean(list.hasItems)}
+                checked={Boolean(
+                  list.discoverItems.some((item) => item.id === discoverItemId),
+                )}
                 className="pointer-events-none"
-                // eslint-disable-next-line react/jsx-no-bind
-                onCheckedChange={(checked) => {
-                  handleToggleList(list.id, checked);
-                }}
               />
               <span>{list.name}</span>
             </div>

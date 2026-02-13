@@ -19,17 +19,17 @@ export type UserListDto = Prisma.UserListGetPayload<{
 }>;
 
 export const listsApi = {
+  getAll: () => getJson<UserListSummaryDto[]>('/api/lists'),
+
   create: (payload: ListSchema) => postJson<UserListDto>('/api/lists', payload),
 
   addOrRemoveDiscoverItemToList: (payload: {
-    itemId: string;
-    listIds?: string[];
-  }) => postJson<{ listIds?: string[] }>('/api/lists/discoverItem', payload),
+    discoverItemId: string;
+    listId?: string;
+  }) => postJson<{ listId: string[] }>('/api/lists/discoverItem', payload),
 
-  getById: (itemId: string) =>
+  getByDiscoverItemId: (discoverItemId: string) =>
     getJson<UserListWithItemStatus[]>(
-      `/api/lists/item/${encodeURIComponent(itemId)}`,
+      `/api/lists/item/${encodeURIComponent(discoverItemId)}`,
     ),
-
-  getOverview: () => getJson<UserListSummaryDto[]>('/api/lists'),
 };

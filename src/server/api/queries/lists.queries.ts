@@ -4,33 +4,33 @@ import { listsApi } from '../lists';
 
 export const listsKeys = {
   all: ['lists'] as const,
-  lists: () => [...listsKeys.all] as const,
-  byItem: (itemId: string) => [...listsKeys.lists(), 'item', itemId] as const,
-  overview: () => [...listsKeys.lists(), 'overview'] as const,
+  getAll: () => [...listsKeys.all] as const,
+  byDiscoverItemId: (discoverItemId: string) =>
+    [...listsKeys.all, 'item', discoverItemId] as const,
   mutations: {
-    addDiscoverItemToList: () =>
-      [...listsKeys.all, 'addDiscoverItemToList'] as const,
+    addOrRemoveDiscoverItemToList: () =>
+      [...listsKeys.all, 'addOrRemoveDiscoverItemToList'] as const,
     create: () => [...listsKeys.all, 'create'] as const,
   },
 };
 
 export const listsQueries = {
-  overview: () =>
+  all: () =>
     queryOptions({
-      queryKey: listsKeys.overview(),
-      queryFn: listsApi.getOverview,
+      queryKey: listsKeys.getAll(),
+      queryFn: listsApi.getAll,
     }),
-  byItem: (itemId: string) =>
+  byDiscoverItemId: (discoverItemId: string) =>
     queryOptions({
-      queryKey: listsKeys.byItem(itemId),
-      queryFn: () => listsApi.getById(itemId),
+      queryKey: listsKeys.byDiscoverItemId(discoverItemId),
+      queryFn: () => listsApi.getByDiscoverItemId(discoverItemId),
     }),
 };
 
 export const listsMutations = {
-  addDiscoverItemToList: () =>
+  addOrRemoveDiscoverItemToList: () =>
     mutationOptions({
-      mutationKey: listsKeys.mutations.addDiscoverItemToList(),
+      mutationKey: listsKeys.mutations.addOrRemoveDiscoverItemToList(),
       mutationFn: listsApi.addOrRemoveDiscoverItemToList,
     }),
   create: () =>

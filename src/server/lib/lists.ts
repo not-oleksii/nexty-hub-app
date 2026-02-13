@@ -1,4 +1,4 @@
-import { UserList } from '@generated/prisma/client';
+import { Prisma, UserList } from '@generated/prisma/client';
 
 import { ListSchema, listSchema } from '@/lib/validators/list';
 
@@ -7,20 +7,37 @@ import { prisma } from '../db/prisma';
 import { ApiErrorType, HttpStatus } from '../http/types';
 import { ResponseService, ServerResponse } from '../services/response-service';
 
-export type UserListWithProgress = {
-  id: string;
-  name: string;
-  createdAt: Date;
-  owner: { id: string; username: string };
+export type UserListWithProgress = Prisma.UserListGetPayload<{
+  select: {
+    id: true;
+    name: true;
+    createdAt: true;
+    owner: {
+      select: { id: true; username: true };
+    };
+    discoverItems: {
+      select: {
+        id: true;
+        usersCompleted: {
+          select: { id: true };
+        };
+      };
+    };
+  };
+}> & {
   totalDiscoverItems: number;
   completedDiscoverItems: number;
 };
 
-export type UserListWithItemStatus = {
-  id: string;
-  name: string;
-  hasItems: boolean;
-};
+export type UserListWithItemStatus = Prisma.UserListGetPayload<{
+  select: {
+    id: true;
+    name: true;
+    discoverItems: {
+      select: { id: true };
+    };
+  };
+}>;
 
 export async function getUserLists(): ServerResponse<UserListWithProgress[]> {
   try {
@@ -45,7 +62,7 @@ export async function getUserLists(): ServerResponse<UserListWithProgress[]> {
             username: true,
           },
         },
-        items: {
+        discoverItems: {
           select: {
             id: true,
             usersCompleted: {
@@ -58,8 +75,8 @@ export async function getUserLists(): ServerResponse<UserListWithProgress[]> {
     });
 
     const listsWithProgress = lists.map((list) => {
-      const totalDiscoverItems = list.items.length;
-      const completedDiscoverItems = list.items.filter((item) =>
+      const totalDiscoverItems = list.discoverItems.length;
+      const completedDiscoverItems = list.discoverItems.filter((item) =>
         item.usersCompleted.some((user) => user.id === userId),
       ).length;
       const owner = list.owner;
@@ -73,6 +90,7 @@ export async function getUserLists(): ServerResponse<UserListWithProgress[]> {
         name: list.name,
         createdAt: list.createdAt,
         owner,
+        discoverItems: list.discoverItems,
         totalDiscoverItems,
         completedDiscoverItems,
       };
@@ -93,7 +111,7 @@ export async function getUserLists(): ServerResponse<UserListWithProgress[]> {
   }
 }
 
-export async function getUserListsByItem(
+export async function getUserListsByDiscoverItemId(
   id: string,
 ): ServerResponse<UserListWithItemStatus[]> {
   try {
@@ -111,22 +129,15 @@ export async function getUserListsByItem(
       select: {
         id: true,
         name: true,
-        items: {
+        discoverItems: {
           where: { id },
           select: { id: true },
         },
       },
-      orderBy: { createdAt: 'asc' },
     });
 
-    const listsWithStatus = lists.map((list) => ({
-      id: list.id,
-      name: list.name,
-      hasItems: list.items.length > 0,
-    }));
-
     return ResponseService.success({
-      data: listsWithStatus,
+      data: lists,
       message: 'User lists fetched successfully',
       status: HttpStatus.OK,
     });
@@ -209,7 +220,7 @@ export async function addOrRemoveDiscoverItemToList(
     const list = await prisma.userList.findUnique({
       where: { id: listId },
       select: {
-        items: {
+        discoverItems: {
           select: { id: true },
         },
       },
@@ -222,13 +233,15 @@ export async function addOrRemoveDiscoverItemToList(
       });
     }
 
-    const isItemInList = list.items.some((item) => item.id === discoverItemId);
+    const doesListContainSelectedDiscoverItem = list.discoverItems.some(
+      (item) => item.id === discoverItemId,
+    );
 
-    if (isItemInList) {
+    if (doesListContainSelectedDiscoverItem) {
       const updatedList = await prisma.userList.update({
         where: { id: listId },
         data: {
-          items: {
+          discoverItems: {
             disconnect: { id: discoverItemId },
           },
         },
@@ -238,7 +251,7 @@ export async function addOrRemoveDiscoverItemToList(
         (
           await prisma.userList.findMany({
             where: {
-              items: { some: { id: discoverItemId } },
+              discoverItems: { some: { id: discoverItemId } },
               AND: { users: { some: { id: userId } } },
             },
             select: { id: true },
@@ -248,7 +261,7 @@ export async function addOrRemoveDiscoverItemToList(
       if (discoverItemDoesNotExistInAnyCurrentUserLists) {
         await prisma.user.update({
           where: { id: userId },
-          data: { savedItems: { disconnect: { id: discoverItemId } } },
+          data: { savedDiscoverItems: { disconnect: { id: discoverItemId } } },
         });
       }
 
@@ -273,7 +286,7 @@ export async function addOrRemoveDiscoverItemToList(
     const updatedList = await prisma.userList.update({
       where: { id: listId },
       data: {
-        items: {
+        discoverItems: {
           connect: { id: discoverItemId },
         },
         users: {
@@ -285,7 +298,7 @@ export async function addOrRemoveDiscoverItemToList(
     await prisma.user.update({
       where: { id: userId },
       data: {
-        savedItems: {
+        savedDiscoverItems: {
           connect: { id: discoverItemId },
         },
       },
