@@ -16,12 +16,12 @@ import { ROUTES } from '@/constants/routes';
 import { mapPrismaToItemType } from '@/server/utils/prisma-maps';
 
 type DiscoverItemProps = {
-  item: DiscoverItem;
+  discoverItem: DiscoverItem;
   isLoading: boolean;
 };
 
-export function DiscoverItem({ item, isLoading }: DiscoverItemProps) {
-  const { title, imageUrl } = item;
+export function DiscoverItem({ discoverItem, isLoading }: DiscoverItemProps) {
+  const { title, imageUrl } = discoverItem;
 
   if (isLoading) {
     return <DiscoverItemSkeleton />;
@@ -31,18 +31,18 @@ export function DiscoverItem({ item, isLoading }: DiscoverItemProps) {
     <Card className="max-w-xs">
       <CardHeader>
         <div className="flex justify-between">
-          <AddToListButton itemId={item.id} />
+          <AddToListButton discoverItemId={discoverItem.id} />
         </div>
       </CardHeader>
       <Link
-        href={`${ROUTES.discoverList.item.replace(':type', mapPrismaToItemType(item.type)).replace(':id', item.id)}`}
+        href={`${ROUTES.discoverList.item.replace(':type', mapPrismaToItemType(discoverItem.type)).replace(':id', discoverItem.id)}`}
         className="block"
       >
         <CardContent>
           <AlbumImage src={imageUrl} title={title} aspectRatio="aspect-10/16" />
         </CardContent>
         <CardFooter>
-          <Subtitle2>{item.title}</Subtitle2>
+          <Subtitle2>{discoverItem.title}</Subtitle2>
         </CardFooter>
       </Link>
     </Card>
