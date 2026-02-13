@@ -3,7 +3,7 @@
 import { type SubmitEvent, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { ItemType } from '@generated/prisma/enums';
+import { DiscoverItemType } from '@generated/prisma/enums';
 import { useForm } from '@tanstack/react-form-nextjs';
 import { useMutation } from '@tanstack/react-query';
 
@@ -40,7 +40,7 @@ const toOptionalTrimmed = (value: string) => {
 };
 
 const DEFAULT_VALUES: DiscoverItemSchema = {
-  type: ItemType.MOVIE,
+  type: DiscoverItemType.MOVIE,
   completed: false,
   category: '',
   title: '',
@@ -131,7 +131,7 @@ export function AddDiscoverItemForm() {
                     const isInvalid =
                       field.state.meta.isTouched && !field.state.meta.isValid;
                     const handleTypeChange = (value: string) => {
-                      field.handleChange(value as ItemType);
+                      field.handleChange(value as DiscoverItemType);
                     };
 
                     return (
@@ -150,17 +150,19 @@ export function AddDiscoverItemForm() {
                             <SelectValue placeholder="Select type" />
                           </SelectTrigger>
                           <SelectContent>
-                            {(Object.values(ItemType) as ItemType[]).map(
-                              (type) => (
-                                <SelectItem
-                                  className="cursor-pointer"
-                                  key={type}
-                                  value={type}
-                                >
-                                  {type}
-                                </SelectItem>
-                              ),
-                            )}
+                            {(
+                              Object.values(
+                                DiscoverItemType,
+                              ) as DiscoverItemType[]
+                            ).map((type) => (
+                              <SelectItem
+                                className="cursor-pointer"
+                                key={type}
+                                value={type}
+                              >
+                                {type}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                         {isInvalid && (

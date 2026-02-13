@@ -1,6 +1,6 @@
 'use client';
 
-import { ItemType } from '@generated/prisma/enums';
+import { DiscoverItemType } from '@generated/prisma/enums';
 import { useQuery } from '@tanstack/react-query';
 
 import { Body } from '@/components/typography/body';
@@ -15,7 +15,7 @@ import { discoverQueries } from '@/server/api/queries/discover.queries';
 import { ItemCardActions } from './item-card-actions';
 
 type DiscoverItemDetailsProps = {
-  type: ItemType;
+  type: DiscoverItemType;
   id: string;
 };
 

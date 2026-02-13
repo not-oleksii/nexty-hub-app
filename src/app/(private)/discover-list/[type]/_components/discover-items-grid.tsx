@@ -1,6 +1,6 @@
 'use client';
 
-import { ItemType } from '@generated/prisma/enums';
+import { DiscoverItemType } from '@generated/prisma/enums';
 import { useQuery } from '@tanstack/react-query';
 
 import { Title } from '@/components/typography/title';
@@ -9,7 +9,7 @@ import { discoverQueries } from '@/server/api/queries/discover.queries';
 import { DiscoverItem, DiscoverItemSkeleton } from './discover-item';
 
 type DiscoverItemsGridProps = {
-  type: ItemType;
+  type: DiscoverItemType;
 };
 
 export function DiscoverItemsGrid({ type }: DiscoverItemsGridProps) {

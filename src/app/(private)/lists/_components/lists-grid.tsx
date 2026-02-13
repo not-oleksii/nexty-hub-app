@@ -20,7 +20,7 @@ const formatDate = (value: string) =>
   );
 
 export function ListsGrid() {
-  const { data = [], isLoading, isError } = useQuery(listsQueries.overview());
+  const { data, isLoading, isError } = useQuery(listsQueries.all());
 
   if (isLoading) {
     return <ListsGridSkeleton />;
@@ -33,7 +33,7 @@ export function ListsGrid() {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       <CreateListCard />
-      {data.map((list) => {
+      {data?.map((list) => {
         const progress =
           list.totalDiscoverItems > 0
             ? (list.completedDiscoverItems / list.totalDiscoverItems) * 100

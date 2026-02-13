@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { ErrorResponse } from '@/server/http/error-response';
 import { ApiErrorType, HttpStatus } from '@/server/http/types';
-import { getUserListsByItem } from '@/server/lib/lists';
+import { getUserListsByDiscoverItemId } from '@/server/lib/lists';
 
 type Params = {
   params: Promise<{ id: string }>;
@@ -11,7 +11,7 @@ type Params = {
 export async function GET(_req: Request, { params }: Params) {
   try {
     const { id } = await params;
-    const { data, status, error } = await getUserListsByItem(id);
+    const { data, status, error } = await getUserListsByDiscoverItemId(id);
 
     if (error) {
       return ErrorResponse(error, status);

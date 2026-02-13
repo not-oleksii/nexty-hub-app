@@ -4,7 +4,7 @@ import { ApiErrorType, HttpStatus } from '@/server/http/types';
 import { getDiscoverItemById } from '@/server/lib/discover';
 
 type Params = {
-  params: Promise<{ type: string; id: string }>;
+  params: Promise<{ id: string }>;
 };
 
 export async function GET(_request: Request, { params }: Params) {

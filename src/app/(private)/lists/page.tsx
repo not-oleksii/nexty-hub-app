@@ -10,7 +10,7 @@ import { ListsGrid } from './_components/lists-grid';
 
 export default async function ListsPage() {
   const queryClient = new QueryClient();
-  await queryClient.prefetchQuery(listsQueries.overview());
+  await queryClient.prefetchQuery(listsQueries.all());
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

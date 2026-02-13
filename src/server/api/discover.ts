@@ -1,5 +1,5 @@
 import type { Prisma } from '@generated/prisma/client';
-import type { ItemType } from '@generated/prisma/enums';
+import type { DiscoverItemType } from '@generated/prisma/enums';
 
 import { DiscoverItemSchema } from '@/lib/validators/discovery-item';
 import { getJson, postJson } from '@/server/utils/fetch-json';
@@ -17,7 +17,7 @@ export type DiscoverItemDto = Prisma.DiscoverItemGetPayload<{
 export const discoverApi = {
   getAll: () => getJson<DiscoverItemDto[]>('/api/discover'),
 
-  getByType: (type: ItemType) =>
+  getByType: (type: DiscoverItemType) =>
     getJson<DiscoverItemDto[]>(`/api/discover/${type}`),
 
   getById: (id: string) =>

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { ItemType } from '@generated/prisma/enums';
+import { DiscoverItemType } from '@generated/prisma/enums';
 import { useQuery } from '@tanstack/react-query';
 import {
   BookIcon,
@@ -23,25 +23,25 @@ import { ROUTES } from '@/constants/routes';
 import { discoverQueries } from '@/server/api/queries/discover.queries';
 
 interface DiscoverListCardProps {
-  type: ItemType;
+  type: DiscoverItemType;
 }
 
-const itemTypeTitleMap: Record<ItemType, string> = {
-  [ItemType.MOVIE]: 'Movie',
-  [ItemType.SERIES]: 'Series',
-  [ItemType.GAME]: 'Game',
-  [ItemType.BOOK]: 'Book',
-  [ItemType.COURSE]: 'Course',
-  [ItemType.OTHER]: 'Other',
+const itemTypeTitleMap: Record<DiscoverItemType, string> = {
+  [DiscoverItemType.MOVIE]: 'Movie',
+  [DiscoverItemType.SERIES]: 'Series',
+  [DiscoverItemType.GAME]: 'Game',
+  [DiscoverItemType.BOOK]: 'Book',
+  [DiscoverItemType.COURSE]: 'Course',
+  [DiscoverItemType.OTHER]: 'Other',
 };
 
-const itemTypeIconMap: Record<ItemType, React.ReactNode> = {
-  [ItemType.MOVIE]: <ClapperboardIcon />,
-  [ItemType.SERIES]: <FilmIcon />,
-  [ItemType.GAME]: <Gamepad2Icon />,
-  [ItemType.BOOK]: <BookIcon />,
-  [ItemType.COURSE]: <BrainIcon />,
-  [ItemType.OTHER]: <SparklesIcon />,
+const itemTypeIconMap: Record<DiscoverItemType, React.ReactNode> = {
+  [DiscoverItemType.MOVIE]: <ClapperboardIcon />,
+  [DiscoverItemType.SERIES]: <FilmIcon />,
+  [DiscoverItemType.GAME]: <Gamepad2Icon />,
+  [DiscoverItemType.BOOK]: <BookIcon />,
+  [DiscoverItemType.COURSE]: <BrainIcon />,
+  [DiscoverItemType.OTHER]: <SparklesIcon />,
 };
 
 export function DiscoverListCard({ type }: DiscoverListCardProps) {
