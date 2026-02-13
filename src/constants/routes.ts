@@ -12,5 +12,6 @@ export const ROUTES = {
   },
   lists: {
     root: '/lists',
+    create: '/lists/create',
   },
 } as const;

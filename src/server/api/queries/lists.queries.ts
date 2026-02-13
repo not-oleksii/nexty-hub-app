@@ -10,6 +10,7 @@ export const listsKeys = {
   mutations: {
     addDiscoverItemToList: () =>
       [...listsKeys.all, 'addDiscoverItemToList'] as const,
+    create: () => [...listsKeys.all, 'create'] as const,
   },
 };
 
@@ -31,5 +32,10 @@ export const listsMutations = {
     mutationOptions({
       mutationKey: listsKeys.mutations.addDiscoverItemToList(),
       mutationFn: listsApi.addOrRemoveDiscoverItemToList,
+    }),
+  create: () =>
+    mutationOptions({
+      mutationKey: listsKeys.mutations.create(),
+      mutationFn: listsApi.create,
     }),
 };
