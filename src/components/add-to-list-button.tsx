@@ -24,13 +24,6 @@ interface AddToListButtonProps {
   discoverItemId: string;
 }
 
-interface AddToListButtonContentProps {
-  isSaved: boolean;
-  isLoading: boolean;
-  onClick: (event: MouseEvent) => void;
-  children?: React.ReactNode;
-}
-
 export function AddToListButton({ discoverItemId }: AddToListButtonProps) {
   const queryClient = useQueryClient();
   const listsWithSelectedDiscoverItem = useQuery(
