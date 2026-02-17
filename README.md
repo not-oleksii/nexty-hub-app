@@ -1,14 +1,15 @@
 # Nexty Hub App
 
-A **mobile-first** Next.js App Router project for tracking “discover” items (movies, series, games, books, courses, etc.).
+A Next.js App Router project for tracking “discover” items (movies, series, games, books, courses, etc.).
 
 - **Tech**: Next.js 16 (App Router) + React 19 + TypeScript
 - **UI**: Tailwind CSS v4 + shadcn/ui (Radix) + `next-themes`
-- **Data**: Prisma + SQLite (local dev)
-- **Forms/Validation**: React Hook Form + Zod
+- **Data**: Prisma + Postgres (local dev)
+- **Forms/Validation**: Tanstack Form + Zod
+- **Api calls**: Tanstack Query
 - **Quality**: ESLint + Prettier + Vitest + GitHub Actions CI
 
-> Tip: if you are new to the codebase, start from `src/app/(authorized)/discover-list/page.tsx` and the API routes in `src/app/api/…`.
+> Tip: if you are new to the codebase, start from `src/app/(private)/discover-list/page.tsx` and the API routes in `src/app/api/…`.
 
 ---
 
@@ -17,56 +18,50 @@ A **mobile-first** Next.js App Router project for tracking “discover” items 
 - Node.js **22** (CI uses Node 22)
 - npm (recommended: `npm ci`)
 
----
-
-## Quick start (local dev)
-
 ```bash
-npm install
-cp .env.example .env
-npm run db:reset
-npm run dev
+# install node modules before continue
+npm ci
 ```
 
-Open: http://localhost:3000
+---
+
+## Environment variables setup
+
+1. Run
+
+```bash
+cp .env.example .env
+```
+
+2. In .env file replace envs with correspond data.
+
+NOTE: If you didn't setup a local PostgreSQL database then check Database section below.
+
+`.env example`:
+
+```bash
+DATABASE_URL="postgresql://my-username:test1234@localhost:5432/mydb?schema=public"
+```
 
 ---
 
 ### Database
 
 - Local dev uses **Postgresql**.
-- The file `dev.db` will be created in the project root when you run `db:reset`.
 
 1. Setup a local DB
    To setup a local PostgreSQL database follow this guide -> [Setting up a local PostgreSQL database](https://www.prisma.io/docs/orm/more/help-and-troubleshooting/dataguide/setting-up-a-local-postgresql-database)
 
 2. Run next commands
 
-```
-npx prisma migrate dev --name init
-npx prisma generate
+```bash
+npm run db:generate
 ```
 
 3. To seed new data run
 
-```
-npm run db:reset
-```
-
-or
-
-```
-prisma db push --force-reset && prisma db seed
-```
-
----
-
-## Environment variables
-
-`.env.example`:
-
 ```bash
-DATABASE_URL="postgresql://username:password@localhost:5432/mydb?schema=public"
+npm run db:reset
 ```
 
 ---
@@ -96,10 +91,12 @@ Database (Prisma):
 - `npm run db:deploy` — apply migrations in production
 - `npm run prisma:studio` — Prisma Studio
 
-Test user accounts:
+## Test user accounts
 
-- testuser1 / test1234
-- testuser2 / test1234
+| Username  | Password |
+| --------- | -------- |
+| testuser1 | test1234 |
+| testuser2 | test1234 |
 
 ---
 
@@ -117,73 +114,6 @@ src/
 prisma/                # Prisma schema + seed
 ```
 
-### `src/app` routing
-
-- `src/app/layout.tsx` — root layout (theme provider, global styles)
-- `src/app/(authorized)/layout.tsx` — layout with the sidebar
-- `src/app/(authorized)/discover-list/page.tsx` — main dashboard grid
-
-Dynamic routes:
-
-- `src/app/(authorized)/discover-list/[type]/page.tsx` — list by type
-- `src/app/(authorized)/discover-list/[type]/[id]/page.tsx` — item details
-
-API routes:
-
-- `src/app/api/discover/route.ts` — `GET /api/discover` (all items)
-- `src/app/api/discover/[type]/route.ts` — `GET /api/discover/:type`
-- `src/app/api/discover/[type]/[id]/route.ts` — `GET /api/discover/:type/:id`
-- `src/app/api/items/route.ts` — `POST /api/items` (create item)
-
----
-
-## Data model
-
-Prisma model lives in `prisma/schema.prisma`.
-
-Main entity:
-
-- `DiscoverItem`
-  - `type`: `ItemType` enum (`MOVIE | SERIES | GAME | BOOK | COURSE | OTHER`)
-  - `status`: `ItemStatus` enum (`TODO | DONE`)
-
----
-
-## Theming & styling
-
-- Design tokens are defined as CSS variables in `src/app/globals.css`.
-- Tailwind v4 tokens are mapped via `@theme inline`.
-- Dark mode is handled by `next-themes`.
-
----
-
-## Server-side fetch helpers
-
-`src/server/api/discover.ts` contains server-side helpers that call local API routes using a base URL computed from request headers:
-
-- `getBaseUrl()` in `src/server/http/get-base-url.ts`
-
-This keeps page components simple (they call typed functions instead of repeating fetch logic).
-
----
-
-## Images
-
-Remote images are allowed for a set of hosts via `next.config.ts` (`images.remotePatterns`).
-
----
-
-## CI
-
-GitHub Actions workflow: `.github/workflows/general_checks.yml`
-
-Runs:
-
-- `npm ci`
-- `npm run lint`
-- `npm run typecheck`
-- `npm test`
-
 ---
 
 ## Contributing
@@ -196,26 +126,21 @@ See `CONTRIBUTING.md` for branching rules and PR title conventions.
 
 ### 1) Database issues
 
-- Recreate the DB:
+If you applied some changes to the DB structure and you unable to use the then run:
 
 ```bash
-rm -f dev.db
-npm run db:reset
+npm run db:generate
+npm run db:migrate:reset
+npm run db:migrate:dev
+npm run db:seed
 ```
 
-### 2) `next build` / route typing errors
+The commands will reset data and migrate to the new version of the DB with the latest changes you did and seed data. Also it will generate Typescript types for schemas.
 
-If `next build` fails with route handler typing, check the handler signatures in `src/app/api/**/route.ts`.
+NOTE: if you made breaking changes to the DB you may also need to update the prisma/seed.ts file0
 
-For Next.js route handlers:
+After that restart the project
 
-- The second argument is `context`, and `context.params` is **not a Promise**.
-
----
-
-## Roadmap (ideas)
-
-- Item edit/delete
-- Auth
-- Better filtering/sorting
-- Persisted user profile
+```bash
+npm run dev
+```
