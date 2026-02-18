@@ -1,11 +1,26 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import dynamic from 'next/dynamic';
 
 import { Subtitle1 } from '@/components/typography/subtitle1';
+import { Skeleton } from '@/components/ui/skeleton';
 
 import { ListsGrid } from './lists-grid';
-import { RandomReel, Reel } from './random-reel';
+import { Reel } from './random-reel';
+
+const RandomReel = dynamic(
+  () => import('./random-reel').then((mod) => mod.RandomReel),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex flex-col items-center justify-center gap-4">
+        <Skeleton className="bg-muted/50 h-[250px] w-full animate-pulse rounded-xl" />
+        <Skeleton className="bg-muted/50 h-12 w-[150px] animate-pulse rounded-xl" />
+      </div>
+    ),
+  },
+);
 
 export function RandomPickContent() {
   const [selectedReels, setSelectedReels] = useState<Reel[]>([]);

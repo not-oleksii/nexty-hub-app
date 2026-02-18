@@ -75,7 +75,9 @@ export function RandomReel({ reels }: RandomReelProps) {
     setPickedItem(winner);
 
     const newTrack = getArrayOfRandomItems(pool, TRACK_LENGTH);
+
     newTrack[WIN_INDEX] = winner;
+
     setSpinTrack(newTrack);
 
     requestAnimationFrame(() => {
@@ -163,11 +165,13 @@ export function RandomReel({ reels }: RandomReelProps) {
           {isSpinning ? 'Spinning...' : 'PICK!'}
         </Button>
 
-        {isSpinningComplete && pickedItem && (
-          <p className="text-primary animate-in fade-in zoom-in font-bold duration-300">
-            Winner: {pickedItem.title}
-          </p>
-        )}
+        <div className="flex h-3 items-center justify-center">
+          {isSpinningComplete && pickedItem && (
+            <p className="text-primary animate-in fade-in zoom-in font-bold duration-300">
+              Winner: {pickedItem.title}
+            </p>
+          )}
+        </div>
       </div>
 
       <WinnerDialog
