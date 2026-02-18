@@ -16,7 +16,7 @@ export function RandomPickContent() {
   }, []);
 
   return (
-    <div>
+    <div className="w-full">
       <RandomReel reels={selectedReels} />
       <div className="mt-8 flex flex-col gap-4">
         <Subtitle1>Select lists to pick from</Subtitle1>

@@ -14,6 +14,7 @@ import {
 
 import { getUniqueReels } from '../helpers';
 import { ReelItem } from './reel-item';
+import { WinnerDialog } from './winner-dialog';
 
 export type Reel = Pick<
   UserListWithProgress,
@@ -50,7 +51,7 @@ export function RandomReel({ reels }: RandomReelProps) {
   const [offset, setOffset] = useState(0);
   const [spinTrack, setSpinTrack] = useState<Reel[]>([]);
   const [pickedItem, setPickedItem] = useState<Reel | null>(null);
-
+  const [isWinnerDialogOpen, setIsWinnerDialogOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const baseItems = useMemo(() => {
@@ -97,11 +98,11 @@ export function RandomReel({ reels }: RandomReelProps) {
 
     setIsSpinning(false);
     setIsSpinningComplete(true);
-    console.log('Stopped on:', pickedItem?.title);
-  }, [isSpinning, pickedItem]);
+    setIsWinnerDialogOpen(true);
+  }, [isSpinning]);
 
   return (
-    <div>
+    <div className="w-full">
       <div
         ref={containerRef}
         className="bg-background/50 relative h-[250px] w-full overflow-hidden rounded-xl shadow-inner"
@@ -168,6 +169,12 @@ export function RandomReel({ reels }: RandomReelProps) {
           </p>
         )}
       </div>
+
+      <WinnerDialog
+        open={isWinnerDialogOpen}
+        winner={pickedItem}
+        onOpenChange={setIsWinnerDialogOpen}
+      />
     </div>
   );
 }
