@@ -8,10 +8,10 @@ import { Subtitle3 } from '@/components/typography/subtitle3';
 import { listsQueries } from '@/server/api/queries/lists.queries';
 
 import { ListCard, ListCardSkeleton } from './list-card';
-import { Reels } from './random-reel';
+import { Reel } from './random-reel';
 
 interface ListsGridProps {
-  onListClick: (selectedReels: Reels) => void;
+  onListClick: (selectedReels: Reel[]) => void;
 }
 
 export function ListsGrid({ onListClick }: ListsGridProps) {

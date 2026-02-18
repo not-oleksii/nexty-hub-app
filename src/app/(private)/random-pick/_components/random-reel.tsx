@@ -1,61 +1,173 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
+import { DiscoverItemType } from '@generated/prisma/enums';
+
+import { Button } from '@/components/ui/button';
 import { UserListWithProgress } from '@/server/lib/lists';
-import { getRandomTitle } from '@/server/utils/random';
+import {
+  getArrayOfRandomItems,
+  getRandomItem,
+  getRandomTitle,
+} from '@/server/utils/random';
 
+import { getUniqueReels } from '../helpers';
 import { ReelItem } from './reel-item';
 
-export type Reels = Pick<
+export type Reel = Pick<
   UserListWithProgress,
   'discoverItems'
->['discoverItems'];
+>['discoverItems'][number];
 
 interface RandomReelProps {
-  reels: Reels;
+  reels: Reel[];
 }
+
+const ITEM_WIDTH = 180;
+const GAP = 16;
+const TOTAL_ITEM_WIDTH = ITEM_WIDTH + GAP;
+const TRACK_LENGTH = 60;
+const WIN_INDEX = 50;
 
 const tempReels = Array.from({ length: 15 }, (_, index) => {
   const title = getRandomTitle();
 
   return {
-    category: 'Sci-Fi',
-    description:
-      'A team travels through a wormhole in search of a new home for humanity.',
-    id: '15268af8-9ece-470e-ba62-7fce5e8a9c3a',
-    imageUrl: 'https://i.imgur.com/bVXo3zK.jpeg',
+    category: 'Lorem',
+    description: 'Lorem ipsum dolor sit amet',
+    id: `title-${index}`,
+    imageUrl: null,
     owner: null,
-    title: 'Interstellar',
-    type: 'MOVIE',
+    title: title,
+    type: DiscoverItemType.OTHER,
   };
-}) as Reels;
+}) as Reel[];
 
 export function RandomReel({ reels }: RandomReelProps) {
-  const items = useMemo(() => (reels.length > 0 ? reels : tempReels), [reels]);
+  const [isSpinning, setIsSpinning] = useState(false);
+  const [isSpinningComplete, setIsSpinningComplete] = useState(false);
+  const [offset, setOffset] = useState(0);
+  const [spinTrack, setSpinTrack] = useState<Reel[]>([]);
+  const [pickedItem, setPickedItem] = useState<Reel | null>(null);
 
-  console.log(items);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const baseItems = useMemo(() => {
+    if (reels.length === 0) return tempReels;
+
+    return getArrayOfRandomItems(getUniqueReels(reels), 15);
+  }, [reels]);
+
+  const onPickClick = useCallback(() => {
+    if (!containerRef.current) return;
+
+    const uniqueReels = getUniqueReels(reels);
+    const pool = uniqueReels.length > 0 ? uniqueReels : tempReels;
+    const winner = getRandomItem(pool);
+
+    if (!winner) return;
+
+    setIsSpinning(false);
+    setIsSpinningComplete(false);
+    setOffset(0);
+    setPickedItem(winner);
+
+    const newTrack = getArrayOfRandomItems(pool, TRACK_LENGTH);
+    newTrack[WIN_INDEX] = winner;
+    setSpinTrack(newTrack);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setIsSpinning(true);
+
+        const containerWidth = containerRef.current!.offsetWidth;
+        const centerOffset = containerWidth / 2 - ITEM_WIDTH / 2;
+        const targetPosition = WIN_INDEX * TOTAL_ITEM_WIDTH;
+        const randomNudge = Math.floor(Math.random() * 60) - 100;
+        const finalOffset = -(targetPosition - centerOffset + randomNudge);
+
+        setOffset(finalOffset);
+      });
+    });
+  }, [reels]);
+
+  const handleTransitionEnd = useCallback(() => {
+    if (!isSpinning) return;
+
+    setIsSpinning(false);
+    setIsSpinningComplete(true);
+    console.log('Stopped on:', pickedItem?.title);
+  }, [isSpinning, pickedItem]);
 
   return (
-    <div className="relative h-[250px] w-full overflow-hidden rounded-xl">
-      <div className="animate-infinite-scroll flex h-full w-max items-center">
-        {Array.from({ length: 2 }).map((_, index) => (
-          <div key={`group-${index}-container`} className="flex gap-4 pr-4">
-            {items.map(
-              ({ title, imageUrl, description, category, type }, itemIndex) => (
-                <ReelItem
-                  key={`group-${title}-${itemIndex}`}
-                  title={title}
-                  imageUrl={imageUrl}
-                />
-              ),
-            )}
-          </div>
-        ))}
+    <div>
+      <div
+        ref={containerRef}
+        className="bg-background/50 relative h-[250px] w-full overflow-hidden rounded-xl shadow-inner"
+      >
+        <div
+          onTransitionEnd={handleTransitionEnd}
+          className={`flex h-full w-max items-center ${
+            !isSpinning && !pickedItem ? 'animate-infinite-scroll' : ''
+          }`}
+          style={{
+            transform:
+              isSpinning || pickedItem ? `translateX(${offset}px)` : undefined,
+            transition: isSpinning
+              ? 'transform 10s cubic-bezier(0.15, 0.85, 0.15, 1)'
+              : 'none',
+          }}
+        >
+          {isSpinning || pickedItem ? (
+            <div className="flex gap-4 pr-4">
+              {spinTrack.map(({ title, imageUrl }, itemIndex) => (
+                <div key={`spin-${itemIndex}`} className="w-[180px] shrink-0">
+                  <ReelItem title={title} imageUrl={imageUrl} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <>
+              {Array.from({ length: 2 }).map((_, groupIndex) => (
+                <div
+                  key={`group-${groupIndex}-container`}
+                  className="flex gap-4 pr-4"
+                >
+                  {baseItems.map(({ title, imageUrl }, itemIndex) => (
+                    <div
+                      key={`idle-${groupIndex}-${title}-${itemIndex}`}
+                      className="w-[180px] shrink-0"
+                    >
+                      <ReelItem title={title} imageUrl={imageUrl} />
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </>
+          )}
+        </div>
+
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,hsl(var(--background))_0%,transparent_15%,transparent_85%,hsl(var(--background))_100%)]" />
+        <div className="bg-primary pointer-events-none absolute top-0 bottom-0 left-1/2 w-[2px] -translate-x-1/2 shadow-[0_0_15px_hsl(var(--primary))]" />
       </div>
 
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,hsl(var(--primary)/0.8)_1%,transparent_5%,transparent_95%,hsl(var(--primary)/0.8)_99%)]" />
-      <div className="bg-primary pointer-events-none absolute top-0 bottom-0 left-1/2 w-[2px] -translate-x-1/2" />
+      <div className="mt-4 flex w-full flex-col items-center justify-center gap-4">
+        <Button
+          size="lg"
+          onClick={onPickClick}
+          disabled={reels.length === 0 || isSpinning}
+          className="w-32"
+        >
+          {isSpinning ? 'Spinning...' : 'PICK!'}
+        </Button>
+
+        {isSpinningComplete && pickedItem && (
+          <p className="text-primary animate-in fade-in zoom-in font-bold duration-300">
+            Winner: {pickedItem.title}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
