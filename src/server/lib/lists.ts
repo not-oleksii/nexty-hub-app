@@ -18,6 +18,17 @@ export type UserListWithProgress = Prisma.UserListGetPayload<{
     discoverItems: {
       select: {
         id: true;
+        title: true;
+        imageUrl: true;
+        type: true;
+        category: true;
+        description: true;
+        owner: {
+          select: {
+            id: true;
+            username: true;
+          };
+        };
         usersCompleted: {
           select: { id: true };
         };
@@ -65,6 +76,17 @@ export async function getUserLists(): ServerResponse<UserListWithProgress[]> {
         discoverItems: {
           select: {
             id: true,
+            title: true,
+            imageUrl: true,
+            type: true,
+            category: true,
+            description: true,
+            owner: {
+              select: {
+                id: true,
+                username: true,
+              },
+            },
             usersCompleted: {
               select: { id: true },
             },

@@ -8,8 +8,13 @@ import { Subtitle3 } from '@/components/typography/subtitle3';
 import { listsQueries } from '@/server/api/queries/lists.queries';
 
 import { ListCard, ListCardSkeleton } from './list-card';
+import { Reels } from './random-reel';
 
-export function ListsGrid() {
+interface ListsGridProps {
+  onListClick: (selectedReels: Reels) => void;
+}
+
+export function ListsGrid({ onListClick }: ListsGridProps) {
   const { data, isLoading, isError } = useQuery(listsQueries.all());
   const [selectedListsIds, setSelectedListsIds] = useState<string[]>([]);
   const nonEmptyLists = useMemo(
@@ -21,13 +26,23 @@ export function ListsGrid() {
     [data],
   );
 
-  const handleListClick = useCallback((listId: string) => {
-    setSelectedListsIds((prev) =>
-      prev.includes(listId)
-        ? prev.filter((id) => id !== listId)
-        : [...prev, listId],
-    );
-  }, []);
+  const handleListClick = useCallback(
+    (listId: string) => {
+      const selectedIds = selectedListsIds.includes(listId)
+        ? selectedListsIds.filter((id) => id !== listId)
+        : [...selectedListsIds, listId];
+
+      setSelectedListsIds(selectedIds);
+
+      const reels =
+        nonEmptyLists
+          ?.filter((list) => selectedIds.includes(list.id))
+          .flatMap((list) => list.discoverItems) ?? [];
+
+      onListClick(reels);
+    },
+    [selectedListsIds, nonEmptyLists, onListClick],
+  );
 
   if (isLoading) {
     return (
