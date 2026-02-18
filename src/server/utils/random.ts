@@ -54,10 +54,13 @@ export function getRandomizedArray<T>(items: T[]): T[] {
   return shuffled;
 }
 
-export function getArrayOfRandomItems<T>(items: T[], count: number): T[] {
+export function getArrayOfRandomItemsByLength<T>(
+  items: T[],
+  length: number,
+): T[] {
   if (!items || items.length === 0) return [];
 
-  const filledArray = Array.from({ length: count }, () => {
+  const filledArray = Array.from({ length }, () => {
     const randomIndex = Math.floor(Math.random() * items.length);
 
     return items[randomIndex];

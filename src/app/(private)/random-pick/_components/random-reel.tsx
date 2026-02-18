@@ -7,7 +7,7 @@ import { DiscoverItemType } from '@generated/prisma/enums';
 import { Button } from '@/components/ui/button';
 import { UserListWithProgress } from '@/server/lib/lists';
 import {
-  getArrayOfRandomItems,
+  getArrayOfRandomItemsByLength,
   getRandomItem,
   getRandomTitle,
 } from '@/server/utils/random';
@@ -57,7 +57,7 @@ export function RandomReel({ reels }: RandomReelProps) {
   const baseItems = useMemo(() => {
     if (reels.length === 0) return tempReels;
 
-    return getArrayOfRandomItems(getUniqueReels(reels), 15);
+    return getArrayOfRandomItemsByLength(getUniqueReels(reels), 15);
   }, [reels]);
 
   const onPickClick = useCallback(() => {
@@ -74,7 +74,7 @@ export function RandomReel({ reels }: RandomReelProps) {
     setOffset(0);
     setPickedItem(winner);
 
-    const newTrack = getArrayOfRandomItems(pool, TRACK_LENGTH);
+    const newTrack = getArrayOfRandomItemsByLength(pool, TRACK_LENGTH);
 
     newTrack[WIN_INDEX] = winner;
 
@@ -84,7 +84,9 @@ export function RandomReel({ reels }: RandomReelProps) {
       requestAnimationFrame(() => {
         setIsSpinning(true);
 
-        const containerWidth = containerRef.current!.offsetWidth;
+        if (!containerRef.current) return;
+
+        const containerWidth = containerRef.current.offsetWidth;
         const centerOffset = containerWidth / 2 - ITEM_WIDTH / 2;
         const targetPosition = WIN_INDEX * TOTAL_ITEM_WIDTH;
         const randomNudge = Math.floor(Math.random() * 60) - 100;
@@ -116,7 +118,7 @@ export function RandomReel({ reels }: RandomReelProps) {
           }`}
           style={{
             transform:
-              isSpinning || pickedItem ? `translateX(${offset}px)` : undefined,
+              isSpinning || pickedItem ? `translateX(${offset}px)` : '',
             transition: isSpinning
               ? 'transform 10s cubic-bezier(0.15, 0.85, 0.15, 1)'
               : 'none',

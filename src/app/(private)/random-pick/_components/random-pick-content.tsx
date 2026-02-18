@@ -27,7 +27,6 @@ export function RandomPickContent() {
 
   const onListClick = useCallback((selectedReels: Reel[]) => {
     setSelectedReels(selectedReels);
-    console.log(selectedReels);
   }, []);
 
   return (

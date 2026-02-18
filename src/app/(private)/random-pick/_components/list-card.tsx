@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react';
 
 import { CheckCircle2 } from 'lucide-react';
 
+import { Body } from '@/components/typography/body';
 import { Caption1 } from '@/components/typography/caption1';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -55,8 +56,7 @@ export function ListCard({
           'hover:border-primary/50 cursor-pointer hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]',
         selected &&
           'border-primary bg-primary/5 shadow-[0_0_15px_-3px_hsl(var(--primary)/0.15)]',
-        disabled &&
-          'cursor-not-allowed opacity-50 grayscale hover:translate-y-0',
+        disabled && 'cursor-not-allowed opacity-50 hover:translate-y-0',
       )}
     >
       {selected && (
@@ -76,7 +76,12 @@ export function ListCard({
           />
 
           <div className="flex flex-col gap-1 pt-1 pr-6">
-            <CardTitle className="group-hover:text-primary line-clamp-1 text-base transition-colors duration-300">
+            <CardTitle
+              className={cn(
+                'group-hover:text-primary line-clamp-1 text-base transition-colors duration-300',
+                disabled && 'group-hover:text-muted-foreground',
+              )}
+            >
               {name}
             </CardTitle>
             <Caption1 className="text-muted-foreground line-clamp-1">
@@ -89,24 +94,21 @@ export function ListCard({
       <CardContent className="flex flex-col gap-3">
         {totalDiscoverItems > 0 ? (
           <div className="flex flex-col gap-1.5">
-            <div className="text-muted-foreground flex items-center justify-between text-xs">
-              <span>
+            <div className="text-muted-foreground flex items-center justify-between">
+              <Body>
                 {completedDiscoverItems} / {totalDiscoverItems} items
-              </span>
-              <span
+              </Body>
+              <Body
                 className={cn('font-medium', isCompleted && 'text-primary')}
               >
                 {progressPercentage}%
-              </span>
+              </Body>
             </div>
-            <Progress
-              value={progressPercentage}
-              className={cn('h-1.5', isCompleted && '[&>div]:bg-primary')}
-            />
+            <Progress value={progressPercentage} />
           </div>
         ) : (
           <div className="flex h-[26px] items-center">
-            <span className="text-muted-foreground text-xs">List is empty</span>
+            <Body className="text-muted-foreground">List is empty</Body>
           </div>
         )}
       </CardContent>
