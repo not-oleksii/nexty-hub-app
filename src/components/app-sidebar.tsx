@@ -8,6 +8,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   BookmarkIcon,
   CirclePlusIcon,
+  DicesIcon,
   ListVideoIcon,
   LogOutIcon,
   User2,
@@ -48,22 +49,12 @@ const MenuItemWithLink = ({
 export function AppSidebar() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const {
-    mutateAsync: logoutAsync,
-    isPending: isLogoutPending,
-    error: logoutError,
-    isError: isLogoutError,
-  } = useMutation(authMutations.logout());
-  const {
-    data: user,
-    isLoading: isUserLoading,
-    isError: isUserError,
-    error: userError,
-  } = useQuery(usersQueries.current());
+  const logoutMutation = useMutation(authMutations.logout());
+  const userQuery = useQuery(usersQueries.current());
 
   const handleLogout = useCallback(async () => {
     try {
-      await logoutAsync();
+      await logoutMutation.mutateAsync();
 
       clearSessionCache(queryClient);
 
@@ -72,7 +63,7 @@ export function AppSidebar() {
     } catch (error) {
       console.error('Error logging out:', error);
     }
-  }, [logoutAsync, queryClient, router]);
+  }, [logoutMutation, queryClient, router]);
 
   return (
     <Sidebar variant="floating" collapsible="icon">
@@ -90,6 +81,9 @@ export function AppSidebar() {
             <MenuItemWithLink href={ROUTES.lists.root}>
               <BookmarkIcon size={24} className="text-primary" /> Lists
             </MenuItemWithLink>
+            <MenuItemWithLink href={ROUTES.randomPick.root}>
+              <DicesIcon size={24} className="text-primary" /> Random Pick
+            </MenuItemWithLink>
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
@@ -97,23 +91,24 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton className="cursor-pointer">
-              <User2 /> {user?.username}
+              <User2 /> {userQuery.data?.username}
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
               className="cursor-pointer"
-              disabled={isLogoutPending}
+              disabled={logoutMutation.isPending}
               onClick={handleLogout}
             >
-              <LogOutIcon /> {isLogoutPending ? 'Logging out...' : 'Logout'}
+              <LogOutIcon />
+              {logoutMutation.isPending ? 'Logging out...' : 'Logout'}
             </SidebarMenuButton>
           </SidebarMenuItem>
-          {isUserError ||
-            (isLogoutError && (
+          {userQuery.isError ||
+            (logoutMutation.isError && (
               <SidebarMenuItem>
                 <SidebarMenuButton aria-disabled>
-                  {getErrorMessage([logoutError, userError])}
+                  {getErrorMessage([userQuery.error, logoutMutation.error])}
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}

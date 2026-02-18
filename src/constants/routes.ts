@@ -14,4 +14,7 @@ export const ROUTES = {
     root: '/lists',
     create: '/lists/create',
   },
+  randomPick: {
+    root: '/random-pick',
+  },
 } as const;
