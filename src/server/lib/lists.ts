@@ -141,7 +141,9 @@ export async function getUserLists(): ServerResponse<UserListWithProgress[]> {
           id: m.id,
           username: m.user.username,
         })),
-        discoverItems: list.discoverItems.map(({ trackers, ...item }) => item),
+        discoverItems: list.discoverItems.map(
+          ({ trackers: _trackers, ...item }) => item,
+        ),
         totalDiscoverItems,
         completedDiscoverItems,
       };

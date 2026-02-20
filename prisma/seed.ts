@@ -135,7 +135,7 @@ async function main() {
 
   console.log('Creating Lists and access rights...');
 
-  const mainList = await prisma.userList.create({
+  await prisma.userList.create({
     data: {
       name: 'My Backlog 2026',
       visibility: ListVisibility.PUBLIC,
@@ -177,7 +177,7 @@ async function main() {
     },
   });
 
-  const completedList = await prisma.userList.create({
+  await prisma.userList.create({
     data: {
       name: 'Finished Masterpieces',
       visibility: ListVisibility.PUBLIC,
