@@ -93,10 +93,11 @@ Database (Prisma):
 
 ## Test user accounts
 
-| Username  | Password |
-| --------- | -------- |
-| testuser1 | test1234 |
-| testuser2 | test1234 |
+| Username     | Password |
+| ------------ | -------- |
+| alex_dev     | test1234 |
+| lonely_gamer | test1234 |
+| design_guru  | test1234 |
 
 ---
 
