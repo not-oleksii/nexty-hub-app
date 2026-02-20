@@ -9,7 +9,6 @@ import { Body } from '@/components/typography/body';
 import { Caption1 } from '@/components/typography/caption1';
 import { Card } from '@/components/ui/card';
 import { ROUTES } from '@/constants/routes';
-import { cn } from '@/lib/utils/common';
 
 export function CreateListCard() {
   const router = useRouter();
@@ -20,13 +19,9 @@ export function CreateListCard() {
 
   return (
     <Card
+      variant="empty"
       onClick={onCardClick}
-      className={cn(
-        'group relative flex h-full min-h-[220px] cursor-pointer flex-col items-center justify-center overflow-hidden',
-        'border-muted-foreground/20 border-2 border-dashed bg-transparent',
-        'transition-all duration-300 ease-in-out',
-        'hover:border-primary/50 hover:bg-primary/5 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]',
-      )}
+      className="relative flex h-full min-h-[220px] flex-col items-center justify-center overflow-hidden"
     >
       <div className="flex flex-col items-center gap-4 p-6 text-center">
         <div className="bg-muted/30 group-hover:bg-primary/10 flex h-16 w-16 items-center justify-center rounded-full transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_15px_-3px_hsl(var(--primary)/0.2)]">

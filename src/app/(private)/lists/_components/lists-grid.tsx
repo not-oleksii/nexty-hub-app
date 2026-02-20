@@ -44,7 +44,8 @@ export function ListsGrid() {
         return (
           <Card
             key={list.id}
-            className="group hover:border-primary/50 flex h-full flex-col justify-between overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]"
+            variant="interactive"
+            className="flex h-full flex-col justify-between overflow-hidden"
           >
             <CardHeader className="pb-4">
               <div className="flex items-start justify-between gap-4">

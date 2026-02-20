@@ -60,7 +60,7 @@ export function DiscoverListCard({ type }: DiscoverListCardProps) {
 
   return (
     <Link href={`${ROUTES.discoverList.root}/${type.toLowerCase()}`}>
-      <Card className="md:min-w-sm">
+      <Card variant="interactive" className="md:min-w-sm">
         <CardHeader>
           <div className="flex items-center gap-2">
             {itemTypeIconMap[type]}
