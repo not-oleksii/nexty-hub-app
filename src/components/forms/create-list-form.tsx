@@ -43,6 +43,7 @@ import type { DiscoverItemSearchResult } from '@/server/api/discover';
 import { discoverQueries } from '@/server/api/queries/discover.queries';
 import { friendsQueries } from '@/server/api/queries/friends.queries';
 import { listsKeys, listsMutations } from '@/server/api/queries/lists.queries';
+import type { UserListDetail } from '@/server/lib/lists';
 
 const DEFAULT_VALUES: ListSchema = {
   name: '',
@@ -60,7 +61,12 @@ const VISIBILITY_OPTIONS = [
   { value: ListVisibility.PUBLIC, label: 'Public', icon: GlobeIcon },
 ] as const;
 
-export function CreateListForm() {
+type CreateListFormProps = {
+  list?: UserListDetail;
+};
+
+export function CreateListForm({ list }: CreateListFormProps) {
+  const isEditMode = Boolean(list);
   const router = useRouter();
   const queryClient = useQueryClient();
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -74,12 +80,28 @@ export function CreateListForm() {
     discoverQueries.search(debouncedSearch, 12),
   );
 
-  const { mutateAsync, isPending, error, isError } = useMutation(
-    listsMutations.create(),
-  );
+  const createMutation = useMutation(listsMutations.create());
+  const updateMutation = useMutation(listsMutations.update());
+
+  const isPending = isEditMode
+    ? updateMutation.isPending
+    : createMutation.isPending;
+  const error = isEditMode ? updateMutation.error : createMutation.error;
+  const isError = isEditMode ? updateMutation.isError : createMutation.isError;
 
   const form = useForm({
-    defaultValues: DEFAULT_VALUES,
+    defaultValues: isEditMode
+      ? {
+          name: list!.name,
+          description: list!.description ?? '',
+          coverImageUrl: list!.coverImageUrl ?? '',
+          tags: list!.tags ?? [],
+          memberIds: list!.memberIds ?? [],
+          discoverItemIds: list!.discoverItems?.map((i) => i.id) ?? [],
+          visibility:
+            (list!.visibility as ListVisibility) ?? ListVisibility.PRIVATE,
+        }
+      : DEFAULT_VALUES,
     validators: {
       onSubmit: ({ value }) => {
         const result = listSchema.safeParse({
@@ -112,25 +134,46 @@ export function CreateListForm() {
           return;
         }
 
-        await mutateAsync(validated.data);
+        if (isEditMode) {
+          await updateMutation.mutateAsync({
+            id: list!.id,
+            ...validated.data,
+          });
+          queryClient.invalidateQueries({ queryKey: listsKeys.all });
+          queryClient.invalidateQueries({
+            queryKey: listsKeys.detail(list!.id),
+          });
+          toast.success('List updated successfully');
+        } else {
+          await createMutation.mutateAsync(validated.data);
+          queryClient.invalidateQueries({ queryKey: listsKeys.all });
+          toast.success('List created successfully');
+        }
 
-        queryClient.invalidateQueries({ queryKey: listsKeys.all });
-        toast.success('List created successfully');
         router.push(ROUTES.lists.root);
         router.refresh();
       } catch (err) {
-        console.error('Error creating list:', err);
+        console.error(
+          isEditMode ? 'Error updating list:' : 'Error creating list:',
+          err,
+        );
         toast.error(getErrorMessage(err));
       }
     },
   });
 
-  const [tags, setTags] = useState<string[]>([]);
-  const [memberIds, setMemberIds] = useState<string[]>([]);
-  const [discoverItemIds, setDiscoverItemIds] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>(() =>
+    isEditMode ? (list?.tags ?? []) : [],
+  );
+  const [memberIds, setMemberIds] = useState<string[]>(() =>
+    isEditMode ? (list?.memberIds ?? []) : [],
+  );
+  const [discoverItemIds, setDiscoverItemIds] = useState<string[]>(() =>
+    isEditMode ? (list?.discoverItems?.map((i) => i.id) ?? []) : [],
+  );
   const [addedDiscoverItems, setAddedDiscoverItems] = useState<
     DiscoverItemSearchResult[]
-  >([]);
+  >(() => (isEditMode ? (list?.discoverItems ?? []) : []));
 
   const friends = friendsQuery.data ?? [];
   const searchResults = searchResultsQuery.data ?? [];
@@ -193,12 +236,20 @@ export function CreateListForm() {
     [form],
   );
 
+  const onCancel = useCallback(() => {
+    router.push(ROUTES.lists.root);
+    router.refresh();
+  }, [router]);
+
   return (
     <CardContent className="mx-auto w-full max-w-2xl">
       <Header size="lg" className="mb-6">
-        Create list
+        {isEditMode ? 'Edit list' : 'Create list'}
       </Header>
-      <form id="create-list-form" onSubmit={onSubmitClick}>
+      <form
+        id={isEditMode ? 'edit-list-form' : 'create-list-form'}
+        onSubmit={onSubmitClick}
+      >
         <FieldGroup>
           <FieldSet>
             <form.Field name="name">
@@ -459,23 +510,41 @@ export function CreateListForm() {
       </form>
       <div className="mt-6 flex flex-col gap-2">
         {isError && <FieldError>{getErrorMessage(error)}</FieldError>}
-        <Field orientation="horizontal">
+        <div className="flex gap-3">
           <Button
             type="submit"
-            form="create-list-form"
+            form={isEditMode ? 'edit-list-form' : 'create-list-form'}
             size="lg"
             disabled={form.state.isSubmitting || isPending}
-            className="bg-primary hover:bg-primary/90 w-full rounded-lg px-6 font-medium shadow-md transition-shadow hover:shadow-lg"
+            className={
+              isEditMode
+                ? undefined
+                : 'bg-primary hover:bg-primary/90 w-full rounded-lg px-6 font-medium shadow-md transition-shadow hover:shadow-lg'
+            }
           >
             {form.state.isSubmitting || isPending ? (
               <>
-                <Spinner data-icon="inline-start" /> Creating...
+                <Spinner data-icon="inline-start" />
+                {isEditMode ? 'Saving...' : 'Creating...'}
               </>
+            ) : isEditMode ? (
+              'Save'
             ) : (
               'Create'
             )}
           </Button>
-        </Field>
+          {isEditMode && (
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              onClick={onCancel}
+              disabled={form.state.isSubmitting || isPending}
+            >
+              Cancel
+            </Button>
+          )}
+        </div>
       </div>
     </CardContent>
   );

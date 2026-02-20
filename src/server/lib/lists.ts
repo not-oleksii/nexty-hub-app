@@ -309,6 +309,253 @@ export async function createList(body: ListSchema): ServerResponse<UserList> {
   }
 }
 
+export type UserListDetailDiscoverItem = {
+  id: string;
+  type: string;
+  title: string;
+  category?: string | null;
+  imageUrl?: string | null;
+};
+
+export type UserListDetail = {
+  id: string;
+  name: string;
+  description: string | null;
+  coverImageUrl: string | null;
+  tags: string[];
+  visibility: string;
+  ownerId: string;
+  memberIds: string[];
+  discoverItems: UserListDetailDiscoverItem[];
+};
+
+export async function getListById(
+  listId: string,
+): ServerResponse<UserListDetail> {
+  try {
+    const userId = await getUserId();
+
+    if (!userId) {
+      return ResponseService.error({
+        message: ApiErrorType.UNAUTHORIZED,
+        status: HttpStatus.UNAUTHORIZED,
+      });
+    }
+
+    const list = await prisma.userList.findUnique({
+      where: { id: listId },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        coverImageUrl: true,
+        tags: true,
+        visibility: true,
+        ownerId: true,
+        members: {
+          select: { userId: true },
+        },
+        discoverItems: {
+          select: {
+            id: true,
+            type: true,
+            title: true,
+            category: true,
+            imageUrl: true,
+          },
+        },
+      },
+    });
+
+    if (!list) {
+      return ResponseService.error({
+        message: `List with id ${listId} not found`,
+        status: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    if (list.ownerId !== userId) {
+      return ResponseService.error({
+        message: 'You can only edit your own lists',
+        status: HttpStatus.FORBIDDEN,
+      });
+    }
+
+    const data: UserListDetail = {
+      id: list.id,
+      name: list.name,
+      description: list.description,
+      coverImageUrl: list.coverImageUrl,
+      tags: list.tags,
+      visibility: list.visibility,
+      ownerId: list.ownerId,
+      memberIds: list.members.map((m) => m.userId),
+      discoverItems: list.discoverItems.map((item) => ({
+        id: item.id,
+        type: item.type,
+        title: item.title,
+        category: item.category,
+        imageUrl: item.imageUrl,
+      })),
+    };
+
+    return ResponseService.success({
+      data,
+      message: 'List fetched successfully',
+      status: HttpStatus.OK,
+    });
+  } catch (error: unknown) {
+    console.error('Error fetching list:', error);
+
+    return ResponseService.error({
+      message: ApiErrorType.INTERNAL_SERVER_ERROR,
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+}
+
+const updateListSchema = listSchema;
+
+export async function updateList(
+  listId: string,
+  body: ListSchema,
+): ServerResponse<UserList> {
+  try {
+    const userId = await getUserId();
+
+    if (!userId) {
+      return ResponseService.error({
+        message: ApiErrorType.UNAUTHORIZED,
+        status: HttpStatus.UNAUTHORIZED,
+      });
+    }
+
+    const validationResult = updateListSchema.safeParse(body);
+
+    if (!validationResult.success) {
+      const firstError =
+        validationResult.error.issues[0]?.message ?? ApiErrorType.BAD_REQUEST;
+
+      return ResponseService.error({
+        message: firstError,
+        status: HttpStatus.BAD_REQUEST,
+      });
+    }
+
+    const list = await prisma.userList.findUnique({
+      where: { id: listId },
+      select: { ownerId: true },
+    });
+
+    if (!list) {
+      return ResponseService.error({
+        message: `List with id ${listId} not found`,
+        status: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    if (list.ownerId !== userId) {
+      return ResponseService.error({
+        message: 'You can only edit your own lists',
+        status: HttpStatus.FORBIDDEN,
+      });
+    }
+
+    const {
+      name,
+      description,
+      coverImageUrl,
+      tags,
+      memberIds = [],
+      discoverItemIds = [],
+      visibility,
+    } = validationResult.data;
+
+    if (memberIds.length > 0) {
+      const friendships = await prisma.friendship.findMany({
+        where: {
+          status: FriendshipStatus.ACCEPTED,
+          OR: [{ requesterId: userId }, { addresseeId: userId }],
+        },
+        select: {
+          requesterId: true,
+          addresseeId: true,
+        },
+      });
+
+      const friendIds = new Set(
+        friendships.flatMap((f) =>
+          f.requesterId === userId ? [f.addresseeId] : [f.requesterId],
+        ),
+      );
+
+      const invalidMember = memberIds.find((id) => !friendIds.has(id));
+
+      if (invalidMember) {
+        return ResponseService.error({
+          message: 'Can only add accepted friends as list members',
+          status: HttpStatus.BAD_REQUEST,
+        });
+      }
+    }
+
+    if (discoverItemIds.length > 0) {
+      const existingItems = await prisma.discoverItem.findMany({
+        where: { id: { in: discoverItemIds } },
+        select: { id: true },
+      });
+
+      const existingIds = new Set(existingItems.map((i) => i.id));
+      const invalidItem = discoverItemIds.find((id) => !existingIds.has(id));
+
+      if (invalidItem) {
+        return ResponseService.error({
+          message: 'One or more discover items not found',
+          status: HttpStatus.BAD_REQUEST,
+        });
+      }
+    }
+
+    const updatedList = await prisma.userList.update({
+      where: { id: listId },
+      data: {
+        name,
+        description: description?.trim() || null,
+        coverImageUrl: coverImageUrl?.trim() || null,
+        tags: tags ?? [],
+        visibility,
+        members: {
+          deleteMany: {},
+          ...(memberIds.length > 0
+            ? {
+                create: memberIds.map((memberId) => ({
+                  userId: memberId,
+                  role: ListRole.VIEWER,
+                })),
+              }
+            : {}),
+        },
+        discoverItems: {
+          set: discoverItemIds.map((id) => ({ id })),
+        },
+      },
+    });
+
+    return ResponseService.success({
+      data: updatedList,
+      message: 'List updated successfully',
+      status: HttpStatus.OK,
+    });
+  } catch (error: unknown) {
+    console.error('Error updating list:', error);
+
+    return ResponseService.error({
+      message: ApiErrorType.INTERNAL_SERVER_ERROR,
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+}
+
 export async function addOrRemoveDiscoverItemToList(
   listId: string,
   discoverItemId: string,

@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import { useQuery } from '@tanstack/react-query';
 import { CalendarIcon, Edit2Icon } from 'lucide-react';
 
@@ -16,13 +18,16 @@ import {
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ThumbnailStack } from '@/components/ui/thumbnail-stack';
+import { ROUTES } from '@/constants/routes';
 import { formatDate } from '@/lib/utils/format-date';
 import { listsQueries } from '@/server/api/queries/lists.queries';
+import { usersQueries } from '@/server/api/queries/users.queries';
 
 import { CreateListCard } from './create-list-card';
 
 export function ListsGrid() {
   const { data, isLoading, isError } = useQuery(listsQueries.all());
+  const { data: currentUser } = useQuery(usersQueries.current());
 
   if (isLoading) {
     return <ListsGridSkeleton />;
@@ -68,13 +73,17 @@ export function ListsGrid() {
                   </div>
                 </div>
 
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="hover:bg-primary/10 hover:text-primary text-muted-foreground reveal-on-hover h-8 w-8 shrink-0"
-                >
-                  <Edit2Icon className="h-4 w-4" />
-                </Button>
+                {list.owner.id === currentUser?.id && (
+                  <Link href={ROUTES.lists.edit(list.id)}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="hover:bg-primary/10 hover:text-primary text-muted-foreground reveal-on-hover h-8 w-8 shrink-0"
+                    >
+                      <Edit2Icon className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                )}
               </div>
             </CardHeader>
 
