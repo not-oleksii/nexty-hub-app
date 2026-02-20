@@ -6,10 +6,7 @@ export function Code({ className, ...props }: CodeProps) {
   return (
     <code
       className={cn(
-        [
-          'bg-muted text-foreground rounded px-1.5 py-0.5 font-mono text-xs',
-          'border-border border',
-        ].join(' '),
+        `bg-muted text-foreground \ border-border rounded border px-1.5 py-0.5 font-mono text-xs`,
         className,
       )}
       {...props}

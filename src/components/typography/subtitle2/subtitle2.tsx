@@ -1,7 +1,7 @@
-import { cn } from '@/lib/utils/common';
+import { Subtitle1 } from '@/components/typography/subtitle1';
 
 import type { Subtitle2Props } from './types';
 
 export function Subtitle2({ className, ...props }: Subtitle2Props) {
-  return <h3 className={cn('text-base font-medium', className)} {...props} />;
+  return <Subtitle1 size={2} className={className} {...props} />;
 }

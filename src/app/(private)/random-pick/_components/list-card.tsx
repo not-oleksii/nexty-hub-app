@@ -107,7 +107,7 @@ export function ListCard({
           </div>
         ) : (
           <div className="flex h-[26px] items-center">
-            <Body className="text-muted-foreground">List is empty</Body>
+            <Body variant="muted">List is empty</Body>
           </div>
         )}
       </CardContent>

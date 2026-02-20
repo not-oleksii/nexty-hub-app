@@ -1,12 +1,7 @@
-import { cn } from '@/lib/utils/common';
+import { Subtitle1 } from '@/components/typography/subtitle1';
 
 import type { Subtitle4Props } from './types';
 
 export function Subtitle4({ className, ...props }: Subtitle4Props) {
-  return (
-    <h5
-      className={cn('text-xs font-medium tracking-wide uppercase', className)}
-      {...props}
-    />
-  );
+  return <Subtitle1 size={4} className={className} {...props} />;
 }

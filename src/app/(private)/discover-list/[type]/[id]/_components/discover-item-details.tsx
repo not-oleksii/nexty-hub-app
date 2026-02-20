@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { Body } from '@/components/typography/body';
 import { Caption1 } from '@/components/typography/caption1';
-import { Title } from '@/components/typography/title';
+import { Header2 } from '@/components/typography/header2';
 import { AlbumImage } from '@/components/ui/album-image';
 import { Badge } from '@/components/ui/badge';
 import { DetailsList } from '@/components/ui/details-list';
@@ -32,7 +32,7 @@ export function DiscoverItemDetails({ type, id }: DiscoverItemDetailsProps) {
     <div className="flex justify-between gap-6 max-md:flex-col max-md:gap-4">
       <div className="flex max-w-sm flex-col gap-3">
         <div className="flex items-center gap-2">
-          <Title>{data?.title}</Title>
+          <Header2>{data?.title}</Header2>
           <Badge variant={isCompleted ? 'default' : 'outline'}>
             {isCompleted ? 'Completed' : 'Todo'}
           </Badge>

@@ -1,3 +1,7 @@
 import type { HTMLAttributes } from 'react';
 
-export type Caption1Props = HTMLAttributes<HTMLParagraphElement>;
+export type CaptionProps = HTMLAttributes<HTMLParagraphElement> & {
+  size?: 1 | 2;
+};
+
+export type Caption1Props = CaptionProps;

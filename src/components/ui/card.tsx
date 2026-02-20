@@ -5,22 +5,16 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils/common';
 
 const cardVariants = cva(
-  [
-    'bg-card text-card-foreground flex flex-col gap-6 rounded-xl py-6',
-    'overflow-hidden transition-all duration-300 ease-in-out',
-  ].join(' '),
+  `bg-card text-card-foreground flex flex-col gap-6 rounded-xl py-6 \
+overflow-hidden transition-all duration-300 ease-in-out`,
   {
     variants: {
       variant: {
         default: 'border-border/50 border shadow-md',
-        interactive: [
-          'group cursor-pointer border border-border/50 shadow-md',
-          'hover:border-primary/50 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]',
-        ].join(' '),
-        empty: [
-          'group cursor-pointer border-2 border-dashed border-muted-foreground/20 bg-transparent',
-          'hover:border-primary/50 hover:bg-primary/5 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]',
-        ].join(' '),
+        interactive: `group cursor-pointer border border-border/50 shadow-md \
+hover:border-primary/50 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]`,
+        empty: `group cursor-pointer border-2 border-dashed border-muted-foreground/20 bg-transparent \
+hover:border-primary/50 hover:bg-primary/5 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]`,
       },
     },
     defaultVariants: {

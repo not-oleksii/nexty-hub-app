@@ -29,7 +29,10 @@ export function CreateListCard() {
         </div>
 
         <div className="flex flex-col gap-1">
-          <Body className="text-muted-foreground group-hover:text-primary text-lg font-medium transition-colors duration-300">
+          <Body
+            variant="muted"
+            className="group-hover:text-primary text-lg font-medium transition-colors duration-300"
+          >
             Create New List
           </Body>
           <Caption1 className="text-muted-foreground/60 group-hover:text-muted-foreground transition-colors duration-300">

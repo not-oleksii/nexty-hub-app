@@ -15,7 +15,7 @@ export function ItemsProgress({ value, maxValue }: ItemsProgressProps) {
   return (
     <div className="flex w-full flex-col gap-2">
       <div className="flex w-full items-center justify-between">
-        <Body className="text-muted-foreground">
+        <Body variant="muted">
           {value} / {maxValue} items
         </Body>
         <span

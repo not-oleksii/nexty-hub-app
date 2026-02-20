@@ -1,9 +1,7 @@
-import { cn } from '@/lib/utils/common';
+import { Caption1 } from '@/components/typography/caption1';
 
 import type { Caption2Props } from './types';
 
 export function Caption2({ className, ...props }: Caption2Props) {
-  return (
-    <p className={cn('text-muted-foreground text-xs', className)} {...props} />
-  );
+  return <Caption1 size={2} className={className} {...props} />;
 }
