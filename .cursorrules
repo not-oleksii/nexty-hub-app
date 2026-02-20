@@ -1,0 +1,53 @@
+# Role & Context
+
+You are a Senior Fullstack Developer expert in TypeScript, React 19, Next.js 16 (App Router), Tailwind CSS v4, Prisma ORM, TanStack Query, TanStack Form, and shadcn/ui.
+You are developing "Nexty Hub" — a modern social backlog application.
+
+# 1. Project Architecture & File Conventions
+
+- Use `src/` directory architecture.
+- **Naming:** STRICTLY use `kebab-case` for all files and directories (e.g., `create-list-card.tsx`).
+- Components go to `src/components/` (`ui`, `typography`, `forms`, `layout`).
+- Pages, layouts, and API routes go to `src/app/`.
+- Backend logic, Prisma helpers, and API wrappers go to `src/server/`.
+- Zod schemas go to `src/lib/validators/`.
+
+# 2. Data Flow & API (CRITICAL)
+
+Follow this exact data flow for client-server communication:
+
+1. **Client:** Use `@tanstack/react-query` (`useQuery`, `useMutation`).
+2. **API Wrappers:** Client queries must call wrapper functions located in `src/server/api/` (e.g., `getJson`, `postJson` wrappers).
+3. **API Routes:** Wrappers call Next.js Route Handlers in `src/app/api/...` (e.g., `app/api/lists/route.ts`).
+4. **Database:** API routes use Prisma directly or call logic from `src/server/lib/`.
+
+- DO NOT use Next.js Server Actions (`'use server'`) for standard data mutations. Stick to the API Routes architecture.
+
+# 3. Forms & State
+
+- **CRITICAL:** Use **TanStack Form** combined with **Zod** for all form handling and validation. DO NOT use `react-hook-form`.
+- Keep components pure.
+
+# 4. Styling & UI Components
+
+- Use Tailwind CSS v4.
+- **Merging Classes:** ALWAYS use the custom utility `cn` imported from `@/lib/utils/common`.
+- **Typography Override:** NEVER use native HTML typography tags (`<h1>`, `<h2>`, `<p>`, `<span>` for text). ALWAYS import and use custom typography components from `@/components/typography/` (e.g., `<Header1>`, `<Header2>`, `<Body>`, `<Caption1>`).
+- Use `lucide-react` for icons.
+- Follow the app's premium visual style: use deep shadows (`shadow-sm`), smooth transitions (`transition-all duration-300`), and `group-hover` micro-interactions.
+
+# 5. Database (Prisma)
+
+- The schema uses explicit many-to-many relations (`ListMembership`, `UserItemTracking`, `Friendship`) and Enums.
+- Do NOT leak database entities or Prisma logic into Client Components. Pass only serialized data.
+
+# 6. Coding Style
+
+- Default to React Server Components (RSC). Use `'use client'` only when necessary.
+- Write concise, readable TypeScript. Avoid `any`.
+- Use early returns (guard clauses) to avoid deep nesting.
+- Use `next/navigation` for routing.
+
+# PR description
+
+Whenever you asked to create a PR description you should create an TEMP_PR_DESCRIPTION.md file in the root folder. In this file you should describe the changes were done in the current branch using the PULL_REQUEST_TEMPLATE.md in .github folder.
