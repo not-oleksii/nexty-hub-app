@@ -10,6 +10,9 @@ interface ItemsProgressProps {
 
 export function ItemsProgress({ value, maxValue }: ItemsProgressProps) {
   const progress = maxValue > 0 ? (value / maxValue) * 100 : 0;
+  const progressDisplay = Number.isInteger(progress)
+    ? String(progress)
+    : progress.toFixed(1);
   const isCompleted = progress >= 100;
 
   return (
@@ -24,7 +27,7 @@ export function ItemsProgress({ value, maxValue }: ItemsProgressProps) {
             isCompleted ? 'text-primary' : 'text-foreground',
           )}
         >
-          {progress}%
+          {progressDisplay}%
         </span>
       </div>
       <Progress
