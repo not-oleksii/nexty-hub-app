@@ -15,9 +15,10 @@ interface ThumbnailItem {
 
 interface ThumbnailStackProps {
   items: ThumbnailItem[];
+  className?: string;
 }
 
-export function ThumbnailStack({ items }: ThumbnailStackProps) {
+export function ThumbnailStack({ items, className }: ThumbnailStackProps) {
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
 
   const validItems = items.filter((item) => item.imageUrl).slice(0, 3);
@@ -31,7 +32,7 @@ export function ThumbnailStack({ items }: ThumbnailStackProps) {
   }
 
   return (
-    <div className="relative h-12 w-12 shrink-0">
+    <div className={cn('relative h-12 w-12 shrink-0', className)}>
       {validItems.map((item, index) => {
         const isBroken = failedImages[item.id];
 
