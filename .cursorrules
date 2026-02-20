@@ -28,13 +28,23 @@ Follow this exact data flow for client-server communication:
 - **CRITICAL:** Use **TanStack Form** combined with **Zod** for all form handling and validation. DO NOT use `react-hook-form`.
 - Keep components pure.
 
-# 4. Styling & UI Components
+# 4. Styling, UI & Design System (CRITICAL)
 
-- Use Tailwind CSS v4.
-- **Merging Classes:** ALWAYS use the custom utility `cn` imported from `@/lib/utils/common`.
-- **Typography Override:** NEVER use native HTML typography tags (`<h1>`, `<h2>`, `<p>`, `<span>` for text). ALWAYS import and use custom typography components from `@/components/typography/` (e.g., `<Header1>`, `<Header2>`, `<Body>`, `<Caption1>`).
-- Use `lucide-react` for icons.
-- Follow the app's premium visual style: use deep shadows (`shadow-sm`), smooth transitions (`transition-all duration-300`), and `group-hover` micro-interactions.
+You are a Lead UI/UX Designer. Nexty Hub has a premium, modern, SaaS-like aesthetic. Follow these strict design rules:
+
+- **Tailwind v4:** Use modern Tailwind utility classes.
+- **Merge Classes:** ALWAYS use `cn` from `@/lib/utils/common`.
+- **Typography:** NEVER use native HTML tags (`<h1>`, `<h2>`, `<p>`). ALWAYS use custom components from `@/components/typography/` (`<Header1>`, `<Header2>`, `<Body>`, `<Caption1>`). Use `text-muted-foreground` for secondary text.
+- **Card Aesthetics:** - Standard cards: `rounded-xl border bg-card text-card-foreground shadow-sm`.
+  - Interactive/Clickable cards: Add `transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-primary/50`.
+  - Empty/Create states: Use `border-2 border-dashed border-muted-foreground/20 bg-transparent`.
+- **Micro-interactions (The "Premium" feel):**
+  - Use `group` on parent containers and `group-hover` for inner elements.
+  - Hide secondary actions (like Edit/Delete buttons) by default: `opacity-0 transition-all duration-300 group-hover:opacity-100`.
+  - Add subtle background highlights on hover: `hover:bg-primary/5` or `group-hover:bg-primary/10`.
+  - Scale interactive icons slightly: `group-hover:scale-110`.
+- **Layout:** Rely heavily on Flexbox (`flex items-center gap-3`, `flex-col`) and Grid for lists. Maintain consistent padding (usually `p-6` for cards).
+- **Icons:** Use `lucide-react`. Default size `h-5 w-5` or `h-4 w-4`.
 
 # 5. Database (Prisma)
 
@@ -47,6 +57,18 @@ Follow this exact data flow for client-server communication:
 - Write concise, readable TypeScript. Avoid `any`.
 - Use early returns (guard clauses) to avoid deep nesting.
 - Use `next/navigation` for routing.
+- Always write variables, function names, and inline code comments strictly in English, regardless of the prompt language.
+
+# 7. Language Rules
+
+- **CRITICAL:** Always write code, variables, function names, and inline code comments strictly in ENGLISH. You may communicate and explain concepts in the user's prompt language (e.g., Ukrainian), but the generated code MUST remain fully English.
+
+# 8. DRY Principle & Component Reusability (CRITICAL)
+
+- **Zero Duplication:** If you find yourself writing the same complex Tailwind class string (especially long hover effects, layouts, or shadows) more than twice, STOP. Extract it into a reusable React component or a custom UI primitive in `src/components/`.
+- **Component Variants:** For UI elements that have slight visual variations (like buttons, cards, or badges), use `class-variance-authority` (cva) to define variants (e.g., `intent="primary" | "secondary" | "interactive"`), just like shadcn/ui does.
+- **Composition over Inheritance:** When creating interactive cards, create a `<HoverCard>` wrapper or extend the existing shadcn `<Card>` component with an `interactive` variant, rather than copy-pasting `hover:-translate...` everywhere.
+- Always use `cn()` so the parent can still override or append classes to the reusable component via `className`.
 
 # PR description
 
