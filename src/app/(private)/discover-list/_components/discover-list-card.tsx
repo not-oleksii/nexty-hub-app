@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 
 import { Body } from '@/components/typography/body';
-import { Header2 } from '@/components/typography/header2';
+import { Header } from '@/components/typography/header';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardFooter, CardHeader } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -65,7 +65,7 @@ export function DiscoverListCard({ type }: DiscoverListCardProps) {
           <div className="flex items-center gap-2">
             {itemTypeIconMap[type]}
             <div className="flex items-center gap-2 pl-2">
-              <Header2>{itemTypeTitleMap[type]}</Header2>
+              <Header size="lg">{itemTypeTitleMap[type]}</Header>
               <Badge>{data?.length}</Badge>
             </div>
           </div>

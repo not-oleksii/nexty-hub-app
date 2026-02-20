@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 
-import { Subtitle3 } from '@/components/typography/subtitle3';
+import { Subtitle } from '@/components/typography/subtitle';
 import { listsQueries } from '@/server/api/queries/lists.queries';
 
 import { ListCard, ListCardSkeleton } from './list-card';
@@ -55,7 +55,9 @@ export function ListsGrid({ onListClick }: ListsGridProps) {
   }
 
   if (!data?.length || isError) {
-    return <Subtitle3>No lists found. Create one to get started!</Subtitle3>;
+    return (
+      <Subtitle size="sm">No lists found. Create one to get started!</Subtitle>
+    );
   }
 
   return (

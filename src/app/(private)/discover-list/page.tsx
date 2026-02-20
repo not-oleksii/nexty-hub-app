@@ -7,7 +7,7 @@ import {
 import { SparkleIcon } from 'lucide-react';
 
 import { ContentWrapper } from '@/components/layout/content';
-import { Header1 } from '@/components/typography/header1';
+import { Header } from '@/components/typography/header';
 import { discoverQueries } from '@/server/api/queries/discover.queries';
 
 import { DiscoverListCard } from './_components/discover-list-card';
@@ -32,7 +32,7 @@ export default async function DiscoverListPage() {
     <HydrationBoundary state={dehydrate(queryClient)}>
       <ContentWrapper>
         <div className="flex items-center gap-2">
-          <Header1>Discover your next adventure</Header1>
+          <Header>Discover your next adventure</Header>
           <SparkleIcon className="text-primary" fill="currentColor" />
         </div>
 

@@ -1,6 +1,8 @@
+import type { HTMLAttributes } from 'react';
+
 import { cn } from '@/lib/utils/common';
 
-import type { OverlineProps } from './types';
+type OverlineProps = HTMLAttributes<HTMLSpanElement>;
 
 export function Overline({ className, ...props }: OverlineProps) {
   return (

@@ -3,7 +3,7 @@ import { useCallback, useMemo } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 
 import { Body } from '@/components/typography/body';
-import { Caption1 } from '@/components/typography/caption1';
+import { Caption } from '@/components/typography/caption';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -83,9 +83,9 @@ export function ListCard({
             >
               {name}
             </CardTitle>
-            <Caption1 className="text-muted-foreground line-clamp-1">
+            <Caption className="text-muted-foreground line-clamp-1">
               By {owner.username}
-            </Caption1>
+            </Caption>
           </div>
         </div>
       </CardHeader>

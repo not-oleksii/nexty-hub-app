@@ -16,8 +16,8 @@ import { GlobeIcon, LockIcon, UsersIcon, XIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Body } from '@/components/typography/body';
-import { Caption1 } from '@/components/typography/caption1';
-import { Header2 } from '@/components/typography/header2';
+import { Caption } from '@/components/typography/caption';
+import { Header } from '@/components/typography/header';
 import { AlbumImage } from '@/components/ui/album-image';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -194,7 +194,9 @@ export function CreateListForm() {
 
   return (
     <CardContent className="mx-auto w-full max-w-2xl">
-      <Header2 className="mb-6">Create list</Header2>
+      <Header size="lg" className="mb-6">
+        Create list
+      </Header>
       <form id="create-list-form" onSubmit={onSubmitClick}>
         <FieldGroup>
           <FieldSet>
@@ -262,14 +264,15 @@ export function CreateListForm() {
 
             <Field>
               <FieldLabel>Tags</FieldLabel>
-              <Caption1 className="text-muted-foreground mb-2">
+              <Caption size="base" className="text-muted-foreground mb-2">
                 Add custom tags or click suggested ones below
-              </Caption1>
+              </Caption>
               <div className="flex flex-wrap gap-1.5">
                 {tags.map((tag, i) => (
                   <Badge
                     key={`${tag}-${i}`}
                     variant="secondary"
+                    size="default"
                     className="cursor-pointer gap-1 pr-1"
                     onClick={() => removeTag(i)}
                   >
@@ -296,6 +299,7 @@ export function CreateListForm() {
                   <Badge
                     key={tag}
                     variant="outline"
+                    size="default"
                     className="hover:bg-primary/10 hover:text-primary cursor-pointer"
                     onClick={() => addTag(tag)}
                   >
@@ -334,9 +338,9 @@ export function CreateListForm() {
 
             <Field>
               <FieldLabel>Share with friends</FieldLabel>
-              <Caption1 className="text-muted-foreground mb-2">
+              <Caption size="base" className="text-muted-foreground mb-2">
                 Add friends who can view this list
-              </Caption1>
+              </Caption>
               {friendsQuery.isLoading ? (
                 <Spinner className="h-6 w-6" />
               ) : friends.length === 0 ? (
@@ -349,6 +353,7 @@ export function CreateListForm() {
                       variant={
                         memberIds.includes(friend.id) ? 'default' : 'outline'
                       }
+                      size="default"
                       className="cursor-pointer"
                       onClick={() => toggleMember(friend.id)}
                     >
@@ -361,9 +366,9 @@ export function CreateListForm() {
 
             <Field>
               <FieldLabel>Discover items</FieldLabel>
-              <Caption1 className="text-muted-foreground mb-2">
+              <Caption size="base" className="text-muted-foreground mb-2">
                 Search and add items to your list
-              </Caption1>
+              </Caption>
               <Input
                 ref={searchInputRef}
                 placeholder="Search by title (min 2 chars)..."
@@ -373,9 +378,9 @@ export function CreateListForm() {
               />
               {discoverItemIds.length > 0 && (
                 <div className="mb-3">
-                  <Caption1 className="text-muted-foreground mb-2">
+                  <Caption className="text-muted-foreground mb-2">
                     Added ({discoverItemIds.length})
-                  </Caption1>
+                  </Caption>
                   <div className="flex flex-wrap gap-2">
                     {addedDiscoverItems.map((item) => (
                       <div
@@ -473,9 +478,9 @@ function DiscoverItemCard({
       />
       <div className="truncate px-2 py-1 text-xs font-medium">{item.title}</div>
       {item.category && (
-        <Caption1 className="text-muted-foreground truncate px-2 pb-1 text-xs">
+        <Caption size="xs" className="text-muted-foreground truncate px-2 pb-1">
           {item.category}
-        </Caption1>
+        </Caption>
       )}
     </button>
   );

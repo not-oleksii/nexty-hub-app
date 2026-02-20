@@ -5,7 +5,7 @@ import { CalendarIcon, Edit2Icon } from 'lucide-react';
 
 import { ItemsProgress } from '@/components/items-progress';
 import { Body } from '@/components/typography/body';
-import { Caption1 } from '@/components/typography/caption1';
+import { Caption } from '@/components/typography/caption';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -62,9 +62,9 @@ export function ListsGrid() {
                     <CardTitle className="group-hover-primary-transition line-clamp-1 text-lg">
                       {list.name}
                     </CardTitle>
-                    <Caption1 className="text-muted-foreground line-clamp-1">
+                    <Caption className="text-muted-foreground line-clamp-1">
                       By {list.owner.username}
-                    </Caption1>
+                    </Caption>
                   </div>
                 </div>
 

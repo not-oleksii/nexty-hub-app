@@ -1,6 +1,8 @@
+import type { HTMLAttributes } from 'react';
+
 import { cn } from '@/lib/utils/common';
 
-import type { LabelProps } from './types';
+type LabelProps = HTMLAttributes<HTMLSpanElement>;
 
 export function Label({ className, ...props }: LabelProps) {
   return (

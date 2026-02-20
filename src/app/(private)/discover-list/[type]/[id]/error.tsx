@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ArrowLeftIcon } from 'lucide-react';
 
 import { ContentWrapper } from '@/components/layout/content';
-import { Caption1 } from '@/components/typography/caption1';
+import { Caption } from '@/components/typography/caption';
 import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/constants/routes';
 
@@ -14,9 +14,9 @@ export default function DiscoverItemPageError() {
     <ContentWrapper>
       <div className="flex flex-col items-center justify-center gap-4">
         <div className="flex items-center gap-2">
-          <Caption1>
+          <Caption>
             The item you are looking for not found. Try another one.
-          </Caption1>
+          </Caption>
         </div>
         <Link href={ROUTES.discoverList.root}>
           <Button>

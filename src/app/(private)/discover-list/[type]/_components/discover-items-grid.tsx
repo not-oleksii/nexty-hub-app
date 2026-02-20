@@ -3,7 +3,7 @@
 import { DiscoverItemType } from '@generated/prisma/enums';
 import { useQuery } from '@tanstack/react-query';
 
-import { Header2 } from '@/components/typography/header2';
+import { Header } from '@/components/typography/header';
 import { discoverQueries } from '@/server/api/queries/discover.queries';
 
 import { DiscoverItem, DiscoverItemSkeleton } from './discover-item';
@@ -27,7 +27,7 @@ export function DiscoverItemsGrid({ type }: DiscoverItemsGridProps) {
 
   return (
     <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
-      {isError && <Header2>Error loading items</Header2>}
+      {isError && <Header size="lg">Error loading items</Header>}
       {data?.map((item) => (
         <DiscoverItem key={item.id} discoverItem={item} isLoading={isLoading} />
       ))}

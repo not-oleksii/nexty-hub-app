@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 import { AddToListButton } from '@/components/add-to-list-button';
-import { Subtitle2 } from '@/components/typography/subtitle2';
+import { Subtitle } from '@/components/typography/subtitle';
 import { AlbumImage } from '@/components/ui/album-image';
 import {
   Card,
@@ -45,7 +45,7 @@ export function DiscoverItem({ discoverItem, isLoading }: DiscoverItemProps) {
           <AlbumImage src={imageUrl} title={title} aspectRatio="aspect-10/16" />
         </CardContent>
         <CardFooter>
-          <Subtitle2>{discoverItem.title}</Subtitle2>
+          <Subtitle size="base">{discoverItem.title}</Subtitle>
         </CardFooter>
       </Card>
     </Link>

@@ -5,7 +5,7 @@ import {
 } from '@tanstack/react-query';
 
 import { ContentWrapper } from '@/components/layout/content';
-import { Header1 } from '@/components/typography/header1';
+import { Header } from '@/components/typography/header';
 import { discoverQueries } from '@/server/api/queries/discover.queries';
 import { mapItemTypeToPrisma } from '@/server/utils/prisma-maps';
 
@@ -23,7 +23,7 @@ export default async function DiscoverMoviesPage({
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <ContentWrapper>
-        <Header1>{type.toUpperCase()}</Header1>
+        <Header>{type.toUpperCase()}</Header>
         <DiscoverItemsGrid type={prismaType} />
       </ContentWrapper>
     </HydrationBoundary>

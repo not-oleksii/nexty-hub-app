@@ -3,7 +3,7 @@
 import { useCallback, useState } from 'react';
 import dynamic from 'next/dynamic';
 
-import { Subtitle1 } from '@/components/typography/subtitle1';
+import { Subtitle } from '@/components/typography/subtitle';
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { ListsGrid } from './lists-grid';
@@ -33,7 +33,7 @@ export function RandomPickContent() {
     <div className="w-full">
       <RandomReel reels={selectedReels} />
       <div className="mt-8 flex flex-col gap-4">
-        <Subtitle1>Select lists to pick from</Subtitle1>
+        <Subtitle>Select lists to pick from</Subtitle>
         <ListsGrid onListClick={onListClick} />
       </div>
     </div>

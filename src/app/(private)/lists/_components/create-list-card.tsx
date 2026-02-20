@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { PlusIcon } from 'lucide-react';
 
 import { Body } from '@/components/typography/body';
-import { Caption1 } from '@/components/typography/caption1';
+import { Caption } from '@/components/typography/caption';
 import { Card } from '@/components/ui/card';
 import { ROUTES } from '@/constants/routes';
 
@@ -35,9 +35,12 @@ export function CreateListCard() {
           >
             Create New List
           </Body>
-          <Caption1 className="text-muted-foreground/60 group-hover:text-muted-foreground transition-colors-smooth">
+          <Caption
+            size="base"
+            className="text-muted-foreground/60 group-hover:text-muted-foreground transition-colors-smooth"
+          >
             Start tracking your next favorites
-          </Caption1>
+          </Caption>
         </div>
       </div>
     </Card>
