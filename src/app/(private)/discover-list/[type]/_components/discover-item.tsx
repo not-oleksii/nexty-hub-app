@@ -1,5 +1,7 @@
 import Link from 'next/link';
 
+import { DiscoverItemType } from '@generated/prisma/enums';
+
 import { AddToListButton } from '@/components/add-to-list-button';
 import { Subtitle } from '@/components/typography/subtitle';
 import { AlbumImage } from '@/components/ui/album-image';
@@ -10,7 +12,6 @@ import {
   CardHeader,
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DiscoverItemType } from '@generated/prisma/enums';
 import { ROUTES } from '@/constants/routes';
 import type { DiscoverItemDto } from '@/server/api/discover';
 import { mapPrismaToItemType } from '@/server/utils/prisma-maps';

@@ -110,7 +110,6 @@ export function AddToListButton({ discoverItemId }: AddToListButtonProps) {
           <DropdownMenuItem
             className="cursor-pointer"
             key={list.id}
-            // eslint-disable-next-line react/jsx-no-bind
             onSelect={(event) => {
               event.preventDefault();
               handleAddItemToList(list.id);

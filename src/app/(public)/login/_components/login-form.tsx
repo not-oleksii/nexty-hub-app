@@ -87,7 +87,6 @@ export function LoginForm() {
                           id={field.name}
                           name={field.name}
                           value={field.state.value}
-                          // eslint-disable-next-line react/jsx-no-bind
                           onChange={(e) => field.handleChange(e.target.value)}
                           onBlur={field.handleBlur}
                           placeholder="Enter your username"
@@ -112,7 +111,6 @@ export function LoginForm() {
                           id={field.name}
                           name={field.name}
                           value={field.state.value}
-                          // eslint-disable-next-line react/jsx-no-bind
                           onChange={(e) => field.handleChange(e.target.value)}
                           onBlur={field.handleBlur}
                           placeholder="••••••••"

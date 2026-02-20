@@ -110,7 +110,6 @@ export function AddDiscoverItemForm() {
                         id={field.name}
                         name={field.name}
                         value={field.state.value}
-                        // eslint-disable-next-line react/jsx-no-bind
                         onChange={(e) => field.handleChange(e.target.value)}
                         onBlur={field.handleBlur}
                         placeholder="e.g. Interstellar"
@@ -139,7 +138,6 @@ export function AddDiscoverItemForm() {
                         <FieldLabel htmlFor={field.name}>Type</FieldLabel>
                         <Select
                           value={field.state.value}
-                          // eslint-disable-next-line react/jsx-no-bind
                           onValueChange={handleTypeChange}
                         >
                           <SelectTrigger
@@ -180,7 +178,6 @@ export function AddDiscoverItemForm() {
                       <ToggleGroup
                         type="single"
                         value={field.state.value ? 'yes' : 'no'}
-                        // eslint-disable-next-line react/jsx-no-bind
                         onValueChange={(value) => {
                           if (!value) {
                             return;
@@ -215,7 +212,6 @@ export function AddDiscoverItemForm() {
                           id={field.name}
                           name={field.name}
                           value={field.state.value}
-                          // eslint-disable-next-line react/jsx-no-bind
                           onChange={(e) => field.handleChange(e.target.value)}
                           onBlur={field.handleBlur}
                           placeholder="e.g. Sci-Fi"
@@ -241,7 +237,6 @@ export function AddDiscoverItemForm() {
                           id={field.name}
                           name={field.name}
                           value={field.state.value}
-                          // eslint-disable-next-line react/jsx-no-bind
                           onChange={(e) => field.handleChange(e.target.value)}
                           onBlur={field.handleBlur}
                           placeholder="https://..."
@@ -268,7 +263,6 @@ export function AddDiscoverItemForm() {
                         id={field.name}
                         name={field.name}
                         value={field.state.value}
-                        // eslint-disable-next-line react/jsx-no-bind
                         onChange={(e) => field.handleChange(e.target.value)}
                         onBlur={field.handleBlur}
                         className="min-h-24"

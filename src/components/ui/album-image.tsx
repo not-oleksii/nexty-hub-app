@@ -3,8 +3,8 @@
 import { useCallback, useMemo, useState } from 'react';
 import Image from 'next/image';
 
-import { pickGradientPalette } from '@/lib/utils/gradient';
 import { cn } from '@/lib/utils/common';
+import { pickGradientPalette } from '@/lib/utils/gradient';
 
 const ALLOWED_IMAGE_HOSTS = new Set([
   'images.unsplash.com',

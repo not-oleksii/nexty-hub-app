@@ -59,7 +59,6 @@ export function ThumbnailStack({ items, className }: ThumbnailStackProps) {
                 fill
                 sizes="48px"
                 className="object-cover"
-                // eslint-disable-next-line react/jsx-no-bind
                 onError={() => {
                   setFailedImages((prev) => ({
                     ...prev,
