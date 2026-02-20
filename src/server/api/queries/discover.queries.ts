@@ -9,6 +9,8 @@ export const discoverKeys = {
   type: (type: DiscoverItemType) =>
     [...discoverKeys.all, 'type', type] as const,
   detail: (id: string) => [...discoverKeys.all, 'detail', id] as const,
+  search: (query: string, limit?: number) =>
+    [...discoverKeys.all, 'search', query, limit ?? 20] as const,
   mutations: {
     create: () => [...discoverKeys.all, 'create'] as const,
   },
@@ -31,6 +33,13 @@ export const discoverQueries = {
     queryOptions({
       queryKey: discoverKeys.detail(id),
       queryFn: () => discoverApi.getById(id),
+    }),
+
+  search: (query: string, limit = 20) =>
+    queryOptions({
+      queryKey: discoverKeys.search(query, limit),
+      queryFn: () => discoverApi.search(query, limit),
+      enabled: query.length >= 2,
     }),
 };
 

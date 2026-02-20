@@ -1,7 +1,7 @@
 'use client';
 
-import { Header2 } from '@/components/typography/header2';
-import { Subtitle1 } from '@/components/typography/subtitle1';
+import { Header } from '@/components/typography/header';
+import { Subtitle } from '@/components/typography/subtitle';
 import { AlbumImage } from '@/components/ui/album-image';
 import {
   Dialog,
@@ -51,11 +51,13 @@ export function WinnerDialog({
           </div>
 
           <div className="animate-in fade-in slide-in-from-bottom-6 fill-mode-both text-center delay-300 duration-500">
-            <Header2 className="text-primary">{winner.title}</Header2>
+            <Header size="lg" className="text-primary">
+              {winner.title}
+            </Header>
             {winner.category && (
-              <Subtitle1 className="text-muted-foreground mt-1">
+              <Subtitle className="text-muted-foreground mt-1">
                 {winner.category}
-              </Subtitle1>
+              </Subtitle>
             )}
           </div>
         </div>

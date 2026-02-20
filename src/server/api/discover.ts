@@ -1,17 +1,25 @@
-import type { Prisma } from '@generated/prisma/client';
 import type { DiscoverItemType } from '@generated/prisma/enums';
 
 import { DiscoverItemSchema } from '@/lib/validators/discovery-item';
 import { getJson, postJson } from '@/server/utils/fetch-json';
 
-export type DiscoverItemDto = Prisma.DiscoverItemGetPayload<{
-  include: {
-    usersSaved: { select: { id: true } };
-    usersCompleted: { select: { id: true } };
-  };
-}> & {
+export type DiscoverItemDto = {
+  id: string;
+  type: string;
+  title: string;
+  description?: string | null;
+  category?: string | null;
+  imageUrl?: string | null;
   isSaved: boolean;
   isCompleted: boolean;
+};
+
+export type DiscoverItemSearchResult = {
+  id: string;
+  type: string;
+  title: string;
+  category?: string | null;
+  imageUrl?: string | null;
 };
 
 export const discoverApi = {
@@ -22,6 +30,11 @@ export const discoverApi = {
 
   getById: (id: string) =>
     getJson<DiscoverItemDto | null>(`/api/discover/item/${id}`),
+
+  search: (query: string, limit = 20) =>
+    getJson<DiscoverItemSearchResult[]>(
+      `/api/discover/search?q=${encodeURIComponent(query)}&limit=${limit}`,
+    ),
 
   create: (payload: DiscoverItemSchema) =>
     postJson<{ item: DiscoverItemDto }>('/api/discover/item', payload),

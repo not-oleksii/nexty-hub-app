@@ -3,7 +3,7 @@ import { useCallback, useMemo } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 
 import { Body } from '@/components/typography/body';
-import { Caption1 } from '@/components/typography/caption1';
+import { Caption } from '@/components/typography/caption';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -49,18 +49,17 @@ export function ListCard({
 
   return (
     <Card
+      variant="interactive"
       onClick={handleClick}
       className={cn(
-        'group relative flex h-full flex-col justify-between transition-all duration-300',
-        !disabled &&
-          'hover:border-primary/50 cursor-pointer hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]',
+        'relative flex h-full flex-col justify-between',
         selected &&
           'border-primary bg-primary/5 shadow-[0_0_15px_-3px_hsl(var(--primary)/0.15)]',
         disabled && 'cursor-not-allowed opacity-50 hover:translate-y-0',
       )}
     >
       {selected && (
-        <div className="text-primary animate-in zoom-in absolute top-4 right-4 z-40 duration-300">
+        <div className="text-primary animate-entrance-zoom absolute top-4 right-4 z-40">
           <CheckCircle2 className="fill-primary/10 h-5 w-5" />
         </div>
       )}
@@ -78,15 +77,15 @@ export function ListCard({
           <div className="flex flex-col gap-1 pt-1 pr-6">
             <CardTitle
               className={cn(
-                'group-hover:text-primary line-clamp-1 text-base transition-colors duration-300',
+                'group-hover-primary-transition line-clamp-1 text-base',
                 disabled && 'group-hover:text-muted-foreground',
               )}
             >
               {name}
             </CardTitle>
-            <Caption1 className="text-muted-foreground line-clamp-1">
+            <Caption className="text-muted-foreground line-clamp-1">
               By {owner.username}
-            </Caption1>
+            </Caption>
           </div>
         </div>
       </CardHeader>
@@ -108,7 +107,7 @@ export function ListCard({
           </div>
         ) : (
           <div className="flex h-[26px] items-center">
-            <Body className="text-muted-foreground">List is empty</Body>
+            <Body variant="muted">List is empty</Body>
           </div>
         )}
       </CardContent>

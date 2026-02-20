@@ -1,5 +1,4 @@
-import { NextResponse } from 'next/server';
-
+import { ErrorResponse, SuccessResponse } from '@/server/http/response';
 import { ApiErrorType, HttpStatus } from '@/server/http/types';
 import { getDiscoverItemById } from '@/server/lib/discover';
 
@@ -13,16 +12,16 @@ export async function GET(_request: Request, { params }: Params) {
     const { data, status, error } = await getDiscoverItemById(id);
 
     if (error) {
-      return NextResponse.json({ error }, { status });
+      return ErrorResponse(error, status);
     }
 
-    return NextResponse.json(data, { status });
+    return SuccessResponse(data, status);
   } catch (error: unknown) {
     console.error('Error fetching discover item:', error);
 
-    return NextResponse.json(
-      { error: ApiErrorType.INTERNAL_SERVER_ERROR },
-      { status: HttpStatus.INTERNAL_SERVER_ERROR },
+    return ErrorResponse(
+      new Error(ApiErrorType.INTERNAL_SERVER_ERROR),
+      HttpStatus.INTERNAL_SERVER_ERROR,
     );
   }
 }

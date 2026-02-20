@@ -1,9 +1,9 @@
 import Link from 'next/link';
 
-import { type DiscoverItem } from '@generated/prisma/browser';
+import { DiscoverItemType } from '@generated/prisma/enums';
 
 import { AddToListButton } from '@/components/add-to-list-button';
-import { Subtitle2 } from '@/components/typography/subtitle2';
+import { Subtitle } from '@/components/typography/subtitle';
 import { AlbumImage } from '@/components/ui/album-image';
 import {
   Card,
@@ -13,10 +13,11 @@ import {
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ROUTES } from '@/constants/routes';
+import type { DiscoverItemDto } from '@/server/api/discover';
 import { mapPrismaToItemType } from '@/server/utils/prisma-maps';
 
 type DiscoverItemProps = {
-  discoverItem: DiscoverItem;
+  discoverItem: DiscoverItemDto;
   isLoading: boolean;
 };
 
@@ -28,24 +29,27 @@ export function DiscoverItem({ discoverItem, isLoading }: DiscoverItemProps) {
   }
 
   return (
-    <Card className="max-w-xs">
-      <CardHeader>
-        <div className="flex justify-between">
-          <AddToListButton discoverItemId={discoverItem.id} />
-        </div>
-      </CardHeader>
-      <Link
-        href={`${ROUTES.discoverList.item.replace(':type', mapPrismaToItemType(discoverItem.type)).replace(':id', discoverItem.id)}`}
-        className="block"
-      >
+    <Link
+      href={`${ROUTES.discoverList.item.replace(':type', mapPrismaToItemType(discoverItem.type as DiscoverItemType)).replace(':id', discoverItem.id)}`}
+      className="block"
+    >
+      <Card variant="interactive" className="max-w-xs">
+        <CardHeader>
+          <div
+            className="flex justify-between"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <AddToListButton discoverItemId={discoverItem.id} />
+          </div>
+        </CardHeader>
         <CardContent>
           <AlbumImage src={imageUrl} title={title} aspectRatio="aspect-10/16" />
         </CardContent>
         <CardFooter>
-          <Subtitle2>{discoverItem.title}</Subtitle2>
+          <Subtitle size="base">{discoverItem.title}</Subtitle>
         </CardFooter>
-      </Link>
-    </Card>
+      </Card>
+    </Link>
   );
 }
 

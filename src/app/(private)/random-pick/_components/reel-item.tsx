@@ -1,4 +1,4 @@
-import { Subtitle2 } from '@/components/typography/subtitle2';
+import { Subtitle } from '@/components/typography/subtitle';
 import { AlbumImage } from '@/components/ui/album-image';
 
 interface ReelItemProps {
@@ -21,9 +21,12 @@ export function ReelItem({ title, imageUrl }: ReelItemProps) {
       </div>
 
       <div className="flex h-12 w-full items-center justify-center px-3 py-2">
-        <Subtitle2 className="text-foreground truncate text-center font-medium transition-colors">
+        <Subtitle
+          size="base"
+          className="text-foreground truncate text-center font-medium transition-colors"
+        >
           {title}
-        </Subtitle2>
+        </Subtitle>
       </div>
     </div>
   );

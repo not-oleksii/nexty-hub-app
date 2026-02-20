@@ -92,6 +92,37 @@ export async function postJson<T>(
   return res.json() as Promise<T>;
 }
 
+export async function putJson<T>(
+  path: string,
+  body: unknown = {},
+  config?: FetchConfig,
+): Promise<T> {
+  const url = await resolveRequestUrl(path);
+
+  const res = await fetch(url, {
+    method: 'PUT',
+    cache: 'no-store',
+    ...config,
+    headers: {
+      'Content-Type': 'application/json',
+      ...config?.headers,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const responseBody = await res.json().catch(() => ({}));
+    const message = getErrorMessageFromBody(
+      responseBody,
+      `Request failed: ${res.status} ${res.statusText}`,
+    );
+
+    throw new Error(message);
+  }
+
+  return res.json() as Promise<T>;
+}
+
 export async function patchJson<T>(
   path: string,
   body: unknown = {},

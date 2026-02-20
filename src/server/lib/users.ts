@@ -1,4 +1,3 @@
-import type { Prisma } from '@generated/prisma/client';
 import { User } from '@generated/prisma/client';
 
 import { SignupSchema, signupSchema } from '@/lib/validators/signup';
@@ -12,15 +11,7 @@ import {
 } from '../services/response-service';
 import { hashPassword } from '../utils/password';
 
-export type CurrentUserResponse = Prisma.UserGetPayload<{
-  include: {
-    lists: { include: { discoverItems: true } };
-    ownedLists: { include: { discoverItems: true } };
-    savedDiscoverItems: true;
-    completedDiscoverItems: true;
-    discoverItems: true;
-  };
-}>;
+export type CurrentUserResponse = Pick<User, 'id' | 'username'>;
 
 export async function createUser(body: SignupSchema): ServerResponse<User> {
   try {
@@ -53,13 +44,6 @@ export async function createUser(body: SignupSchema): ServerResponse<User> {
         username: validationResult.data.username,
         passwordHash: hashPassword(validationResult.data.password),
       },
-      include: {
-        lists: { include: { discoverItems: true } },
-        ownedLists: { include: { discoverItems: true } },
-        savedDiscoverItems: true,
-        completedDiscoverItems: true,
-        discoverItems: true,
-      },
     });
 
     return ResponseService.success({
@@ -90,13 +74,7 @@ export async function getCurrentUser(): ServerResponse<CurrentUserResponse> {
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: {
-        lists: { include: { discoverItems: true } },
-        ownedLists: { include: { discoverItems: true } },
-        savedDiscoverItems: true,
-        completedDiscoverItems: true,
-        discoverItems: true,
-      },
+      select: { id: true, username: true },
     });
 
     if (!user) {

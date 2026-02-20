@@ -1,5 +1,5 @@
 import { Body } from '../typography/body';
-import { Subtitle2 } from '../typography/subtitle2';
+import { Subtitle } from '../typography/subtitle';
 
 type DetailsRowProps = {
   label: string;
@@ -13,7 +13,9 @@ type DetailsListProps = {
 export function DetailsRow({ label, value }: DetailsRowProps) {
   return (
     <div className="flex items-start gap-2">
-      <Subtitle2 className="w-36 text-left">{label}</Subtitle2>
+      <Subtitle size="base" className="w-36 text-left">
+        {label}
+      </Subtitle>
       <Body className="w-full text-left">{value}</Body>
     </div>
   );

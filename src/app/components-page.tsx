@@ -1,11 +1,17 @@
 import { ContentWrapper } from '@/components/layout/content';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Caption1 } from '@/components/typography/caption1';
-import { Subtitle3 } from '@/components/typography/subtitle3';
-import { Title } from '@/components/typography/title';
+import { Caption } from '@/components/typography/caption';
+import { Header } from '@/components/typography/header';
+import { Subtitle } from '@/components/typography/subtitle';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
@@ -15,8 +21,8 @@ export default function ComponentsPage() {
     <ContentWrapper className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
-          <Title>Nexty Hub</Title>
-          <Caption1>UI kit preview (shadcn + theme tokens)</Caption1>
+          <Header size="lg">Nexty Hub</Header>
+          <Caption>UI kit preview (shadcn + theme tokens)</Caption>
         </div>
         <ThemeToggle />
       </div>
@@ -24,7 +30,9 @@ export default function ComponentsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Quick add</CardTitle>
-          <CardDescription>Example form fields using the shared theme.</CardDescription>
+          <CardDescription>
+            Example form fields using the shared theme.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <Input placeholder="Title" />
@@ -48,19 +56,19 @@ export default function ComponentsPage() {
           <Card>
             <CardHeader className="flex-row items-center justify-between">
               <div className="flex flex-col gap-1">
-                <Subtitle3>Movies</Subtitle3>
-                <Caption1>12 items</Caption1>
+                <Subtitle size="sm">Movies</Subtitle>
+                <Caption>12 items</Caption>
               </div>
               <Badge>Shared</Badge>
             </CardHeader>
             <CardContent>
-              <Caption1>Empty state goes here later.</Caption1>
+              <Caption>Empty state goes here later.</Caption>
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent className="pt-3" value="done">
-          <Caption1>No completed items yet.</Caption1>
+          <Caption>No completed items yet.</Caption>
         </TabsContent>
       </Tabs>
     </ContentWrapper>

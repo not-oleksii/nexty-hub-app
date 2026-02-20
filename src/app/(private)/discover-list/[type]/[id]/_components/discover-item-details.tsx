@@ -4,8 +4,8 @@ import { DiscoverItemType } from '@generated/prisma/enums';
 import { useQuery } from '@tanstack/react-query';
 
 import { Body } from '@/components/typography/body';
-import { Caption1 } from '@/components/typography/caption1';
-import { Title } from '@/components/typography/title';
+import { Caption } from '@/components/typography/caption';
+import { Header } from '@/components/typography/header';
 import { AlbumImage } from '@/components/ui/album-image';
 import { Badge } from '@/components/ui/badge';
 import { DetailsList } from '@/components/ui/details-list';
@@ -32,7 +32,7 @@ export function DiscoverItemDetails({ type, id }: DiscoverItemDetailsProps) {
     <div className="flex justify-between gap-6 max-md:flex-col max-md:gap-4">
       <div className="flex max-w-sm flex-col gap-3">
         <div className="flex items-center gap-2">
-          <Title>{data?.title}</Title>
+          <Header size="lg">{data?.title}</Header>
           <Badge variant={isCompleted ? 'default' : 'outline'}>
             {isCompleted ? 'Completed' : 'Todo'}
           </Badge>
@@ -46,7 +46,7 @@ export function DiscoverItemDetails({ type, id }: DiscoverItemDetailsProps) {
           ]}
         />
         <div className="flex flex-col gap-1">
-          <Caption1>Description</Caption1>
+          <Caption>Description</Caption>
           <Body>{data?.description}</Body>
         </div>
         <ItemCardActions discoverItemId={id} />
@@ -73,7 +73,7 @@ export function DiscoverItemDetailsSkeleton() {
         </div>
         <Skeleton className="h-3 w-full" />
         <div className="flex flex-col gap-1">
-          <Caption1>Description</Caption1>
+          <Caption>Description</Caption>
           <Skeleton className="h-3 w-full" />
           <Skeleton className="h-3 w-full" />
           <Skeleton className="h-3 w-full" />

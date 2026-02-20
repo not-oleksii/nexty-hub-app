@@ -82,7 +82,6 @@ export function SignupForm() {
                           id={field.name}
                           name={field.name}
                           value={field.state.value}
-                          // eslint-disable-next-line react/jsx-no-bind
                           onChange={(e) => field.handleChange(e.target.value)}
                           onBlur={field.handleBlur}
                           placeholder="Enter your username"
@@ -109,7 +108,6 @@ export function SignupForm() {
                           id={field.name}
                           name={field.name}
                           value={field.state.value}
-                          // eslint-disable-next-line react/jsx-no-bind
                           onChange={(e) => field.handleChange(e.target.value)}
                           onBlur={field.handleBlur}
                           placeholder="Enter your password"
@@ -137,7 +135,6 @@ export function SignupForm() {
                           id={field.name}
                           name={field.name}
                           value={field.state.value}
-                          // eslint-disable-next-line react/jsx-no-bind
                           onChange={(e) => field.handleChange(e.target.value)}
                           onBlur={field.handleBlur}
                           placeholder="Confirm your password"

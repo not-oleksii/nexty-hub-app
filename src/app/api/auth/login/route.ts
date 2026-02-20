@@ -1,6 +1,5 @@
-import { NextResponse } from 'next/server';
-
 import { AUTH_COOKIE_NAME } from '@/server/auth/session';
+import { ErrorResponse, SuccessResponse } from '@/server/http/response';
 import { ApiErrorType, HttpStatus } from '@/server/http/types';
 import { login } from '@/server/lib/auth';
 
@@ -11,17 +10,14 @@ export async function POST(request: Request) {
     const { error, status, message, data } = await login(username, password);
 
     if (error) {
-      return NextResponse.json({ error: error?.message }, { status: status });
+      return ErrorResponse(error, status);
     }
 
     if (!data) {
-      return NextResponse.json(
-        { error: ApiErrorType.BAD_REQUEST },
-        { status: status },
-      );
+      return ErrorResponse(new Error(ApiErrorType.BAD_REQUEST), status);
     }
 
-    const response = NextResponse.json({ message }, { status: status });
+    const response = SuccessResponse({ message }, status);
 
     response.cookies.set({
       name: AUTH_COOKIE_NAME,
@@ -37,9 +33,9 @@ export async function POST(request: Request) {
   } catch (error: unknown) {
     console.error('Login error:', error);
 
-    return NextResponse.json(
-      { error: ApiErrorType.INTERNAL_SERVER_ERROR },
-      { status: HttpStatus.INTERNAL_SERVER_ERROR },
+    return ErrorResponse(
+      new Error(ApiErrorType.INTERNAL_SERVER_ERROR),
+      HttpStatus.INTERNAL_SERVER_ERROR,
     );
   }
 }

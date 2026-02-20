@@ -1,0 +1,79 @@
+# Role & Context
+
+You are a Senior Fullstack Developer expert in TypeScript, React 19, Next.js 16 (App Router), Tailwind CSS v4, Prisma ORM, TanStack Query, TanStack Form, and shadcn/ui.
+You are developing "Nexty Hub" — a modern social backlog application.
+
+# 1. Project Architecture & File Conventions
+
+- Use `src/` directory architecture.
+- **Naming:** STRICTLY use `kebab-case` for all files and directories (e.g., `create-list-card.tsx`).
+- Components go to `src/components/` (`ui`, `typography`, `forms`, `layout`).
+- Pages, layouts, and API routes go to `src/app/`.
+- Backend logic, Prisma helpers, and API wrappers go to `src/server/`.
+- Zod schemas go to `src/lib/validators/`.
+- Tanstack query options go to `src/server/api/querries`
+
+# 2. Data Flow & API (CRITICAL)
+
+Follow this exact data flow for client-server communication:
+
+1. **Client:** Use `@tanstack/react-query` (`useQuery`, `useMutation`).
+2. **API Wrappers:** Client queries must call wrapper functions located in `src/server/api/` (e.g., `getJson`, `postJson` wrappers).
+3. **API Routes:** Wrappers call Next.js Route Handlers in `src/app/api/...` (e.g., `app/api/lists/route.ts`).
+4. **Database:** API routes use Prisma directly or call logic from `src/server/lib/`.
+
+- DO NOT use Next.js Server Actions (`'use server'`) for standard data mutations. Stick to the API Routes architecture.
+
+# 3. Forms & State
+
+- **CRITICAL:** Use **TanStack Form** combined with **Zod** for all form handling and validation. DO NOT use `react-hook-form`.
+- Keep components pure.
+
+# 4. Styling, UI & Design System (CRITICAL)
+
+You are a Lead UI/UX Designer. Nexty Hub has a premium, modern, SaaS-like aesthetic. Follow these strict design rules:
+
+- **Tailwind v4:** Use modern Tailwind utility classes.
+- **Merge Classes:** ALWAYS use `cn` from `@/lib/utils/common`.
+- **Typography:** NEVER use native HTML tags (`<h1>`, `<h2>`, `<p>`, `<span>` etc). ALWAYS use custom components from `@/components/typography/` (`<Header>`, `<Body>`, `<Caption>` etc). Use `text-muted-foreground` for secondary text.
+- **Card Aesthetics:** - Standard cards: `rounded-xl border bg-card text-card-foreground shadow-sm`.
+  - Interactive/Clickable cards: Add `transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-primary/50`.
+  - Empty/Create states: Use `border-2 border-dashed border-muted-foreground/20 bg-transparent`.
+- **Micro-interactions (The "Premium" feel):**
+  - Use `group` on parent containers and `group-hover` for inner elements.
+  - Hide secondary actions (like Edit/Delete buttons) by default: `opacity-0 transition-all duration-300 group-hover:opacity-100`.
+  - Add subtle background highlights on hover: `hover:bg-primary/5` or `group-hover:bg-primary/10`.
+  - Scale interactive icons slightly: `group-hover:scale-110`.
+- **Layout:** Rely heavily on Flexbox (`flex items-center gap-3`, `flex-col`) and Grid for lists. Maintain consistent padding (usually `p-6` for cards).
+- **Icons:** Use `lucide-react`. Default size `h-5 w-5` or `h-4 w-4`.
+
+# 5. Database (Prisma)
+
+- The schema uses explicit many-to-many relations (`ListMembership`, `UserItemTracking`, `Friendship`) and Enums.
+- Do NOT leak database entities or Prisma logic into Client Components. Pass only serialized data.
+
+# 6. Coding Style
+
+- Default to React Server Components (RSC). Use `'use client'` only when necessary.
+- Write concise, readable TypeScript. Avoid `any`.
+- Use early returns (guard clauses) to avoid deep nesting.
+- Use `next/navigation` for routing.
+- All tanstack querries should use options from `src/server/api/querries`. Use or create new tanstack query options.
+- Avoid magic strings when possible. Use @generated/prisma/enums and create separate enums.
+- Avoid inline lambdas in JSX props (e.g., onClick={() => ...}) when its possible
+- Always write variables, function names, and inline code comments strictly in English, regardless of the prompt language.
+
+# 7. Language Rules
+
+- **CRITICAL:** Always write code, variables, function names, and inline code comments strictly in ENGLISH. You may communicate and explain concepts in the user's prompt language (e.g., Ukrainian), but the generated code MUST remain fully English.
+
+# 8. DRY Principle & Component Reusability (CRITICAL)
+
+- **Zero Duplication:** If you find yourself writing the same complex Tailwind class string (especially long hover effects, layouts, or shadows) more than twice, STOP. Extract it into a reusable React component or a custom UI primitive in `src/components/`.
+- **Component Variants:** For UI elements that have slight visual variations (like buttons, cards, or badges), use `class-variance-authority` (cva) to define variants (e.g., `intent="primary" | "secondary" | "interactive"`), just like shadcn/ui does.
+- **Composition over Inheritance:** When creating interactive cards, create a `<HoverCard>` wrapper or extend the existing shadcn `<Card>` component with an `interactive` variant, rather than copy-pasting `hover:-translate...` everywhere.
+- Always use `cn()` so the parent can still override or append classes to the reusable component via `className`.
+
+# PR description
+
+Whenever you asked to create a PR description you should create an TEMP_PR_DESCRIPTION.md file in the root folder. In this file you should describe the changes were done in the current branch using the PULL_REQUEST_TEMPLATE.md in .github folder.
