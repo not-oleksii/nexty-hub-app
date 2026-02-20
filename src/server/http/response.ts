@@ -11,3 +11,7 @@ export function ErrorResponse(
 
   return NextResponse.json({ error: message }, { status });
 }
+
+export function SuccessResponse<T>(data: T, status: number): NextResponse {
+  return NextResponse.json(data, { status });
+}

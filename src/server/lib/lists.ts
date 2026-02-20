@@ -1,4 +1,5 @@
 import { Prisma, UserList } from '@generated/prisma/client';
+import { FriendshipStatus, ListRole } from '@generated/prisma/enums';
 
 import { ListSchema, listSchema } from '@/lib/validators/list';
 
@@ -197,7 +198,10 @@ export async function createList(body: ListSchema): ServerResponse<UserList> {
     }
 
     const existingList = await prisma.userList.findFirst({
-      where: { name: validationResult.data.name.toLowerCase() },
+      where: {
+        name: { equals: validationResult.data.name, mode: 'insensitive' },
+        ownerId: userId,
+      },
     });
 
     if (existingList) {
@@ -207,14 +211,86 @@ export async function createList(body: ListSchema): ServerResponse<UserList> {
       });
     }
 
+    const {
+      name,
+      description,
+      coverImageUrl,
+      tags,
+      memberIds = [],
+      discoverItemIds = [],
+      visibility,
+    } = validationResult.data;
+
+    if (memberIds.length > 0) {
+      const friendships = await prisma.friendship.findMany({
+        where: {
+          status: FriendshipStatus.ACCEPTED,
+          OR: [{ requesterId: userId }, { addresseeId: userId }],
+        },
+        select: {
+          requesterId: true,
+          addresseeId: true,
+        },
+      });
+
+      const friendIds = new Set(
+        friendships.flatMap((f) =>
+          f.requesterId === userId ? [f.addresseeId] : [f.requesterId],
+        ),
+      );
+
+      const invalidMember = memberIds.find((id) => !friendIds.has(id));
+
+      if (invalidMember) {
+        return ResponseService.error({
+          message: 'Can only add accepted friends as list members',
+          status: HttpStatus.BAD_REQUEST,
+        });
+      }
+    }
+
+    if (discoverItemIds.length > 0) {
+      const existingItems = await prisma.discoverItem.findMany({
+        where: { id: { in: discoverItemIds } },
+        select: { id: true },
+      });
+
+      const existingIds = new Set(existingItems.map((i) => i.id));
+      const invalidItem = discoverItemIds.find((id) => !existingIds.has(id));
+
+      if (invalidItem) {
+        return ResponseService.error({
+          message: 'One or more discover items not found',
+          status: HttpStatus.BAD_REQUEST,
+        });
+      }
+    }
+
     const list = await prisma.userList.create({
       data: {
-        name: validationResult.data.name,
-        owner: {
-          connect: {
-            id: userId,
-          },
-        },
+        name,
+        description: description || null,
+        coverImageUrl: coverImageUrl || null,
+        tags: tags ?? [],
+        visibility,
+        owner: { connect: { id: userId } },
+        ...(memberIds?.length
+          ? {
+              members: {
+                create: memberIds.map((memberId) => ({
+                  userId: memberId,
+                  role: ListRole.VIEWER,
+                })),
+              },
+            }
+          : {}),
+        ...(discoverItemIds?.length
+          ? {
+              discoverItems: {
+                connect: discoverItemIds.map((id) => ({ id })),
+              },
+            }
+          : {}),
       },
     });
 

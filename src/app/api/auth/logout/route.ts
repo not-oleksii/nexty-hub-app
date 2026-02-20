@@ -1,14 +1,10 @@
-import { NextResponse } from 'next/server';
-
 import { AUTH_COOKIE_NAME } from '@/server/auth/session';
+import { ErrorResponse, SuccessResponse } from '@/server/http/response';
 import { ApiErrorType, HttpStatus } from '@/server/http/types';
 
 export async function POST() {
   try {
-    const response = NextResponse.json(
-      { message: 'Logged out' },
-      { status: HttpStatus.OK },
-    );
+    const response = SuccessResponse({ message: 'Logged out' }, HttpStatus.OK);
 
     response.cookies.set({
       name: AUTH_COOKIE_NAME,
@@ -24,9 +20,9 @@ export async function POST() {
   } catch (error: unknown) {
     console.error('Error logging out:', error);
 
-    return NextResponse.json(
-      { error: ApiErrorType.INTERNAL_SERVER_ERROR },
-      { status: HttpStatus.INTERNAL_SERVER_ERROR },
+    return ErrorResponse(
+      new Error(ApiErrorType.INTERNAL_SERVER_ERROR),
+      HttpStatus.INTERNAL_SERVER_ERROR,
     );
   }
 }

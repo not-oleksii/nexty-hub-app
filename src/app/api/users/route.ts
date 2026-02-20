@@ -1,7 +1,5 @@
-import { NextResponse } from 'next/server';
-
 import { type SignupSchema } from '@/lib/validators/signup';
-import { ErrorResponse } from '@/server/http/error-response';
+import { ErrorResponse, SuccessResponse } from '@/server/http/response';
 import { ApiErrorType, HttpStatus } from '@/server/http/types';
 import { createUser } from '@/server/lib/users';
 
@@ -14,13 +12,13 @@ export async function POST(req: Request) {
       return ErrorResponse(error, status);
     }
 
-    return NextResponse.json(data, { status });
+    return SuccessResponse(data, status);
   } catch (error: unknown) {
     console.error('Registration error:', error);
 
-    return NextResponse.json(
-      { error: ApiErrorType.INTERNAL_SERVER_ERROR },
-      { status: HttpStatus.INTERNAL_SERVER_ERROR },
+    return ErrorResponse(
+      new Error(ApiErrorType.INTERNAL_SERVER_ERROR),
+      HttpStatus.INTERNAL_SERVER_ERROR,
     );
   }
 }

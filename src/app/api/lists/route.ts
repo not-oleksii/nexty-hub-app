@@ -1,7 +1,5 @@
-import { NextResponse } from 'next/server';
-
 import { ListSchema } from '@/lib/validators/list';
-import { ErrorResponse } from '@/server/http/error-response';
+import { ErrorResponse, SuccessResponse } from '@/server/http/response';
 import { ApiErrorType, HttpStatus } from '@/server/http/types';
 import { createList, getUserLists } from '@/server/lib/lists';
 
@@ -13,13 +11,13 @@ export async function GET(_req: Request) {
       return ErrorResponse(error, status);
     }
 
-    return NextResponse.json(data, { status });
+    return SuccessResponse(data, status);
   } catch (error: unknown) {
     console.error('Error fetching user lists:', error);
 
-    return NextResponse.json(
-      { error: ApiErrorType.INTERNAL_SERVER_ERROR },
-      { status: HttpStatus.INTERNAL_SERVER_ERROR },
+    return ErrorResponse(
+      new Error(ApiErrorType.INTERNAL_SERVER_ERROR),
+      HttpStatus.INTERNAL_SERVER_ERROR,
     );
   }
 }
@@ -33,13 +31,13 @@ export async function POST(req: Request) {
       return ErrorResponse(error, status);
     }
 
-    return NextResponse.json(data, { status });
+    return SuccessResponse(data, status);
   } catch (error: unknown) {
     console.error('Error adding item to list:', error);
 
-    return NextResponse.json(
-      { error: ApiErrorType.INTERNAL_SERVER_ERROR },
-      { status: 500 },
+    return ErrorResponse(
+      new Error(ApiErrorType.INTERNAL_SERVER_ERROR),
+      HttpStatus.INTERNAL_SERVER_ERROR,
     );
   }
 }

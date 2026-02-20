@@ -1,6 +1,4 @@
-import { NextResponse } from 'next/server';
-
-import { ErrorResponse } from '@/server/http/error-response';
+import { ErrorResponse, SuccessResponse } from '@/server/http/response';
 import { ApiErrorType, HttpStatus } from '@/server/http/types';
 import { getUserListsByDiscoverItemId } from '@/server/lib/lists';
 
@@ -17,13 +15,13 @@ export async function GET(_req: Request, { params }: Params) {
       return ErrorResponse(error, status);
     }
 
-    return NextResponse.json(data, { status });
+    return SuccessResponse(data, status);
   } catch (error: unknown) {
     console.error('Error fetching lists for item:', error);
 
-    return NextResponse.json(
-      { error: ApiErrorType.INTERNAL_SERVER_ERROR },
-      { status: HttpStatus.INTERNAL_SERVER_ERROR },
+    return ErrorResponse(
+      new Error(ApiErrorType.INTERNAL_SERVER_ERROR),
+      HttpStatus.INTERNAL_SERVER_ERROR,
     );
   }
 }

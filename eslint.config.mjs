@@ -34,7 +34,7 @@ const config = [
         'error',
         {
           ignoreRefs: true,
-          allowArrowFunctions: false,
+          allowArrowFunctions: true,
           allowFunctions: false,
           allowBind: false,
         },

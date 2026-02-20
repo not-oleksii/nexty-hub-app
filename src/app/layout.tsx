@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 
 import type { Metadata } from 'next';
 
+import { Toaster } from '@/components/ui/sonner';
 import { cn } from '@/lib/utils/common';
 
 import { Providers } from './providers';
@@ -40,6 +41,7 @@ export default function RootLayout({
           )}
         >
           <Providers>{children}</Providers>
+          <Toaster richColors position="top-right" />
         </body>
       </html>
     </>

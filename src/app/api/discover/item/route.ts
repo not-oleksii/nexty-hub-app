@@ -1,25 +1,24 @@
-import { NextResponse } from 'next/server';
-
 import { type DiscoverItemSchema } from '@/lib/validators/discovery-item';
+import { ErrorResponse, SuccessResponse } from '@/server/http/response';
 import { ApiErrorType, HttpStatus } from '@/server/http/types';
 import { createDiscoverItem } from '@/server/lib/discover';
 
 export async function POST(req: Request) {
   try {
     const body = (await req.json()) as DiscoverItemSchema;
-    const { data, status, message, error } = await createDiscoverItem(body);
+    const { data, status, error } = await createDiscoverItem(body);
 
     if (error) {
-      return NextResponse.json({ error: message }, { status: status });
+      return ErrorResponse(error, status);
     }
 
-    return NextResponse.json(data, { status });
+    return SuccessResponse(data, status);
   } catch (err: unknown) {
     console.error('Error creating item:', err);
 
-    return NextResponse.json(
-      { error: ApiErrorType.INTERNAL_SERVER_ERROR },
-      { status: HttpStatus.INTERNAL_SERVER_ERROR },
+    return ErrorResponse(
+      new Error(ApiErrorType.INTERNAL_SERVER_ERROR),
+      HttpStatus.INTERNAL_SERVER_ERROR,
     );
   }
 }

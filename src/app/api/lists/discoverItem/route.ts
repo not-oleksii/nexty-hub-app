@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
+import { ListVisibility } from '@generated/prisma/enums';
 
-import { ErrorResponse } from '@/server/http/error-response';
-import { ApiErrorType } from '@/server/http/types';
+import { ErrorResponse, SuccessResponse } from '@/server/http/response';
+import { ApiErrorType, HttpStatus } from '@/server/http/types';
 import { addOrRemoveDiscoverItemToList, createList } from '@/server/lib/lists';
 
 export async function POST(req: Request) {
@@ -10,7 +10,15 @@ export async function POST(req: Request) {
     const { listId, discoverItemId } = body;
 
     if (!listId) {
-      const newList = await createList({ name: 'My List' });
+      const newList = await createList({
+        name: 'My List',
+        description: undefined,
+        coverImageUrl: undefined,
+        tags: [],
+        memberIds: [],
+        discoverItemIds: [],
+        visibility: ListVisibility.PRIVATE,
+      });
 
       if (newList.error || !newList.data?.id) {
         return ErrorResponse(newList.error, newList.status);
@@ -25,7 +33,7 @@ export async function POST(req: Request) {
         return ErrorResponse(error, status);
       }
 
-      return NextResponse.json(data, { status });
+      return SuccessResponse(data, status);
     }
 
     const { data, status, error } = await addOrRemoveDiscoverItemToList(
@@ -37,13 +45,13 @@ export async function POST(req: Request) {
       return ErrorResponse(error, status);
     }
 
-    return NextResponse.json(data, { status });
-  } catch (error: unknown) {
-    console.error('Error adding item to list:', error);
+    return SuccessResponse(data, status);
+  } catch (err: unknown) {
+    console.error('Error adding item to list:', err);
 
-    return NextResponse.json(
-      { error: ApiErrorType.INTERNAL_SERVER_ERROR },
-      { status: 500 },
+    return ErrorResponse(
+      new Error(ApiErrorType.INTERNAL_SERVER_ERROR),
+      HttpStatus.INTERNAL_SERVER_ERROR,
     );
   }
 }

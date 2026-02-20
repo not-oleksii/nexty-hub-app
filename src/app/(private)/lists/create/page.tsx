@@ -11,7 +11,7 @@ import { CreateListForm } from '../../../../components/forms/create-list-form';
 export default function CreateListPage() {
   return (
     <ContentWrapper className="flex flex-col gap-6">
-      <Card className="mx-auto w-full max-w-md">
+      <Card className="mx-auto w-full max-w-2xl">
         <CardHeader>
           <div className="flex items-start justify-between gap-4">
             <div className="flex flex-col gap-1">

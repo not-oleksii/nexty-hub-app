@@ -187,6 +187,60 @@ export async function getDiscoverItemById(
   }
 }
 
+type DiscoverItemSearchResult = {
+  id: string;
+  type: string;
+  title: string;
+  category?: string | null;
+  imageUrl?: string | null;
+};
+
+export async function searchDiscoverItems(
+  query: string,
+  limit = 20,
+): ServerResponse<DiscoverItemSearchResult[]> {
+  try {
+    const trimmed = query.trim();
+
+    if (!trimmed || trimmed.length < 2) {
+      return ResponseService.success({
+        data: [],
+        message: 'Search query must be at least 2 characters',
+      });
+    }
+
+    const items = await prisma.discoverItem.findMany({
+      where: {
+        title: {
+          contains: trimmed,
+          mode: 'insensitive',
+        },
+      },
+      select: {
+        id: true,
+        type: true,
+        title: true,
+        category: true,
+        imageUrl: true,
+      },
+      take: limit,
+      orderBy: { title: 'asc' },
+    });
+
+    return ResponseService.success({
+      data: items,
+      message: 'Search results fetched successfully',
+    });
+  } catch (error: unknown) {
+    console.error('Error searching discover items:', error);
+
+    return ResponseService.error({
+      message: ApiErrorType.INTERNAL_SERVER_ERROR,
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+}
+
 export async function createDiscoverItem(
   body: DiscoverItemSchema,
 ): ServerResponse<DiscoverItem> {

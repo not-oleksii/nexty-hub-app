@@ -14,6 +14,14 @@ export type DiscoverItemDto = {
   isCompleted: boolean;
 };
 
+export type DiscoverItemSearchResult = {
+  id: string;
+  type: string;
+  title: string;
+  category?: string | null;
+  imageUrl?: string | null;
+};
+
 export const discoverApi = {
   getAll: () => getJson<DiscoverItemDto[]>('/api/discover'),
 
@@ -22,6 +30,11 @@ export const discoverApi = {
 
   getById: (id: string) =>
     getJson<DiscoverItemDto | null>(`/api/discover/item/${id}`),
+
+  search: (query: string, limit = 20) =>
+    getJson<DiscoverItemSearchResult[]>(
+      `/api/discover/search?q=${encodeURIComponent(query)}&limit=${limit}`,
+    ),
 
   create: (payload: DiscoverItemSchema) =>
     postJson<{ item: DiscoverItemDto }>('/api/discover/item', payload),

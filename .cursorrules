@@ -11,6 +11,7 @@ You are developing "Nexty Hub" — a modern social backlog application.
 - Pages, layouts, and API routes go to `src/app/`.
 - Backend logic, Prisma helpers, and API wrappers go to `src/server/`.
 - Zod schemas go to `src/lib/validators/`.
+- Tanstack query options go to `src/server/api/querries`
 
 # 2. Data Flow & API (CRITICAL)
 
@@ -57,6 +58,9 @@ You are a Lead UI/UX Designer. Nexty Hub has a premium, modern, SaaS-like aesthe
 - Write concise, readable TypeScript. Avoid `any`.
 - Use early returns (guard clauses) to avoid deep nesting.
 - Use `next/navigation` for routing.
+- All tanstack querries should use options from `src/server/api/querries`. Use or create new tanstack query options.
+- Avoid magic strings when possible. Use @generated/prisma/enums and create separate enums.
+- Avoid inline lambdas in JSX props (e.g., onClick={() => ...}) when its possible
 - Always write variables, function names, and inline code comments strictly in English, regardless of the prompt language.
 
 # 7. Language Rules

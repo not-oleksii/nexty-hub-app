@@ -1,0 +1,15 @@
+export const SUGGESTED_TAGS = [
+  'watchlist',
+  'favorites',
+  'to-watch',
+  'completed',
+  'in-progress',
+  'recommendations',
+  'movies',
+  'series',
+  'games',
+  'books',
+  'courses',
+  'backlog',
+  'priority',
+] as const;
