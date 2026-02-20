@@ -30,6 +30,7 @@ import {
   FieldSet,
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -311,58 +312,70 @@ export function CreateListForm() {
 
             <form.Field name="visibility">
               {(field) => (
-                <Field>
-                  <FieldLabel>Visibility</FieldLabel>
-                  <ToggleGroup
-                    type="single"
-                    value={field.state.value ?? ListVisibility.PRIVATE}
-                    onValueChange={(v) =>
-                      v && field.handleChange(v as ListVisibility)
-                    }
-                    className="flex flex-wrap gap-2"
-                  >
-                    {VISIBILITY_OPTIONS.map(({ value, label, icon: Icon }) => (
-                      <ToggleGroupItem
-                        key={value}
-                        value={value}
-                        aria-label={label}
+                <>
+                  <Field>
+                    <FieldLabel>Visibility</FieldLabel>
+                    <ToggleGroup
+                      type="single"
+                      value={field.state.value ?? ListVisibility.PRIVATE}
+                      onValueChange={(v) =>
+                        v && field.handleChange(v as ListVisibility)
+                      }
+                      className="flex flex-wrap gap-2"
+                    >
+                      {VISIBILITY_OPTIONS.map(
+                        ({ value, label, icon: Icon }) => (
+                          <ToggleGroupItem
+                            key={value}
+                            value={value}
+                            aria-label={label}
+                            className="hover:bg-primary/10 hover:text-primary cursor-pointer"
+                          >
+                            <Icon className="h-4 w-4" />
+                            {label}
+                          </ToggleGroupItem>
+                        ),
+                      )}
+                    </ToggleGroup>
+                  </Field>
+                  {(field.state.value ?? ListVisibility.PRIVATE) !==
+                    ListVisibility.PRIVATE && (
+                    <Field>
+                      <FieldLabel>Share with friends</FieldLabel>
+                      <Caption
+                        size="base"
+                        className="text-muted-foreground mb-2"
                       >
-                        <Icon className="h-4 w-4" />
-                        {label}
-                      </ToggleGroupItem>
-                    ))}
-                  </ToggleGroup>
-                </Field>
+                        Add friends who can view this list
+                      </Caption>
+                      {friendsQuery.isLoading ? (
+                        <Spinner className="h-6 w-6" />
+                      ) : friends.length === 0 ? (
+                        <Body variant="muted">No friends yet</Body>
+                      ) : (
+                        <div className="flex flex-wrap gap-2">
+                          {friends.map((friend) => (
+                            <Badge
+                              key={friend.id}
+                              variant={
+                                memberIds.includes(friend.id)
+                                  ? 'default'
+                                  : 'outline'
+                              }
+                              size="default"
+                              className="cursor-pointer"
+                              onClick={() => toggleMember(friend.id)}
+                            >
+                              {friend.username}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                    </Field>
+                  )}
+                </>
               )}
             </form.Field>
-
-            <Field>
-              <FieldLabel>Share with friends</FieldLabel>
-              <Caption size="base" className="text-muted-foreground mb-2">
-                Add friends who can view this list
-              </Caption>
-              {friendsQuery.isLoading ? (
-                <Spinner className="h-6 w-6" />
-              ) : friends.length === 0 ? (
-                <Body variant="muted">No friends yet</Body>
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {friends.map((friend) => (
-                    <Badge
-                      key={friend.id}
-                      variant={
-                        memberIds.includes(friend.id) ? 'default' : 'outline'
-                      }
-                      size="default"
-                      className="cursor-pointer"
-                      onClick={() => toggleMember(friend.id)}
-                    >
-                      {friend.username}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </Field>
 
             <Field>
               <FieldLabel>Discover items</FieldLabel>
@@ -403,10 +416,24 @@ export function CreateListForm() {
                   </div>
                 </div>
               )}
-              {debouncedSearch.length >= 2 && (
-                <div className="border-border rounded-lg border p-3">
-                  {searchResultsQuery.isLoading ? (
-                    <Spinner className="mx-auto h-8 w-8" />
+              {searchQuery.length >= 2 && (
+                <div
+                  className={`border-border rounded-lg border p-3 ${searchQuery !== debouncedSearch || searchResultsQuery.isLoading ? 'min-h-[200px]' : ''}`}
+                >
+                  {searchQuery !== debouncedSearch ||
+                  searchResultsQuery.isLoading ? (
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                      {Array.from({ length: 9 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className="flex flex-col overflow-hidden rounded-lg"
+                        >
+                          <Skeleton className="h-20 w-full rounded-t-lg" />
+                          <Skeleton className="mt-2 h-3 w-full rounded" />
+                          <Skeleton className="mt-1 h-3 w-2/3 rounded" />
+                        </div>
+                      ))}
+                    </div>
                   ) : searchResults.length === 0 ? (
                     <Body variant="muted">No results found</Body>
                   ) : (
@@ -468,7 +495,7 @@ function DiscoverItemCard({
       type="button"
       onClick={onAdd}
       disabled={disabled}
-      className="border-border bg-card hover:bg-accent flex flex-col overflow-hidden rounded-lg border text-left transition-colors disabled:opacity-50"
+      className="border-border bg-card hover:border-primary flex cursor-pointer flex-col overflow-hidden rounded-lg border text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50"
     >
       <AlbumImage
         src={item.imageUrl}
