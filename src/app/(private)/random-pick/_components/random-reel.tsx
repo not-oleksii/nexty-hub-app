@@ -169,7 +169,7 @@ export function RandomReel({ reels }: RandomReelProps) {
 
         <div className="flex h-3 items-center justify-center">
           {isSpinningComplete && pickedItem && (
-            <p className="text-primary animate-in fade-in zoom-in font-bold duration-300">
+            <p className="text-primary animate-entrance-fade-zoom font-bold">
               Winner: {pickedItem.title}
             </p>
           )}

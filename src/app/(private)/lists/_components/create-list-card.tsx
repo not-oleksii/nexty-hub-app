@@ -24,18 +24,18 @@ export function CreateListCard() {
       className="relative flex h-full min-h-[220px] flex-col items-center justify-center overflow-hidden"
     >
       <div className="flex flex-col items-center gap-4 p-6 text-center">
-        <div className="bg-muted/30 group-hover:bg-primary/10 flex h-16 w-16 items-center justify-center rounded-full transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_15px_-3px_hsl(var(--primary)/0.2)]">
-          <PlusIcon className="text-muted-foreground group-hover:text-primary h-8 w-8 transition-colors duration-300" />
+        <div className="bg-muted/30 group-hover:bg-primary/10 transition-smooth flex h-16 w-16 items-center justify-center rounded-full group-hover:scale-110 group-hover:shadow-[0_0_15px_-3px_hsl(var(--primary)/0.2)]">
+          <PlusIcon className="text-muted-foreground group-hover-primary-transition h-8 w-8" />
         </div>
 
         <div className="flex flex-col gap-1">
           <Body
             variant="muted"
-            className="group-hover:text-primary text-lg font-medium transition-colors duration-300"
+            className="group-hover-primary-transition text-lg font-medium"
           >
             Create New List
           </Body>
-          <Caption1 className="text-muted-foreground/60 group-hover:text-muted-foreground transition-colors duration-300">
+          <Caption1 className="text-muted-foreground/60 group-hover:text-muted-foreground transition-colors-smooth">
             Start tracking your next favorites
           </Caption1>
         </div>

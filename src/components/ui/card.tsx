@@ -5,8 +5,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils/common';
 
 const cardVariants = cva(
-  `bg-card text-card-foreground flex flex-col gap-6 rounded-xl py-6 \
-overflow-hidden transition-all duration-300 ease-in-out`,
+  `bg-card text-card-foreground flex flex-col gap-6 rounded-xl py-6 overflow-hidden transition-smooth`,
   {
     variants: {
       variant: {

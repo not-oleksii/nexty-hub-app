@@ -59,7 +59,7 @@ export function ListsGrid() {
                   />
 
                   <div className="flex flex-col pr-2">
-                    <CardTitle className="group-hover:text-primary line-clamp-1 text-lg transition-colors">
+                    <CardTitle className="group-hover-primary-transition line-clamp-1 text-lg">
                       {list.name}
                     </CardTitle>
                     <Caption1 className="text-muted-foreground line-clamp-1">
@@ -71,7 +71,7 @@ export function ListsGrid() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="hover:bg-primary/10 hover:text-primary text-muted-foreground h-8 w-8 shrink-0 opacity-0 transition-all group-hover:opacity-100"
+                  className="hover:bg-primary/10 hover:text-primary text-muted-foreground reveal-on-hover h-8 w-8 shrink-0"
                 >
                   <Edit2Icon className="h-4 w-4" />
                 </Button>

@@ -59,7 +59,7 @@ export function ListCard({
       )}
     >
       {selected && (
-        <div className="text-primary animate-in zoom-in absolute top-4 right-4 z-40 duration-300">
+        <div className="text-primary animate-entrance-zoom absolute top-4 right-4 z-40">
           <CheckCircle2 className="fill-primary/10 h-5 w-5" />
         </div>
       )}
@@ -77,7 +77,7 @@ export function ListCard({
           <div className="flex flex-col gap-1 pt-1 pr-6">
             <CardTitle
               className={cn(
-                'group-hover:text-primary line-clamp-1 text-base transition-colors duration-300',
+                'group-hover-primary-transition line-clamp-1 text-base',
                 disabled && 'group-hover:text-muted-foreground',
               )}
             >

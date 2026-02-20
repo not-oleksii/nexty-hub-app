@@ -205,4 +205,29 @@ body {
   .animate-infinite-scroll {
     animation: infinite-scroll 40s linear infinite;
   }
+
+  /* Reusable animation utilities */
+  .transition-smooth {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  .transition-colors-smooth {
+    @apply transition-colors duration-300;
+  }
+
+  .animate-entrance-zoom {
+    @apply animate-in zoom-in duration-300;
+  }
+
+  .animate-entrance-fade-zoom {
+    @apply animate-in fade-in zoom-in duration-300;
+  }
+
+  .reveal-on-hover {
+    @apply opacity-0 transition-all duration-300 group-hover:opacity-100;
+  }
+
+  .group-hover-primary-transition {
+    @apply group-hover:text-primary transition-colors duration-300;
+  }
 }
