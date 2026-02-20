@@ -17,7 +17,6 @@ import { toast } from 'sonner';
 
 import { Body } from '@/components/typography/body';
 import { Caption } from '@/components/typography/caption';
-import { Header } from '@/components/typography/header';
 import { AlbumImage } from '@/components/ui/album-image';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -243,9 +242,6 @@ export function CreateListForm({ list }: CreateListFormProps) {
 
   return (
     <CardContent className="mx-auto w-full max-w-2xl">
-      <Header size="lg" className="mb-6">
-        {isEditMode ? 'Edit list' : 'Create list'}
-      </Header>
       <form
         id={isEditMode ? 'edit-list-form' : 'create-list-form'}
         onSubmit={onSubmitClick}

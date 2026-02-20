@@ -8,8 +8,12 @@ import type {
 } from '@/server/lib/lists';
 import { getJson, postJson, putJson } from '@/server/utils/fetch-json';
 
-export type UserListSummaryDto = Omit<UserListWithProgress, 'createdAt'> & {
+export type UserListSummaryDto = Omit<
+  UserListWithProgress,
+  'createdAt' | 'updatedAt'
+> & {
   createdAt: string;
+  updatedAt: string;
 };
 
 export type UserListDto = Prisma.UserListGetPayload<object>;

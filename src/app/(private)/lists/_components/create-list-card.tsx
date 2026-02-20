@@ -21,7 +21,7 @@ export function CreateListCard() {
     <Card
       variant="empty"
       onClick={onCardClick}
-      className="relative flex h-full min-h-[220px] flex-col items-center justify-center overflow-hidden"
+      className="relative flex h-full min-h-[320px] flex-col items-center justify-center overflow-hidden"
     >
       <div className="flex flex-col items-center gap-4 p-6 text-center">
         <div className="bg-muted/30 group-hover:bg-primary/10 transition-smooth flex h-16 w-16 items-center justify-center rounded-full group-hover:scale-110 group-hover:shadow-[0_0_15px_-3px_hsl(var(--primary)/0.2)]">

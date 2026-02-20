@@ -28,8 +28,15 @@ type DiscoverItemInList = Prisma.DiscoverItemGetPayload<{
 export type UserListWithProgress = {
   id: string;
   name: string;
+  description: string | null;
+  coverImageUrl: string | null;
+  tags: string[];
+  visibility: string;
+  viewsCount: number;
   createdAt: Date;
+  updatedAt: Date;
   owner: { id: string; username: string };
+  members: { id: string; username: string }[];
   discoverItems: DiscoverItemInList[];
   totalDiscoverItems: number;
   completedDiscoverItems: number;
@@ -63,11 +70,25 @@ export async function getUserLists(): ServerResponse<UserListWithProgress[]> {
       select: {
         id: true,
         name: true,
+        description: true,
+        coverImageUrl: true,
+        tags: true,
+        visibility: true,
+        viewsCount: true,
         createdAt: true,
+        updatedAt: true,
         owner: {
           select: {
             id: true,
             username: true,
+          },
+        },
+        members: {
+          select: {
+            id: true,
+            user: {
+              select: { username: true },
+            },
           },
         },
         discoverItems: {
@@ -108,8 +129,18 @@ export async function getUserLists(): ServerResponse<UserListWithProgress[]> {
       return {
         id: list.id,
         name: list.name,
+        description: list.description,
+        coverImageUrl: list.coverImageUrl,
+        tags: list.tags,
+        visibility: list.visibility,
+        viewsCount: list.viewsCount,
         createdAt: list.createdAt,
+        updatedAt: list.updatedAt,
         owner,
+        members: list.members.map((m) => ({
+          id: m.id,
+          username: m.user.username,
+        })),
         discoverItems: list.discoverItems.map(({ trackers, ...item }) => item),
         totalDiscoverItems,
         completedDiscoverItems,

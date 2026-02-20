@@ -35,7 +35,7 @@ You are a Lead UI/UX Designer. Nexty Hub has a premium, modern, SaaS-like aesthe
 
 - **Tailwind v4:** Use modern Tailwind utility classes.
 - **Merge Classes:** ALWAYS use `cn` from `@/lib/utils/common`.
-- **Typography:** NEVER use native HTML tags (`<h1>`, `<h2>`, `<p>`). ALWAYS use custom components from `@/components/typography/` (`<Header1>`, `<Header2>`, `<Body>`, `<Caption1>`). Use `text-muted-foreground` for secondary text.
+- **Typography:** NEVER use native HTML tags (`<h1>`, `<h2>`, `<p>`, `<span>` etc). ALWAYS use custom components from `@/components/typography/` (`<Header>`, `<Body>`, `<Caption>` etc). Use `text-muted-foreground` for secondary text.
 - **Card Aesthetics:** - Standard cards: `rounded-xl border bg-card text-card-foreground shadow-sm`.
   - Interactive/Clickable cards: Add `transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-primary/50`.
   - Empty/Create states: Use `border-2 border-dashed border-muted-foreground/20 bg-transparent`.

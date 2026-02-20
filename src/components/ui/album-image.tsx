@@ -3,16 +3,8 @@
 import { useCallback, useMemo, useState } from 'react';
 import Image from 'next/image';
 
+import { pickGradientPalette } from '@/lib/utils/gradient';
 import { cn } from '@/lib/utils/common';
-
-const ALBUM_PALETTE = [
-  { bg: '#3B82F6', gradient: ['#60A5FA', '#1D4ED8'], text: '#FFFFFF' },
-  { bg: '#22C55E', gradient: ['#4ADE80', '#15803D'], text: '#FFFFFF' },
-  { bg: '#F97316', gradient: ['#FDBA74', '#C2410C'], text: '#111827' },
-  { bg: '#A855F7', gradient: ['#C084FC', '#6D28D9'], text: '#FFFFFF' },
-  { bg: '#14B8A6', gradient: ['#5EEAD4', '#0F766E'], text: '#0F172A' },
-  { bg: '#F43F5E', gradient: ['#FDA4AF', '#BE123C'], text: '#111827' },
-] as const;
 
 const ALLOWED_IMAGE_HOSTS = new Set([
   'images.unsplash.com',
@@ -45,16 +37,6 @@ function getInitials(title: string) {
   return `${words[0][0] ?? ''}${words[1][0] ?? ''}`.toUpperCase();
 }
 
-function pickPaletteKey(title: string) {
-  let hash = 0;
-
-  for (let i = 0; i < title.length; i += 1) {
-    hash = (hash + title.charCodeAt(i) * 17) % 9973;
-  }
-
-  return hash % ALBUM_PALETTE.length;
-}
-
 function isValidImageSrc(src?: string | null) {
   if (!src) return false;
   if (src.startsWith('/')) return true;
@@ -82,7 +64,7 @@ export function AlbumImage({
     [src],
   );
   const showFallback = !imageSrc || hasError;
-  const palette = useMemo(() => ALBUM_PALETTE[pickPaletteKey(title)], [title]);
+  const palette = useMemo(() => pickGradientPalette(title), [title]);
   const initials = useMemo(() => getInitials(title), [title]);
   const handleImageError = useCallback(() => {
     setHasError(true);
