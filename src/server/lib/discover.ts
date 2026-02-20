@@ -18,15 +18,12 @@ type DiscoverItemData = {
   id: string;
   type: string;
   title: string;
+  description?: string | null;
   category?: string | null;
   imageUrl?: string | null;
   isSaved: boolean;
   isCompleted: boolean;
 };
-
-function includesUserId(userId: string | null, array: Array<{ id: string }>) {
-  return userId ? array.some((item) => item.id === userId) : false;
-}
 
 export async function getDiscoverItems(): ServerResponse<DiscoverItemData[]> {
   try {
@@ -34,8 +31,16 @@ export async function getDiscoverItems(): ServerResponse<DiscoverItemData[]> {
     const items = await prisma.discoverItem.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
-        usersSaved: { select: { id: true } },
-        usersCompleted: { select: { id: true } },
+        userLists: {
+          include: {
+            owner: { select: { id: true } },
+            members: { select: { userId: true } },
+          },
+        },
+        trackers: {
+          where: { status: 'COMPLETED' },
+          select: { userId: true },
+        },
       },
     });
 
@@ -43,10 +48,17 @@ export async function getDiscoverItems(): ServerResponse<DiscoverItemData[]> {
       id: item.id,
       type: item.type,
       title: item.title,
+      description: item.description,
       category: item.category,
       imageUrl: item.imageUrl,
-      isSaved: includesUserId(userId, item.usersSaved),
-      isCompleted: includesUserId(userId, item.usersCompleted),
+      isSaved:
+        !!userId &&
+        item.userLists.some(
+          (list) =>
+            list.owner?.id === userId ||
+            list.members.some((m) => m.userId === userId),
+        ),
+      isCompleted: !!userId && item.trackers.some((t) => t.userId === userId),
     }));
 
     return ResponseService.success({
@@ -72,8 +84,16 @@ export async function getDiscoverItemsByType(
       where: { type },
       orderBy: { createdAt: 'desc' },
       include: {
-        usersSaved: { select: { id: true } },
-        usersCompleted: { select: { id: true } },
+        userLists: {
+          include: {
+            owner: { select: { id: true } },
+            members: { select: { userId: true } },
+          },
+        },
+        trackers: {
+          where: { status: 'COMPLETED' },
+          select: { userId: true },
+        },
       },
     });
 
@@ -81,10 +101,17 @@ export async function getDiscoverItemsByType(
       id: item.id,
       type: item.type,
       title: item.title,
+      description: item.description,
       category: item.category,
       imageUrl: item.imageUrl,
-      isSaved: includesUserId(userId, item.usersSaved),
-      isCompleted: includesUserId(userId, item.usersCompleted),
+      isSaved:
+        !!userId &&
+        item.userLists.some(
+          (list) =>
+            list.owner?.id === userId ||
+            list.members.some((m) => m.userId === userId),
+        ),
+      isCompleted: !!userId && item.trackers.some((t) => t.userId === userId),
     }));
 
     return ResponseService.success({
@@ -109,8 +136,16 @@ export async function getDiscoverItemById(
     const item = await prisma.discoverItem.findUnique({
       where: { id },
       include: {
-        usersSaved: { select: { id: true } },
-        usersCompleted: { select: { id: true } },
+        userLists: {
+          include: {
+            owner: { select: { id: true } },
+            members: { select: { userId: true } },
+          },
+        },
+        trackers: {
+          where: { status: 'COMPLETED' },
+          select: { userId: true },
+        },
       },
     });
 
@@ -125,10 +160,17 @@ export async function getDiscoverItemById(
       id: item.id,
       type: item.type,
       title: item.title,
+      description: item.description,
       category: item.category,
       imageUrl: item.imageUrl,
-      isSaved: includesUserId(userId, item.usersSaved),
-      isCompleted: includesUserId(userId, item.usersCompleted),
+      isSaved:
+        !!userId &&
+        item.userLists.some(
+          (list) =>
+            list.owner?.id === userId ||
+            list.members.some((m) => m.userId === userId),
+        ),
+      isCompleted: !!userId && item.trackers.some((t) => t.userId === userId),
     };
 
     return ResponseService.success({
@@ -186,10 +228,20 @@ export async function createDiscoverItem(
 
     const discoverItem = await prisma.discoverItem.create({
       data: {
-        ...validationResult.data,
-        ...(validationResult.data.completed && userId
-          ? { usersCompleted: { connect: { id: userId } } }
-          : {}),
+        type: validationResult.data.type,
+        category: validationResult.data.category || null,
+        title: validationResult.data.title,
+        description: validationResult.data.description || null,
+        imageUrl: validationResult.data.imageUrl || null,
+        ...(validationResult.data.completed &&
+          userId && {
+            trackers: {
+              create: {
+                userId,
+                status: 'COMPLETED',
+              },
+            },
+          }),
       },
     });
 

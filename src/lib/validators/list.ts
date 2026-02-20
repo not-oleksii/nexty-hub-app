@@ -5,7 +5,7 @@ export const listSchema = z.object({
     .string()
     .trim()
     .min(1, 'Name is required.')
-    .max(100, 'Name is too long.')
+    .max(50, 'Name is too long.')
     .transform((val) => val.replace(/\s+/g, ' '))
     .pipe(
       z

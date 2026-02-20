@@ -1,15 +1,15 @@
-import type { Prisma } from '@generated/prisma/client';
 import type { DiscoverItemType } from '@generated/prisma/enums';
 
 import { DiscoverItemSchema } from '@/lib/validators/discovery-item';
 import { getJson, postJson } from '@/server/utils/fetch-json';
 
-export type DiscoverItemDto = Prisma.DiscoverItemGetPayload<{
-  include: {
-    usersSaved: { select: { id: true } };
-    usersCompleted: { select: { id: true } };
-  };
-}> & {
+export type DiscoverItemDto = {
+  id: string;
+  type: string;
+  title: string;
+  description?: string | null;
+  category?: string | null;
+  imageUrl?: string | null;
   isSaved: boolean;
   isCompleted: boolean;
 };

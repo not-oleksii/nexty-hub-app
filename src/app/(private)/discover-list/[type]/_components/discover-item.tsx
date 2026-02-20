@@ -1,7 +1,5 @@
 import Link from 'next/link';
 
-import { type DiscoverItem } from '@generated/prisma/browser';
-
 import { AddToListButton } from '@/components/add-to-list-button';
 import { Subtitle2 } from '@/components/typography/subtitle2';
 import { AlbumImage } from '@/components/ui/album-image';
@@ -12,11 +10,13 @@ import {
   CardHeader,
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { DiscoverItemType } from '@generated/prisma/enums';
 import { ROUTES } from '@/constants/routes';
+import type { DiscoverItemDto } from '@/server/api/discover';
 import { mapPrismaToItemType } from '@/server/utils/prisma-maps';
 
 type DiscoverItemProps = {
-  discoverItem: DiscoverItem;
+  discoverItem: DiscoverItemDto;
   isLoading: boolean;
 };
 
@@ -28,24 +28,27 @@ export function DiscoverItem({ discoverItem, isLoading }: DiscoverItemProps) {
   }
 
   return (
-    <Card className="max-w-xs">
-      <CardHeader>
-        <div className="flex justify-between">
-          <AddToListButton discoverItemId={discoverItem.id} />
-        </div>
-      </CardHeader>
-      <Link
-        href={`${ROUTES.discoverList.item.replace(':type', mapPrismaToItemType(discoverItem.type)).replace(':id', discoverItem.id)}`}
-        className="block"
-      >
+    <Link
+      href={`${ROUTES.discoverList.item.replace(':type', mapPrismaToItemType(discoverItem.type as DiscoverItemType)).replace(':id', discoverItem.id)}`}
+      className="block"
+    >
+      <Card variant="interactive" className="max-w-xs">
+        <CardHeader>
+          <div
+            className="flex justify-between"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <AddToListButton discoverItemId={discoverItem.id} />
+          </div>
+        </CardHeader>
         <CardContent>
           <AlbumImage src={imageUrl} title={title} aspectRatio="aspect-10/16" />
         </CardContent>
         <CardFooter>
           <Subtitle2>{discoverItem.title}</Subtitle2>
         </CardFooter>
-      </Link>
-    </Card>
+      </Card>
+    </Link>
   );
 }
 

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from '@tanstack/react-form-nextjs';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { Header2 } from '@/components/typography/header2';
 import { Button } from '@/components/ui/button';
 import { CardContent } from '@/components/ui/card';
 import {
@@ -65,6 +66,7 @@ export function CreateListForm() {
 
   return (
     <CardContent className="mx-auto w-full max-w-md">
+      <Header2 className="mb-6">Create list</Header2>
       <form id="create-list-form" onSubmit={onSubmitClick}>
         <FieldGroup>
           <FieldSet>
@@ -85,7 +87,7 @@ export function CreateListForm() {
                         onChange={(e) => field.handleChange(e.target.value)}
                         onBlur={field.handleBlur}
                         placeholder="e.g. My Watchlist"
-                        maxLength={100}
+                        maxLength={50}
                         required
                         aria-invalid={isInvalid}
                       />
@@ -111,7 +113,9 @@ export function CreateListForm() {
           <Button
             type="submit"
             form="create-list-form"
+            size="lg"
             disabled={form.state.isSubmitting || isPending}
+            className="bg-primary hover:bg-primary/90 w-full rounded-lg px-6 font-medium shadow-md transition-shadow hover:shadow-lg"
           >
             {form.state.isSubmitting || isPending ? (
               <>

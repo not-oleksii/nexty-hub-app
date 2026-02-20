@@ -6,7 +6,7 @@ import { Header1 } from '@/components/typography/header1';
 import { Card, CardHeader } from '@/components/ui/card';
 import { ROUTES } from '@/constants/routes';
 
-import { CreateListForm } from './_components/create-list-form';
+import { CreateListForm } from '../../../../components/forms/create-list-form';
 
 export default function CreateListPage() {
   return (

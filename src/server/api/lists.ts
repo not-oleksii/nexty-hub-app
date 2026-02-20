@@ -11,12 +11,7 @@ export type UserListSummaryDto = Omit<UserListWithProgress, 'createdAt'> & {
   createdAt: string;
 };
 
-export type UserListDto = Prisma.UserListGetPayload<{
-  include: {
-    users: { select: { id: true } };
-    items: { select: { id: true } };
-  };
-}>;
+export type UserListDto = Prisma.UserListGetPayload<object>;
 
 export const listsApi = {
   getAll: () => getJson<UserListSummaryDto[]>('/api/lists'),
