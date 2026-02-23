@@ -5,11 +5,10 @@ import { useRouter } from 'next/navigation';
 
 import { ListVisibility } from '@generated/prisma/enums';
 import { useQuery } from '@tanstack/react-query';
-import { CalendarIcon, EyeIcon } from 'lucide-react';
+import { EyeIcon } from 'lucide-react';
 
 import { ItemsProgress } from '@/components/items-progress';
 import { ListEditButton } from '@/components/list-edit-button';
-import { ListMembersBadges } from '@/components/list-members-badges';
 import { ListTagsBadges } from '@/components/list-tags-badges';
 import { Body } from '@/components/typography/body';
 import { Caption } from '@/components/typography/caption';
@@ -31,7 +30,6 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { LIST_VISIBILITY_LABELS } from '@/constants/list-visibility';
 import { ROUTES } from '@/constants/routes';
-import { formatDate } from '@/lib/utils/format-date';
 import type { UserListSummaryDto } from '@/server/api/lists';
 import { usersQueries } from '@/server/api/queries/users.queries';
 
@@ -52,7 +50,6 @@ export function ListCard({ list }: ListCardProps) {
   }, []);
 
   const tags = list.tags ?? [];
-  const members = list.members ?? [];
   const visibilityKey = (list.visibility ??
     ListVisibility.PRIVATE) as ListVisibility;
   const visibility =
@@ -135,59 +132,26 @@ export function ListCard({ list }: ListCardProps) {
                 </Label>
               </Caption>
             </div>
-            <Badge
-              variant="outline"
-              size="sm"
-              className="shrink-0 backdrop-blur-sm"
-            >
-              <VisibilityIcon className="text-muted-foreground mr-1.5 h-3 w-3" />
-              {visibility.label}
-            </Badge>
+
+            <div className="flex shrink-0 flex-col items-end gap-1.5">
+              <Badge variant="outline" size="sm" className="backdrop-blur-sm">
+                <VisibilityIcon className="text-muted-foreground mr-1.5 h-3 w-3" />
+                {visibility.label}
+              </Badge>
+
+              <div className="text-muted-foreground flex items-center gap-1.5">
+                <EyeIcon className="h-3.5 w-3.5 opacity-70" />
+                <Caption size="xs" className="font-medium">
+                  {list.viewsCount ?? 0}
+                </Caption>
+              </div>
+            </div>
           </div>
         </CardHeader>
 
-        <CardContent className="flex flex-1 flex-col gap-3 px-5">
-          <div className="min-h-[40px]">
-            {shortDescription ? (
-              <Caption
-                size="base"
-                className="text-muted-foreground line-clamp-2 leading-snug"
-              >
-                {shortDescription}
-              </Caption>
-            ) : (
-              <Caption
-                size="base"
-                className="text-muted-foreground/40 line-clamp-2 leading-snug italic"
-              >
-                No description provided.
-              </Caption>
-            )}
-          </div>
-
+        <CardContent className="mt-2 mb-5 flex flex-1 flex-col gap-3 px-5">
           <div className="flex flex-col gap-2">
-            <ListMembersBadges
-              members={members}
-              maxDisplay={3}
-              emptyLabel="Only you"
-            />
             <ListTagsBadges tags={tags} maxDisplay={3} />
-          </div>
-
-          <div className="text-muted-foreground mt-auto flex items-center justify-between pt-3">
-            <div className="flex items-center gap-1.5">
-              <CalendarIcon className="h-3.5 w-3.5 opacity-70" />
-              <Caption size="xs" className="font-medium">
-                Last updated:&nbsp;
-                {list.updatedAt ? formatDate(list.updatedAt) : 'Recently'}
-              </Caption>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <EyeIcon className="h-3.5 w-3.5 opacity-70" />
-              <Caption size="xs" className="font-medium">
-                {list.viewsCount ?? 0}
-              </Caption>
-            </div>
           </div>
         </CardContent>
 
@@ -218,29 +182,13 @@ export function ListCardSkeleton() {
       </CardHeader>
 
       <CardContent className="flex flex-1 flex-col gap-3 px-5">
-        <div className="min-h-[40px] space-y-2">
-          <Skeleton className="h-3.5 w-full" />
-          <Skeleton className="h-3.5 w-4/5" />
+        <div className="flex flex-wrap items-center gap-1.5">
+          <Skeleton className="h-5 w-14 rounded-md" />
+          <Skeleton className="h-5 w-12 rounded-md" />
+          <Skeleton className="h-5 w-10 rounded-md" />
         </div>
 
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <Skeleton className="h-3.5 w-3.5 shrink-0 rounded" />
-            <Skeleton className="h-5 w-16 rounded-md" />
-            <Skeleton className="h-5 w-20 rounded-md" />
-          </div>
-          <div className="flex flex-wrap items-center gap-1.5">
-            <Skeleton className="h-5 w-14 rounded-md" />
-            <Skeleton className="h-5 w-12 rounded-md" />
-            <Skeleton className="h-5 w-10 rounded-md" />
-          </div>
-        </div>
-
-        <div className="mt-auto flex items-center justify-between pt-3">
-          <div className="flex items-center gap-1.5">
-            <Skeleton className="h-3.5 w-3.5 shrink-0 rounded" />
-            <Skeleton className="h-3 w-24" />
-          </div>
+        <div className="mt-auto flex items-center justify-end pt-3">
           <div className="flex items-center gap-1.5">
             <Skeleton className="h-3.5 w-3.5 shrink-0 rounded" />
             <Skeleton className="h-3 w-8" />
