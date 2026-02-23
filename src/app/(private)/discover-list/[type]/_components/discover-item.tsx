@@ -1,15 +1,11 @@
 import Link from 'next/link';
 
 import { DiscoverItemType } from '@generated/prisma/enums';
+import { ListIcon, StarIcon } from 'lucide-react';
 
 import { AddToListButton } from '@/components/add-to-list-button';
-import { Subtitle } from '@/components/typography/subtitle';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from '@/components/ui/card';
+import { Caption } from '@/components/typography/caption';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { DynamicCover } from '@/components/ui/dynamic-cover';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ROUTES } from '@/constants/routes';
@@ -22,37 +18,72 @@ type DiscoverItemProps = {
 };
 
 export function DiscoverItem({ discoverItem, isLoading }: DiscoverItemProps) {
-  const { title, imageUrl } = discoverItem;
+  const { title, imageUrl, type, category, rating, userListsCount } =
+    discoverItem;
 
   if (isLoading) {
     return <DiscoverItemSkeleton />;
   }
 
+  const href = `${ROUTES.discoverList.item.replace(':type', mapPrismaToItemType(discoverItem.type as DiscoverItemType)).replace(':id', discoverItem.id)}`;
+
   return (
-    <Link
-      href={`${ROUTES.discoverList.item.replace(':type', mapPrismaToItemType(discoverItem.type as DiscoverItemType)).replace(':id', discoverItem.id)}`}
-      className="block"
-    >
-      <Card variant="interactive" className="max-w-xs">
-        <CardHeader>
-          <div
-            className="flex justify-between"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <AddToListButton discoverItemId={discoverItem.id} />
-          </div>
-        </CardHeader>
-        <CardContent>
+    <Link href={href} className="block h-full">
+      <Card
+        variant="interactive"
+        className="group bg-card/40 flex h-full flex-col overflow-hidden pt-0 backdrop-blur-md"
+      >
+        <div className="relative shrink-0">
           <DynamicCover
             title={title}
             src={imageUrl}
-            aspectRatio="aspect-10/16"
+            aspectRatio="aspect-[2/3]"
+            className="w-full"
             strictHosts
+            actions={
+              <div
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              >
+                <AddToListButton discoverItemId={discoverItem.id} iconOnly />
+              </div>
+            }
           />
-        </CardContent>
-        <CardFooter>
-          <Subtitle size="base">{discoverItem.title}</Subtitle>
-        </CardFooter>
+        </div>
+
+        <CardHeader className="px-5 pb-0">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <CardTitle className="hover:text-primary line-clamp-2 text-lg transition-colors">
+                {title}
+              </CardTitle>
+            </div>
+
+            <div className="flex shrink-0 flex-col items-end gap-1.5">
+              {rating != null && (
+                <div className="text-muted-foreground flex items-center gap-1.5">
+                  <StarIcon className="h-3.5 w-3.5 opacity-70" />
+                  <Caption size="xs" className="font-medium">
+                    {rating}
+                  </Caption>
+                </div>
+              )}
+              <div className="text-muted-foreground flex items-center gap-1.5">
+                <ListIcon className="h-3.5 w-3.5 opacity-70" />
+                <Caption size="xs" className="font-medium">
+                  {userListsCount}
+                </Caption>
+              </div>
+            </div>
+          </div>
+          {(type || category) && (
+            <Caption size="xs" className="text-muted-foreground mt-1">
+              {[type, category].filter(Boolean).join(' • ')}
+            </Caption>
+          )}
+        </CardHeader>
       </Card>
     </Link>
   );
@@ -60,16 +91,18 @@ export function DiscoverItem({ discoverItem, isLoading }: DiscoverItemProps) {
 
 export function DiscoverItemSkeleton() {
   return (
-    <Card className="max-w-xs">
-      <CardHeader>
-        <Skeleton className="h-10 w-20" />
+    <Card className="bg-card/40 flex h-full flex-col overflow-hidden pt-0 backdrop-blur-md">
+      <Skeleton className="aspect-[2/3] w-full shrink-0" />
+      <CardHeader className="px-5 pt-4 pb-0">
+        <div className="flex items-start justify-between gap-3">
+          <Skeleton className="h-5 flex-1" />
+          <div className="flex shrink-0 gap-2">
+            <Skeleton className="h-3.5 w-8" />
+            <Skeleton className="h-3.5 w-8" />
+          </div>
+        </div>
+        <Skeleton className="mt-2 h-3 w-1/2" />
       </CardHeader>
-      <CardContent>
-        <Skeleton className="h-70 w-full" />
-      </CardContent>
-      <CardFooter>
-        <Skeleton className="h-5 w-30" />
-      </CardFooter>
     </Card>
   );
 }

@@ -60,14 +60,12 @@ export function DiscoverItemCard({ item }: DiscoverItemCardProps) {
 
 export function DiscoverItemCardSkeleton() {
   return (
-    <Card className="flex h-full flex-col overflow-hidden">
-      <CardContent className="p-0">
-        <Skeleton className="h-36 w-full rounded-none" />
-      </CardContent>
-      <CardFooter className="flex flex-col items-start gap-0.5 p-3">
+    <div className="border-border/50 bg-card/40 flex flex-col overflow-hidden rounded-xl border backdrop-blur-md">
+      <Skeleton className="aspect-video w-full shrink-0 rounded-none" />
+      <div className="flex flex-col gap-1.5 p-3">
         <Skeleton className="h-4 w-3/4" />
         <Skeleton className="h-3 w-1/2" />
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 }

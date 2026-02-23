@@ -19,12 +19,17 @@ import {
 } from '@/server/api/queries/lists.queries';
 
 import { Button } from './ui/button';
+import { Spinner } from './ui/spinner';
 
 interface AddToListButtonProps {
   discoverItemId: string;
+  iconOnly?: boolean;
 }
 
-export function AddToListButton({ discoverItemId }: AddToListButtonProps) {
+export function AddToListButton({
+  discoverItemId,
+  iconOnly = false,
+}: AddToListButtonProps) {
   const queryClient = useQueryClient();
   const listsWithSelectedDiscoverItem = useQuery(
     listsQueries.byDiscoverItemId(discoverItemId),
@@ -64,30 +69,42 @@ export function AddToListButton({ discoverItemId }: AddToListButtonProps) {
     [allLists.data, handleAddItemToList],
   );
 
+  const isLoading = allLists.isLoading || addItemToList.isPending;
+
   const buttonContent = useMemo(() => {
-    return (
+    if (isLoading) {
+      return <Spinner data-icon="inline" />;
+    }
+
+    if (iconOnly) {
+      return isSaved ? (
+        <BookmarkIcon className="h-4 w-4" />
+      ) : (
+        <PlusIcon className="h-4 w-4" />
+      );
+    }
+
+    return isSaved ? (
       <>
-        {isSaved ? (
-          <>
-            <BookmarkIcon className="h-4 w-4" />
-            Saved
-          </>
-        ) : (
-          <>
-            <PlusIcon className="h-4 w-4" />
-            Add To List
-          </>
-        )}
+        <BookmarkIcon className="h-4 w-4" />
+        Saved
+      </>
+    ) : (
+      <>
+        <PlusIcon className="h-4 w-4" />
+        Add To List
       </>
     );
-  }, [isSaved]);
+  }, [isSaved, isLoading, iconOnly]);
 
   if (!allLists.data || allLists.data.length === 0) {
     return (
       <Button
         variant={isSaved ? 'default' : 'secondary'}
-        disabled={allLists.isLoading || addItemToList.isPending}
+        size={iconOnly ? 'icon' : 'default'}
+        disabled={isLoading}
         onClick={handleButtonClick}
+        aria-label={isSaved ? 'Saved to list' : 'Add to list'}
       >
         {buttonContent}
       </Button>
@@ -99,8 +116,10 @@ export function AddToListButton({ discoverItemId }: AddToListButtonProps) {
       <DropdownMenuTrigger asChild>
         <Button
           variant={isSaved ? 'default' : 'secondary'}
-          disabled={allLists.isLoading || addItemToList.isPending}
+          size={iconOnly ? 'icon' : 'default'}
+          disabled={isLoading}
           onClick={handleButtonClick}
+          aria-label={isSaved ? 'Saved to list' : 'Add to list'}
         >
           {buttonContent}
         </Button>

@@ -1,5 +1,5 @@
 import { DiscoverItem } from '@generated/prisma/client';
-import { DiscoverItemType } from '@generated/prisma/enums';
+import { DiscoverItemType, TrackingStatus } from '@generated/prisma/enums';
 
 import {
   type DiscoverItemSchema,
@@ -23,6 +23,8 @@ type DiscoverItemData = {
   imageUrl?: string | null;
   isSaved: boolean;
   isCompleted: boolean;
+  rating: number | null;
+  userListsCount: number;
 };
 
 export async function getDiscoverItems(): ServerResponse<DiscoverItemData[]> {
@@ -38,28 +40,47 @@ export async function getDiscoverItems(): ServerResponse<DiscoverItemData[]> {
           },
         },
         trackers: {
-          where: { status: 'COMPLETED' },
-          select: { userId: true },
+          select: { userId: true, status: true, rating: true },
         },
       },
     });
 
-    const discoverItems = items.map((item) => ({
-      id: item.id,
-      type: item.type,
-      title: item.title,
-      description: item.description,
-      category: item.category,
-      imageUrl: item.imageUrl,
-      isSaved:
-        !!userId &&
-        item.userLists.some(
-          (list) =>
-            list.owner?.id === userId ||
-            list.members.some((m) => m.userId === userId),
-        ),
-      isCompleted: !!userId && item.trackers.some((t) => t.userId === userId),
-    }));
+    const discoverItems = items.map((item) => {
+      const ratedTrackers = item.trackers.filter(
+        (t): t is { userId: string; status: TrackingStatus; rating: number } =>
+          t.rating != null,
+      );
+      const avgRating =
+        ratedTrackers.length > 0
+          ? Math.round(
+              ratedTrackers.reduce((s, t) => s + t.rating, 0) /
+                ratedTrackers.length,
+            )
+          : null;
+
+      return {
+        id: item.id,
+        type: item.type,
+        title: item.title,
+        description: item.description,
+        category: item.category,
+        imageUrl: item.imageUrl,
+        isSaved:
+          !!userId &&
+          item.userLists.some(
+            (list) =>
+              list.owner?.id === userId ||
+              list.members.some((m) => m.userId === userId),
+          ),
+        isCompleted:
+          !!userId &&
+          item.trackers.some(
+            (t) => t.status === 'COMPLETED' && t.userId === userId,
+          ),
+        rating: avgRating,
+        userListsCount: item.userLists.length,
+      };
+    });
 
     return ResponseService.success({
       data: discoverItems,
@@ -91,28 +112,47 @@ export async function getDiscoverItemsByType(
           },
         },
         trackers: {
-          where: { status: 'COMPLETED' },
-          select: { userId: true },
+          select: { userId: true, status: true, rating: true },
         },
       },
     });
 
-    const discoverItems = items.map((item) => ({
-      id: item.id,
-      type: item.type,
-      title: item.title,
-      description: item.description,
-      category: item.category,
-      imageUrl: item.imageUrl,
-      isSaved:
-        !!userId &&
-        item.userLists.some(
-          (list) =>
-            list.owner?.id === userId ||
-            list.members.some((m) => m.userId === userId),
-        ),
-      isCompleted: !!userId && item.trackers.some((t) => t.userId === userId),
-    }));
+    const discoverItems = items.map((item) => {
+      const ratedTrackers = item.trackers.filter(
+        (t): t is { userId: string; status: TrackingStatus; rating: number } =>
+          t.rating != null,
+      );
+      const avgRating =
+        ratedTrackers.length > 0
+          ? Math.round(
+              ratedTrackers.reduce((s, t) => s + t.rating, 0) /
+                ratedTrackers.length,
+            )
+          : null;
+
+      return {
+        id: item.id,
+        type: item.type,
+        title: item.title,
+        description: item.description,
+        category: item.category,
+        imageUrl: item.imageUrl,
+        isSaved:
+          !!userId &&
+          item.userLists.some(
+            (list) =>
+              list.owner?.id === userId ||
+              list.members.some((m) => m.userId === userId),
+          ),
+        isCompleted:
+          !!userId &&
+          item.trackers.some(
+            (t) => t.status === 'COMPLETED' && t.userId === userId,
+          ),
+        rating: avgRating,
+        userListsCount: item.userLists.length,
+      };
+    });
 
     return ResponseService.success({
       data: discoverItems,
@@ -143,8 +183,7 @@ export async function getDiscoverItemById(
           },
         },
         trackers: {
-          where: { status: 'COMPLETED' },
-          select: { userId: true },
+          select: { userId: true, status: true, rating: true },
         },
       },
     });
@@ -155,6 +194,18 @@ export async function getDiscoverItemById(
         status: HttpStatus.NOT_FOUND,
       });
     }
+
+    const ratedTrackers = item.trackers.filter(
+      (t): t is { userId: string; status: TrackingStatus; rating: number } =>
+        t.rating != null,
+    );
+    const avgRating =
+      ratedTrackers.length > 0
+        ? Math.round(
+            ratedTrackers.reduce((s, t) => s + t.rating, 0) /
+              ratedTrackers.length,
+          )
+        : null;
 
     const discoverItem = {
       id: item.id,
@@ -170,7 +221,13 @@ export async function getDiscoverItemById(
             list.owner?.id === userId ||
             list.members.some((m) => m.userId === userId),
         ),
-      isCompleted: !!userId && item.trackers.some((t) => t.userId === userId),
+      isCompleted:
+        !!userId &&
+        item.trackers.some(
+          (t) => t.status === 'COMPLETED' && t.userId === userId,
+        ),
+      rating: avgRating,
+      userListsCount: item.userLists.length,
     };
 
     return ResponseService.success({
