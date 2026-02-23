@@ -1,5 +1,5 @@
 import { Subtitle } from '@/components/typography/subtitle';
-import { AlbumImage } from '@/components/ui/album-image';
+import { DynamicCover } from '@/components/ui/dynamic-cover';
 
 interface ReelItemProps {
   title: string;
@@ -10,10 +10,11 @@ export function ReelItem({ title, imageUrl }: ReelItemProps) {
   return (
     <div className="group bg-card flex w-[180px] shrink-0 flex-col overflow-hidden rounded-xl border shadow-sm transition-all">
       <div className="bg-muted relative overflow-hidden">
-        <AlbumImage
+        <DynamicCover
           title={title}
           src={imageUrl}
           aspectRatio="aspect-4/3"
+          strictHosts
           className="pointer-events-none h-40 w-full object-cover transition-transform"
         />
 

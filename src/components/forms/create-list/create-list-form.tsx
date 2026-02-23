@@ -23,8 +23,8 @@ import {
   FieldSet,
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { LimitedTextarea } from '@/components/ui/limited-textarea';
 import { Spinner } from '@/components/ui/spinner';
-import { Textarea } from '@/components/ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { ROUTES } from '@/constants/routes';
 import { getErrorMessage } from '@/lib/utils/common';
@@ -41,6 +41,8 @@ const DEFAULT_VALUES: ListSchema = {
   discoverItemIds: [],
   visibility: ListVisibility.PRIVATE,
 };
+
+const DESCRIPTION_MAX_LENGTH = 500;
 
 const VISIBILITY_OPTIONS = [
   { value: ListVisibility.PRIVATE, label: 'Private', icon: LockIcon },
@@ -215,6 +217,17 @@ export function CreateListForm({
   const dirty =
     computeIsDirty((formValues as Record<string, unknown>) ?? {}) || false;
 
+  const hasFormErrors = useMemo(() => {
+    const v = (formValues ?? {}) as Record<string, unknown>;
+
+    return !listSchema.safeParse({
+      ...v,
+      tags,
+      memberIds,
+      discoverItemIds,
+    }).success;
+  }, [formValues, tags, memberIds, discoverItemIds]);
+
   useEffect(() => {
     onDirtyChange?.(dirty);
   }, [dirty, onDirtyChange]);
@@ -272,21 +285,24 @@ export function CreateListForm({
             </form.Field>
 
             <form.Field name="description">
-              {(field) => (
-                <Field>
-                  <FieldLabel htmlFor={field.name}>Description</FieldLabel>
-                  <Textarea
+              {(field) => {
+                const description = field.state.value ?? '';
+
+                return (
+                  <LimitedTextarea
                     id={field.name}
                     name={field.name}
-                    value={field.state.value ?? ''}
+                    label="Description"
+                    value={description}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
-                    placeholder="Optional description..."
-                    maxLength={500}
+                    maxLength={DESCRIPTION_MAX_LENGTH}
+                    placeholder="Tell what your list is about..."
                     rows={3}
+                    overLimitMessage={`Description is too long. Maximum ${DESCRIPTION_MAX_LENGTH} characters.`}
                   />
-                </Field>
-              )}
+                );
+              }}
             </form.Field>
 
             <form.Field name="coverImageUrl">
@@ -364,7 +380,7 @@ export function CreateListForm({
             type="submit"
             form={isEditMode ? 'edit-list-form' : 'create-list-form'}
             size="lg"
-            disabled={form.state.isSubmitting || isPending}
+            disabled={form.state.isSubmitting || isPending || hasFormErrors}
             className={
               isEditMode
                 ? undefined

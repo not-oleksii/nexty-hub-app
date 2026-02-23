@@ -97,13 +97,18 @@ export function RandomReel({ reels }: RandomReelProps) {
     });
   }, [reels]);
 
-  const handleTransitionEnd = useCallback(() => {
-    if (!isSpinning) return;
+  const handleTransitionEnd = useCallback(
+    (e: React.TransitionEvent) => {
+      if (!isSpinning) return;
+      if (e.target !== e.currentTarget) return;
+      if (e.propertyName !== 'transform') return;
 
-    setIsSpinning(false);
-    setIsSpinningComplete(true);
-    setIsWinnerDialogOpen(true);
-  }, [isSpinning]);
+      setIsSpinning(false);
+      setIsSpinningComplete(true);
+      setIsWinnerDialogOpen(true);
+    },
+    [isSpinning],
+  );
 
   return (
     <div className="w-full">

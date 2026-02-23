@@ -12,6 +12,8 @@ export type DiscoverItemDto = {
   imageUrl?: string | null;
   isSaved: boolean;
   isCompleted: boolean;
+  rating: number | null;
+  userListsCount: number;
 };
 
 export type DiscoverItemSearchResult = {

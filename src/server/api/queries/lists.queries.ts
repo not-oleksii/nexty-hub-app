@@ -8,6 +8,7 @@ export const listsKeys = {
   all: ['lists'] as const,
   getAll: () => [...listsKeys.all] as const,
   detail: (id: string) => [...listsKeys.all, 'detail', id] as const,
+  view: (id: string) => [...listsKeys.all, 'view', id] as const,
   byDiscoverItemId: (discoverItemId: string) =>
     [...listsKeys.all, 'item', discoverItemId] as const,
   mutations: {
@@ -28,6 +29,11 @@ export const listsQueries = {
     queryOptions({
       queryKey: listsKeys.detail(id),
       queryFn: () => listsApi.getById(id),
+    }),
+  view: (id: string) =>
+    queryOptions({
+      queryKey: listsKeys.view(id),
+      queryFn: () => listsApi.getViewById(id),
     }),
   byDiscoverItemId: (discoverItemId: string) =>
     queryOptions({

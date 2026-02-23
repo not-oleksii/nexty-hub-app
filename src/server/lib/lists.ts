@@ -447,6 +447,119 @@ export async function getListById(
   }
 }
 
+export async function getListViewData(
+  listId: string,
+): ServerResponse<UserListWithProgress> {
+  try {
+    const userId = await getUserId();
+
+    if (!userId) {
+      return ResponseService.error({
+        message: ApiErrorType.UNAUTHORIZED,
+        status: HttpStatus.UNAUTHORIZED,
+      });
+    }
+
+    const list = await prisma.userList.findUnique({
+      where: { id: listId },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        coverImageUrl: true,
+        tags: true,
+        visibility: true,
+        viewsCount: true,
+        createdAt: true,
+        updatedAt: true,
+        ownerId: true,
+        owner: { select: { id: true, username: true } },
+        members: {
+          select: {
+            id: true,
+            userId: true,
+            user: { select: { username: true } },
+          },
+        },
+        discoverItems: {
+          select: {
+            id: true,
+            title: true,
+            imageUrl: true,
+            type: true,
+            category: true,
+            description: true,
+            owner: { select: { id: true, username: true } },
+            trackers: {
+              where: { userId, status: 'COMPLETED' },
+              select: { id: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (!list) {
+      return ResponseService.error({
+        message: `List with id ${listId} not found`,
+        status: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    const isMember = list.members.some((m) => m.userId === userId);
+    if (list.ownerId !== userId && !isMember) {
+      return ResponseService.error({
+        message: 'You do not have access to this list',
+        status: HttpStatus.FORBIDDEN,
+      });
+    }
+
+    const totalDiscoverItems = list.discoverItems.length;
+    const completedDiscoverItems = list.discoverItems.filter((item) =>
+      item.trackers.some((t) => t.id),
+    ).length;
+    const owner = { ...list.owner };
+    if (owner.id === userId) {
+      owner.username = 'You';
+    }
+
+    const data: UserListWithProgress = {
+      id: list.id,
+      name: list.name,
+      description: list.description,
+      coverImageUrl: list.coverImageUrl,
+      tags: list.tags,
+      visibility: list.visibility,
+      viewsCount: list.viewsCount,
+      createdAt: list.createdAt,
+      updatedAt: list.updatedAt,
+      owner,
+      members: list.members.map((m) => ({
+        id: m.id,
+        username: m.user.username,
+      })),
+      discoverItems: list.discoverItems.map(
+        ({ trackers: _trackers, ...item }) => item,
+      ),
+      totalDiscoverItems,
+      completedDiscoverItems,
+    };
+
+    return ResponseService.success({
+      data,
+      message: 'List view data fetched successfully',
+      status: HttpStatus.OK,
+    });
+  } catch (error: unknown) {
+    console.error('Error fetching list view:', error);
+
+    return ResponseService.error({
+      message: ApiErrorType.INTERNAL_SERVER_ERROR,
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+}
+
 const updateListSchema = listSchema;
 
 export async function updateList(

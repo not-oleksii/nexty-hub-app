@@ -12,12 +12,25 @@ import { ROUTES } from '@/constants/routes';
 import type { DiscoverItemDto } from '@/server/api/discover';
 import { mapPrismaToItemType } from '@/server/utils/prisma-maps';
 
-type DiscoverItemProps = {
-  discoverItem: DiscoverItemDto;
-  isLoading: boolean;
+export type DiscoverItemDisplay = Pick<
+  DiscoverItemDto,
+  'id' | 'type' | 'title' | 'imageUrl' | 'category'
+> & {
+  rating?: number | null;
+  userListsCount?: number | null;
 };
 
-export function DiscoverItem({ discoverItem, isLoading }: DiscoverItemProps) {
+type DiscoverItemProps = {
+  discoverItem: DiscoverItemDisplay;
+  isLoading?: boolean;
+  from?: string;
+};
+
+export function DiscoverItem({
+  discoverItem,
+  isLoading,
+  from,
+}: DiscoverItemProps) {
   const { title, imageUrl, type, category, rating, userListsCount } =
     discoverItem;
 
@@ -25,7 +38,8 @@ export function DiscoverItem({ discoverItem, isLoading }: DiscoverItemProps) {
     return <DiscoverItemSkeleton />;
   }
 
-  const href = `${ROUTES.discoverList.item.replace(':type', mapPrismaToItemType(discoverItem.type as DiscoverItemType)).replace(':id', discoverItem.id)}`;
+  const baseHref = `${ROUTES.discoverList.item.replace(':type', mapPrismaToItemType(discoverItem.type as DiscoverItemType)).replace(':id', discoverItem.id)}`;
+  const href = from ? `${baseHref}?from=${encodeURIComponent(from)}` : baseHref;
 
   return (
     <Link href={href} className="block h-full">
@@ -70,12 +84,14 @@ export function DiscoverItem({ discoverItem, isLoading }: DiscoverItemProps) {
                   </Caption>
                 </div>
               )}
-              <div className="text-muted-foreground flex items-center gap-1.5">
-                <ListIcon className="h-3.5 w-3.5 opacity-70" />
-                <Caption size="xs" className="font-medium">
-                  {userListsCount}
-                </Caption>
-              </div>
+              {userListsCount != null && (
+                <div className="text-muted-foreground flex items-center gap-1.5">
+                  <ListIcon className="h-3.5 w-3.5 opacity-70" />
+                  <Caption size="xs" className="font-medium">
+                    {userListsCount}
+                  </Caption>
+                </div>
+              )}
             </div>
           </div>
           {(type || category) && (

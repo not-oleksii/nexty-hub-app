@@ -1,23 +1,19 @@
 'use client';
 
-import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
+import { ListVisibility } from '@generated/prisma/enums';
 import { useQuery } from '@tanstack/react-query';
-import {
-  CalendarIcon,
-  Edit2Icon,
-  EyeIcon,
-  GlobeIcon,
-  LockIcon,
-  UsersIcon,
-} from 'lucide-react';
+import { EyeIcon } from 'lucide-react';
 
 import { ItemsProgress } from '@/components/items-progress';
+import { ListEditButton } from '@/components/list-edit-button';
+import { ListTagsBadges } from '@/components/list-tags-badges';
 import { Body } from '@/components/typography/body';
 import { Caption } from '@/components/typography/caption';
 import { Label } from '@/components/typography/label';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -25,26 +21,17 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { DynamicCover } from '@/components/ui/dynamic-cover';
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
-import { ListCover } from '@/components/ui/list-cover';
 import { Skeleton } from '@/components/ui/skeleton';
+import { LIST_VISIBILITY_LABELS } from '@/constants/list-visibility';
 import { ROUTES } from '@/constants/routes';
-import { formatDate } from '@/lib/utils/format-date';
 import type { UserListSummaryDto } from '@/server/api/lists';
 import { usersQueries } from '@/server/api/queries/users.queries';
-
-const VISIBILITY_LABELS: Record<
-  string,
-  { label: string; icon: typeof LockIcon }
-> = {
-  PRIVATE: { label: 'Private', icon: LockIcon },
-  FRIENDS_ONLY: { label: 'Friends', icon: UsersIcon },
-  PUBLIC: { label: 'Public', icon: GlobeIcon },
-};
 
 const DESCRIPTION_MAX_LENGTH = 80;
 
@@ -53,21 +40,21 @@ type ListCardProps = {
 };
 
 export function ListCard({ list }: ListCardProps) {
+  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const { data: currentUser } = useQuery(usersQueries.current());
   const isOwner = list.owner.id === currentUser?.id;
 
+  useEffect(() => {
+    queueMicrotask(() => setMounted(true));
+  }, []);
+
   const tags = list.tags ?? [];
-  const members = list.members ?? [];
-  const visibilityKey = list.visibility ?? 'PRIVATE';
+  const visibilityKey = (list.visibility ??
+    ListVisibility.PRIVATE) as ListVisibility;
   const visibility =
-    VISIBILITY_LABELS[visibilityKey] ?? VISIBILITY_LABELS.PRIVATE;
+    LIST_VISIBILITY_LABELS[visibilityKey] ?? LIST_VISIBILITY_LABELS.PRIVATE;
   const VisibilityIcon = visibility.icon;
-
-  const displayedTags = tags.slice(0, 3);
-  const remainingTagsCount = Math.max(0, tags.length - 3);
-
-  const displayedMembers = members.slice(0, 3);
-  const remainingMembersCount = Math.max(0, members.length - 3);
 
   const shortDescription = list.description
     ? list.description.length > DESCRIPTION_MAX_LENGTH
@@ -91,169 +78,90 @@ export function ListCard({ list }: ListCardProps) {
   return (
     <Card
       variant="interactive"
-      className="group flex h-full flex-col overflow-hidden pt-0"
+      className="group relative flex h-full flex-col overflow-hidden pt-0"
     >
-      <div className="relative shrink-0">
-        <ListCover
-          coverImageUrl={list.coverImageUrl}
-          listName={list.name}
-          discoverItems={list.discoverItems}
-          className="w-full"
-        />
-        {isOwner && (
-          <Link
-            href={ROUTES.lists.edit(list.id)}
-            className="absolute top-3 right-3 z-10"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Button
-              variant="secondary"
-              size="icon"
-              className="bg-background/60 hover:bg-background/90 h-8 w-8 opacity-0 shadow-sm backdrop-blur-md transition-all duration-300 group-hover:opacity-100 hover:scale-105"
-            >
-              <Edit2Icon className="text-foreground h-4 w-4" />
-            </Button>
-          </Link>
-        )}
+      <div
+        role="link"
+        tabIndex={0}
+        onClick={() => router.push(ROUTES.lists.detail(list.id))}
+        onKeyDown={(e) =>
+          e.key === 'Enter' && router.push(ROUTES.lists.detail(list.id))
+        }
+        className="flex min-h-0 flex-1 cursor-pointer flex-col"
+      >
+        <div className="relative shrink-0">
+          <DynamicCover
+            title={list.name}
+            src={list.coverImageUrl}
+            fallbackSrcs={list.discoverItems?.map((i) => i.imageUrl)}
+            className="w-full"
+            actions={
+              mounted &&
+              isOwner && (
+                <ListEditButton
+                  listId={list.id}
+                  variant="overlay"
+                  className="relative"
+                />
+              )
+            }
+          />
+        </div>
+
+        <CardHeader className="px-5 pt-4 pb-0">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex min-w-0 flex-col gap-0.5">
+              <HoverCard>
+                <HoverCardTrigger asChild>
+                  <CardTitle className="hover:text-primary line-clamp-1 cursor-pointer text-lg transition-colors">
+                    {list.name}
+                  </CardTitle>
+                </HoverCardTrigger>
+                <HoverCardContent
+                  side="top"
+                  align="start"
+                  className="shadow-lg"
+                >
+                  {hoverContent}
+                </HoverCardContent>
+              </HoverCard>
+              <Caption className="line-clamp-1">
+                By{' '}
+                <Label className="text-foreground/80">
+                  {list.owner.username}
+                </Label>
+              </Caption>
+            </div>
+
+            <div className="flex shrink-0 flex-col items-end gap-1.5">
+              <Badge variant="outline" size="sm" className="backdrop-blur-sm">
+                <VisibilityIcon className="text-muted-foreground mr-1.5 h-3 w-3" />
+                {visibility.label}
+              </Badge>
+
+              <div className="text-muted-foreground flex items-center gap-1.5">
+                <EyeIcon className="h-3.5 w-3.5 opacity-70" />
+                <Caption size="xs" className="font-medium">
+                  {list.viewsCount ?? 0}
+                </Caption>
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="mt-2 mb-5 flex flex-1 flex-col gap-3 px-5">
+          <div className="flex flex-col gap-2">
+            <ListTagsBadges tags={tags} maxDisplay={3} />
+          </div>
+        </CardContent>
+
+        <CardFooter className="border-border/50 bg-background/40 border-t px-5 py-3 backdrop-blur-xl">
+          <ItemsProgress
+            value={list.completedDiscoverItems}
+            maxValue={list.totalDiscoverItems}
+          />
+        </CardFooter>
       </div>
-
-      <CardHeader className="px-5 pt-4 pb-0">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex min-w-0 flex-col gap-0.5">
-            <HoverCard>
-              <HoverCardTrigger asChild>
-                <CardTitle className="hover:text-primary line-clamp-1 cursor-pointer text-lg transition-colors">
-                  {list.name}
-                </CardTitle>
-              </HoverCardTrigger>
-              <HoverCardContent side="top" align="start" className="shadow-lg">
-                {hoverContent}
-              </HoverCardContent>
-            </HoverCard>
-            <Caption className="line-clamp-1">
-              By{' '}
-              <Label className="text-foreground/80">
-                {list.owner.username}
-              </Label>
-            </Caption>
-          </div>
-          <Badge
-            variant="outline"
-            size="sm"
-            className="bg-background/50 shrink-0"
-          >
-            <VisibilityIcon className="text-muted-foreground mr-1.5 h-3 w-3" />
-            {visibility.label}
-          </Badge>
-        </div>
-      </CardHeader>
-
-      <CardContent className="flex flex-1 flex-col gap-3 px-5">
-        <div className="min-h-[40px]">
-          {shortDescription ? (
-            <Caption
-              size="base"
-              className="text-muted-foreground line-clamp-2 leading-snug"
-            >
-              {shortDescription}
-            </Caption>
-          ) : (
-            <Caption
-              size="base"
-              className="text-muted-foreground/40 line-clamp-2 leading-snug italic"
-            >
-              No description provided.
-            </Caption>
-          )}
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <UsersIcon className="text-muted-foreground/50 mr-1 h-3.5 w-3.5" />
-            {members.length > 0 ? (
-              <>
-                {displayedMembers.map((m) => (
-                  <Badge
-                    key={m.id}
-                    variant="outline"
-                    className="text-muted-foreground text-[10px] font-medium tracking-wider uppercase"
-                  >
-                    {m.username}
-                  </Badge>
-                ))}
-                {remainingMembersCount > 0 && (
-                  <Badge
-                    variant="outline"
-                    className="text-muted-foreground text-[10px] font-medium"
-                  >
-                    +{remainingMembersCount}
-                  </Badge>
-                )}
-              </>
-            ) : (
-              <Badge
-                variant="outline"
-                className="border-muted-foreground/20 text-muted-foreground/40 border-dashed text-[10px] font-medium tracking-wider uppercase"
-              >
-                Only you
-              </Badge>
-            )}
-          </div>
-          <div className="flex flex-wrap items-center gap-1.5">
-            {tags.length > 0 ? (
-              <>
-                {displayedTags.map((tag) => (
-                  <Badge
-                    key={tag}
-                    variant="secondary"
-                    className="hover:bg-muted text-[11px] font-normal"
-                  >
-                    #{tag}
-                  </Badge>
-                ))}
-                {remainingTagsCount > 0 && (
-                  <Badge
-                    variant="secondary"
-                    className="text-[11px] font-normal"
-                  >
-                    +{remainingTagsCount}
-                  </Badge>
-                )}
-              </>
-            ) : (
-              <Badge
-                variant="outline"
-                className="border-muted-foreground/20 text-muted-foreground/40 border-dashed text-[11px] font-normal"
-              >
-                No tags
-              </Badge>
-            )}
-          </div>
-        </div>
-
-        <div className="text-muted-foreground mt-auto flex items-center justify-between pt-3">
-          <div className="flex items-center gap-1.5">
-            <CalendarIcon className="h-3.5 w-3.5 opacity-70" />
-            <Caption size="xs" className="font-medium">
-              Last updated:&nbsp;
-              {list.updatedAt ? formatDate(list.updatedAt) : 'Recently'}
-            </Caption>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <EyeIcon className="h-3.5 w-3.5 opacity-70" />
-            <Caption size="xs" className="font-medium">
-              {list.viewsCount ?? 0}
-            </Caption>
-          </div>
-        </div>
-      </CardContent>
-
-      <CardFooter className="bg-muted/5 border-t px-5 py-3">
-        <ItemsProgress
-          value={list.completedDiscoverItems}
-          maxValue={list.totalDiscoverItems}
-        />
-      </CardFooter>
     </Card>
   );
 }
@@ -274,29 +182,13 @@ export function ListCardSkeleton() {
       </CardHeader>
 
       <CardContent className="flex flex-1 flex-col gap-3 px-5">
-        <div className="min-h-[40px] space-y-2">
-          <Skeleton className="h-3.5 w-full" />
-          <Skeleton className="h-3.5 w-4/5" />
+        <div className="flex flex-wrap items-center gap-1.5">
+          <Skeleton className="h-5 w-14 rounded-md" />
+          <Skeleton className="h-5 w-12 rounded-md" />
+          <Skeleton className="h-5 w-10 rounded-md" />
         </div>
 
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <Skeleton className="h-3.5 w-3.5 shrink-0 rounded" />
-            <Skeleton className="h-5 w-16 rounded-md" />
-            <Skeleton className="h-5 w-20 rounded-md" />
-          </div>
-          <div className="flex flex-wrap items-center gap-1.5">
-            <Skeleton className="h-5 w-14 rounded-md" />
-            <Skeleton className="h-5 w-12 rounded-md" />
-            <Skeleton className="h-5 w-10 rounded-md" />
-          </div>
-        </div>
-
-        <div className="mt-auto flex items-center justify-between pt-3">
-          <div className="flex items-center gap-1.5">
-            <Skeleton className="h-3.5 w-3.5 shrink-0 rounded" />
-            <Skeleton className="h-3 w-24" />
-          </div>
+        <div className="mt-auto flex items-center justify-end pt-3">
           <div className="flex items-center gap-1.5">
             <Skeleton className="h-3.5 w-3.5 shrink-0 rounded" />
             <Skeleton className="h-3 w-8" />
@@ -304,7 +196,7 @@ export function ListCardSkeleton() {
         </div>
       </CardContent>
 
-      <CardFooter className="bg-muted/5 border-t px-5 py-3">
+      <CardFooter className="border-border/50 bg-background/40 border-t px-5 py-3 backdrop-blur-xl">
         <div className="flex w-full flex-col gap-2">
           <div className="flex justify-between">
             <Skeleton className="h-3 w-20" />

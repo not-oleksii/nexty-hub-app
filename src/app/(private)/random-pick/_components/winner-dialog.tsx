@@ -2,7 +2,6 @@
 
 import { Header } from '@/components/typography/header';
 import { Subtitle } from '@/components/typography/subtitle';
-import { AlbumImage } from '@/components/ui/album-image';
 import {
   Dialog,
   DialogContent,
@@ -10,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { DynamicCover } from '@/components/ui/dynamic-cover';
 
 import { Reel } from './random-reel';
 
@@ -43,9 +43,11 @@ export function WinnerDialog({
           <div className="animate-in zoom-in-50 fill-mode-both relative delay-150 duration-500">
             <div className="bg-primary/40 absolute -inset-2 animate-pulse rounded-xl blur-2xl" />
 
-            <AlbumImage
+            <DynamicCover
               title={winner.title}
               src={winner.imageUrl}
+              aspectRatio="aspect-album"
+              strictHosts
               className="border-primary/50 relative z-10 w-48 rounded-xl border-2 shadow-xl"
             />
           </div>

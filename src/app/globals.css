@@ -78,8 +78,8 @@
   --primary: 142.1 70.6% 45.3%;
   --primary-foreground: 144.9 80.4% 10%;
 
-  --secondary: 270 65% 90%;
-  --secondary-foreground: 270 30% 20%;
+  --secondary: 240 4% 95%;
+  --secondary-foreground: 240 5% 26%;
 
   --muted: 210 40% 96.1%;
   --muted-foreground: 215.4 16.3% 46.9%;
@@ -127,8 +127,8 @@
   --primary: 142.1 70.6% 45.3%; /* ~ #22C55E */
   --primary-foreground: 144.9 80.4% 10%;
 
-  --secondary: 270 45% 28%;
-  --secondary-foreground: 270 60% 92%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
 
   --muted: 215 35% 18%;
   --muted-foreground: 212 28% 75%; /* ~ #A7BEDA */
@@ -166,19 +166,26 @@ body {
   @apply bg-background text-foreground;
 }
 
-/* subtle background glow (optional) */
 .dark body {
+  background-attachment: fixed;
   background-image:
     radial-gradient(
-      600px circle at 20% 10%,
-      hsl(199 89% 58% / 0.12),
+      100% 50% at 30% 0%,
+      hsl(199 60% 35% / 0.12),
       transparent 60%
     ),
     radial-gradient(
-      800px circle at 80% 20%,
-      hsl(142 71% 45% / 0.1),
-      transparent 55%
+      50% 120% at 100% 50%,
+      hsl(152 50% 30% / 0.1),
+      transparent 50%
+    ),
+    radial-gradient(
+      80% 60% at 0% 100%,
+      hsl(250 40% 30% / 0.08),
+      transparent 50%
     );
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
 }
 /*
   ---break---
@@ -229,5 +236,40 @@ body {
 
   .group-hover-primary-transition {
     @apply group-hover:text-primary transition-colors duration-300;
+  }
+
+  .scrollbar-app {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.5) transparent;
+  }
+
+  .scrollbar-app::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-app::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-app::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.35);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  .scrollbar-app::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.55);
+    background-clip: padding-box;
+  }
+
+  .scrollbar-app::-webkit-scrollbar-thumb:active {
+    background: hsl(var(--muted-foreground) / 0.65);
+    background-clip: padding-box;
+  }
+
+  .scrollbar-app::-webkit-scrollbar-corner {
+    background: transparent;
   }
 }
