@@ -12,7 +12,7 @@ import { ListTagsBadges } from '@/components/list-tags-badges';
 import { Body } from '@/components/typography/body';
 import { Caption } from '@/components/typography/caption';
 import { Header } from '@/components/typography/header';
-import { ListCover } from '@/components/ui/list-cover';
+import { DynamicCover } from '@/components/ui/dynamic-cover';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LIST_VISIBILITY_LABELS } from '@/constants/list-visibility';
 import { formatDate } from '@/lib/utils/format-date';
@@ -79,19 +79,23 @@ export function ListDetailsHeader({ list }: ListDetailsHeaderProps) {
       </div>
 
       <div className="relative shrink-0 overflow-hidden rounded-xl md:w-64 md:min-w-64">
-        <ListCover
-          coverImageUrl={list.coverImageUrl}
-          listName={list.name}
-          discoverItems={list.discoverItems}
-          className="aspect-[3/4] w-full"
+        <DynamicCover
+          title={list.name}
+          src={list.coverImageUrl}
+          fallbackSrcs={list.discoverItems?.map((i) => i.imageUrl)}
+          aspectRatio="aspect-[3/4]"
+          className="w-full"
+          actions={
+            mounted &&
+            isOwner && (
+              <ListEditButton
+                listId={list.id}
+                variant="static"
+                className="relative"
+              />
+            )
+          }
         />
-        <div
-          className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-black/40 to-transparent"
-          aria-hidden
-        />
-        {mounted && isOwner && (
-          <ListEditButton listId={list.id} variant="static" />
-        )}
       </div>
     </div>
   );

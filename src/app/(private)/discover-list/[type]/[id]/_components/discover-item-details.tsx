@@ -6,9 +6,9 @@ import { useQuery } from '@tanstack/react-query';
 import { Body } from '@/components/typography/body';
 import { Caption } from '@/components/typography/caption';
 import { Header } from '@/components/typography/header';
-import { AlbumImage } from '@/components/ui/album-image';
 import { Badge } from '@/components/ui/badge';
 import { DetailsList } from '@/components/ui/details-list';
+import { DynamicCover } from '@/components/ui/dynamic-cover';
 import { Skeleton } from '@/components/ui/skeleton';
 import { discoverQueries } from '@/server/api/queries/discover.queries';
 
@@ -52,11 +52,12 @@ export function DiscoverItemDetails({ type, id }: DiscoverItemDetailsProps) {
         <ItemCardActions discoverItemId={id} />
       </div>
       <div className="flex max-md:justify-center">
-        <AlbumImage
-          src={data?.imageUrl}
+        <DynamicCover
           title={data?.title ?? ''}
-          className="w-3xs"
+          src={data?.imageUrl}
           aspectRatio="aspect-10/16"
+          strictHosts
+          className="w-3xs"
         />
       </div>
     </div>

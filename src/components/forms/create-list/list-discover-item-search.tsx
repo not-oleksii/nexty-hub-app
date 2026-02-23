@@ -7,7 +7,7 @@ import { XIcon } from 'lucide-react';
 
 import { Body } from '@/components/typography/body';
 import { Caption } from '@/components/typography/caption';
-import { AlbumImage } from '@/components/ui/album-image';
+import { DynamicCover } from '@/components/ui/dynamic-cover';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -37,10 +37,11 @@ function DiscoverItemCard({
       disabled={disabled}
       className="border-border bg-card hover:border-primary flex cursor-pointer flex-col overflow-hidden rounded-lg border text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50"
     >
-      <AlbumImage
-        src={item.imageUrl}
+      <DynamicCover
         title={item.title}
+        src={item.imageUrl}
         aspectRatio="aspect-4/3"
+        strictHosts
         className="h-20 w-full object-cover"
       />
       <div className="truncate px-2 py-1 text-xs font-medium">{item.title}</div>

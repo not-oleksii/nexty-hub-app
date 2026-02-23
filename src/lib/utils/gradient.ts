@@ -7,10 +7,6 @@ export const GRADIENT_PALETTE = [
   { bg: '#F43F5E', gradient: ['#FDA4AF', '#BE123C'], text: '#111827' },
 ] as const;
 
-/**
- * Picks a consistent gradient palette index based on a seed string (e.g. title).
- * Same seed always returns the same palette.
- */
 export function pickGradientPalette(
   seed: string,
 ): (typeof GRADIENT_PALETTE)[number] {

@@ -4,13 +4,13 @@ import { DiscoverItemType } from '@generated/prisma/enums';
 
 import { AddToListButton } from '@/components/add-to-list-button';
 import { Subtitle } from '@/components/typography/subtitle';
-import { AlbumImage } from '@/components/ui/album-image';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
 } from '@/components/ui/card';
+import { DynamicCover } from '@/components/ui/dynamic-cover';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ROUTES } from '@/constants/routes';
 import type { DiscoverItemDto } from '@/server/api/discover';
@@ -43,7 +43,12 @@ export function DiscoverItem({ discoverItem, isLoading }: DiscoverItemProps) {
           </div>
         </CardHeader>
         <CardContent>
-          <AlbumImage src={imageUrl} title={title} aspectRatio="aspect-10/16" />
+          <DynamicCover
+            title={title}
+            src={imageUrl}
+            aspectRatio="aspect-10/16"
+            strictHosts
+          />
         </CardContent>
         <CardFooter>
           <Subtitle size="base">{discoverItem.title}</Subtitle>

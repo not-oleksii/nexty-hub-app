@@ -6,8 +6,8 @@ import { DiscoverItemType } from '@generated/prisma/enums';
 
 import { Body } from '@/components/typography/body';
 import { Caption } from '@/components/typography/caption';
-import { AlbumImage } from '@/components/ui/album-image';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { DynamicCover } from '@/components/ui/dynamic-cover';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ROUTES } from '@/constants/routes';
 import { mapPrismaToItemType } from '@/server/utils/prisma-maps';
@@ -35,10 +35,11 @@ export function DiscoverItemCard({ item }: DiscoverItemCardProps) {
         className="group flex h-full flex-col overflow-hidden"
       >
         <CardContent className="p-0">
-          <AlbumImage
-            src={item.imageUrl}
+          <DynamicCover
             title={item.title}
+            src={item.imageUrl}
             aspectRatio="aspect-4/3"
+            strictHosts
             className="h-36 w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           />
         </CardContent>

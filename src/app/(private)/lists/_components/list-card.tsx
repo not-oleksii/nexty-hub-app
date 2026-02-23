@@ -1,8 +1,7 @@
 'use client';
 
-import Link from 'next/link';
-
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { ListVisibility } from '@generated/prisma/enums';
 import { useQuery } from '@tanstack/react-query';
@@ -23,12 +22,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { DynamicCover } from '@/components/ui/dynamic-cover';
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
-import { ListCover } from '@/components/ui/list-cover';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LIST_VISIBILITY_LABELS } from '@/constants/list-visibility';
 import { ROUTES } from '@/constants/routes';
@@ -43,6 +42,7 @@ type ListCardProps = {
 };
 
 export function ListCard({ list }: ListCardProps) {
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const { data: currentUser } = useQuery(usersQueries.current());
   const isOwner = list.owner.id === currentUser?.id;
@@ -83,16 +83,31 @@ export function ListCard({ list }: ListCardProps) {
       variant="interactive"
       className="group relative flex h-full flex-col overflow-hidden pt-0"
     >
-      <Link
-        href={ROUTES.lists.detail(list.id)}
-        className="flex min-h-0 flex-1 flex-col"
+      <div
+        role="link"
+        tabIndex={0}
+        onClick={() => router.push(ROUTES.lists.detail(list.id))}
+        onKeyDown={(e) =>
+          e.key === 'Enter' && router.push(ROUTES.lists.detail(list.id))
+        }
+        className="flex min-h-0 flex-1 cursor-pointer flex-col"
       >
         <div className="relative shrink-0">
-          <ListCover
-            coverImageUrl={list.coverImageUrl}
-            listName={list.name}
-            discoverItems={list.discoverItems}
+          <DynamicCover
+            title={list.name}
+            src={list.coverImageUrl}
+            fallbackSrcs={list.discoverItems?.map((i) => i.imageUrl)}
             className="w-full"
+            actions={
+              mounted &&
+              isOwner && (
+                <ListEditButton
+                  listId={list.id}
+                  variant="overlay"
+                  className="relative"
+                />
+              )
+            }
           />
         </div>
 
@@ -182,11 +197,7 @@ export function ListCard({ list }: ListCardProps) {
             maxValue={list.totalDiscoverItems}
           />
         </CardFooter>
-      </Link>
-
-      {mounted && isOwner && (
-        <ListEditButton listId={list.id} variant="overlay" />
-      )}
+      </div>
     </Card>
   );
 }
