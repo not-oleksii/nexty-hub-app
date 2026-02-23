@@ -1,31 +1,20 @@
 'use client';
 
-import Link from 'next/link';
-
 import { ListVisibility } from '@generated/prisma/enums';
 import { useQuery } from '@tanstack/react-query';
-import { Edit2Icon, GlobeIcon, LockIcon, UsersIcon } from 'lucide-react';
 
 import { ItemsProgress } from '@/components/items-progress';
+import { ListEditButton } from '@/components/list-edit-button';
+import { ListMembersBadges } from '@/components/list-members-badges';
+import { ListTagsBadges } from '@/components/list-tags-badges';
 import { Body } from '@/components/typography/body';
 import { Caption } from '@/components/typography/caption';
 import { Header } from '@/components/typography/header';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { ListCover } from '@/components/ui/list-cover';
-import { ROUTES } from '@/constants/routes';
+import { LIST_VISIBILITY_LABELS } from '@/constants/list-visibility';
 import { formatDate } from '@/lib/utils/format-date';
 import type { UserListViewDto } from '@/server/api/lists';
 import { usersQueries } from '@/server/api/queries/users.queries';
-
-const VISIBILITY_LABELS: Record<
-  ListVisibility,
-  { label: string; icon: typeof LockIcon }
-> = {
-  PRIVATE: { label: 'Private', icon: LockIcon },
-  FRIENDS_ONLY: { label: 'Friends', icon: UsersIcon },
-  PUBLIC: { label: 'Public', icon: GlobeIcon },
-};
 
 type ListDetailsHeaderProps = {
   list: UserListViewDto;
@@ -40,7 +29,7 @@ export function ListDetailsHeader({ list }: ListDetailsHeaderProps) {
   const visibilityKey = (list.visibility ??
     ListVisibility.PRIVATE) as ListVisibility;
   const visibility =
-    VISIBILITY_LABELS[visibilityKey] ?? VISIBILITY_LABELS.PRIVATE;
+    LIST_VISIBILITY_LABELS[visibilityKey] ?? LIST_VISIBILITY_LABELS.PRIVATE;
 
   return (
     <div className="flex flex-col gap-6 md:flex-row md:items-stretch md:gap-8">
@@ -64,35 +53,13 @@ export function ListDetailsHeader({ list }: ListDetailsHeaderProps) {
 
         <div className="mt-auto flex flex-col gap-3">
           {members.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2">
-              <UsersIcon className="text-muted-foreground h-4 w-4 shrink-0" />
-              Shared with {members.length} users
-              <div className="flex flex-wrap gap-1.5">
-                {members.map((m) => (
-                  <Badge
-                    key={m.id}
-                    variant="outline"
-                    className="text-muted-foreground text-xs font-medium tracking-wider uppercase"
-                  >
-                    {m.username}
-                  </Badge>
-                ))}
-              </div>
-            </div>
+            <ListMembersBadges
+              members={members}
+              size="md"
+              prefix={`Shared with ${members.length} users `}
+            />
           )}
-          {tags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {tags.map((tag) => (
-                <Badge
-                  key={tag}
-                  variant="secondary"
-                  className="bg-muted/50 hover:bg-muted text-xs font-normal"
-                >
-                  #{tag}
-                </Badge>
-              ))}
-            </div>
-          )}
+          {tags.length > 0 && <ListTagsBadges tags={tags} size="md" />}
         </div>
 
         <div className="border-border/50 bg-background/40 rounded-lg border p-4 backdrop-blur-xl">
@@ -114,20 +81,7 @@ export function ListDetailsHeader({ list }: ListDetailsHeaderProps) {
           className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-black/40 to-transparent"
           aria-hidden
         />
-        {isOwner && (
-          <Link
-            href={ROUTES.lists.edit(list.id)}
-            className="absolute top-4 right-4 z-10"
-          >
-            <Button
-              variant="secondary"
-              size="icon"
-              className="bg-background/80 hover:bg-background shadow-md backdrop-blur-sm"
-            >
-              <Edit2Icon className="h-4 w-4" />
-            </Button>
-          </Link>
-        )}
+        {isOwner && <ListEditButton listId={list.id} variant="static" />}
       </div>
     </div>
   );

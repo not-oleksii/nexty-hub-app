@@ -2,22 +2,18 @@
 
 import Link from 'next/link';
 
+import { ListVisibility } from '@generated/prisma/enums';
 import { useQuery } from '@tanstack/react-query';
-import {
-  CalendarIcon,
-  Edit2Icon,
-  EyeIcon,
-  GlobeIcon,
-  LockIcon,
-  UsersIcon,
-} from 'lucide-react';
+import { CalendarIcon, EyeIcon } from 'lucide-react';
 
 import { ItemsProgress } from '@/components/items-progress';
+import { ListEditButton } from '@/components/list-edit-button';
+import { ListMembersBadges } from '@/components/list-members-badges';
+import { ListTagsBadges } from '@/components/list-tags-badges';
 import { Body } from '@/components/typography/body';
 import { Caption } from '@/components/typography/caption';
 import { Label } from '@/components/typography/label';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -32,19 +28,11 @@ import {
 } from '@/components/ui/hover-card';
 import { ListCover } from '@/components/ui/list-cover';
 import { Skeleton } from '@/components/ui/skeleton';
+import { LIST_VISIBILITY_LABELS } from '@/constants/list-visibility';
 import { ROUTES } from '@/constants/routes';
 import { formatDate } from '@/lib/utils/format-date';
 import type { UserListSummaryDto } from '@/server/api/lists';
 import { usersQueries } from '@/server/api/queries/users.queries';
-
-const VISIBILITY_LABELS: Record<
-  string,
-  { label: string; icon: typeof LockIcon }
-> = {
-  PRIVATE: { label: 'Private', icon: LockIcon },
-  FRIENDS_ONLY: { label: 'Friends', icon: UsersIcon },
-  PUBLIC: { label: 'Public', icon: GlobeIcon },
-};
 
 const DESCRIPTION_MAX_LENGTH = 80;
 
@@ -58,16 +46,11 @@ export function ListCard({ list }: ListCardProps) {
 
   const tags = list.tags ?? [];
   const members = list.members ?? [];
-  const visibilityKey = list.visibility ?? 'PRIVATE';
+  const visibilityKey = (list.visibility ??
+    ListVisibility.PRIVATE) as ListVisibility;
   const visibility =
-    VISIBILITY_LABELS[visibilityKey] ?? VISIBILITY_LABELS.PRIVATE;
+    LIST_VISIBILITY_LABELS[visibilityKey] ?? LIST_VISIBILITY_LABELS.PRIVATE;
   const VisibilityIcon = visibility.icon;
-
-  const displayedTags = tags.slice(0, 3);
-  const remainingTagsCount = Math.max(0, tags.length - 3);
-
-  const displayedMembers = members.slice(0, 3);
-  const remainingMembersCount = Math.max(0, members.length - 3);
 
   const shortDescription = list.description
     ? list.description.length > DESCRIPTION_MAX_LENGTH
@@ -161,67 +144,12 @@ export function ListCard({ list }: ListCardProps) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <div className="flex flex-wrap items-center gap-1.5">
-              <UsersIcon className="text-muted-foreground/50 mr-1 h-3.5 w-3.5" />
-              {members.length > 0 ? (
-                <>
-                  {displayedMembers.map((m) => (
-                    <Badge
-                      key={m.id}
-                      variant="outline"
-                      className="text-muted-foreground text-[10px] font-medium tracking-wider uppercase"
-                    >
-                      {m.username}
-                    </Badge>
-                  ))}
-                  {remainingMembersCount > 0 && (
-                    <Badge
-                      variant="outline"
-                      className="text-muted-foreground text-[10px] font-medium"
-                    >
-                      +{remainingMembersCount}
-                    </Badge>
-                  )}
-                </>
-              ) : (
-                <Badge
-                  variant="outline"
-                  className="border-muted-foreground/20 text-muted-foreground/40 border-dashed text-[10px] font-medium tracking-wider uppercase"
-                >
-                  Only you
-                </Badge>
-              )}
-            </div>
-            <div className="flex flex-wrap items-center gap-1.5">
-              {tags.length > 0 ? (
-                <>
-                  {displayedTags.map((tag) => (
-                    <Badge
-                      key={tag}
-                      variant="secondary"
-                      className="bg-muted/50 hover:bg-muted text-[11px] font-normal"
-                    >
-                      #{tag}
-                    </Badge>
-                  ))}
-                  {remainingTagsCount > 0 && (
-                    <Badge
-                      variant="secondary"
-                      className="bg-muted/50 hover:bg-muted text-[11px] font-normal"
-                    >
-                      +{remainingTagsCount}
-                    </Badge>
-                  )}
-                </>
-              ) : (
-                <Badge
-                  variant="outline"
-                  className="border-muted-foreground/20 text-muted-foreground/40 border-dashed text-[11px] font-normal"
-                >
-                  No tags
-                </Badge>
-              )}
-            </div>
+            <ListMembersBadges
+              members={members}
+              maxDisplay={3}
+              emptyLabel="Only you"
+            />
+            <ListTagsBadges tags={tags} maxDisplay={3} />
           </div>
 
           <div className="text-muted-foreground mt-auto flex items-center justify-between pt-3">
@@ -249,20 +177,7 @@ export function ListCard({ list }: ListCardProps) {
         </CardFooter>
       </Link>
 
-      {isOwner && (
-        <Link
-          href={ROUTES.lists.edit(list.id)}
-          className="absolute top-3 right-3 z-10"
-        >
-          <Button
-            variant="secondary"
-            size="icon"
-            className="bg-background/60 hover:bg-background/90 h-8 w-8 opacity-0 shadow-sm backdrop-blur-md transition-all duration-300 group-hover:opacity-100 hover:scale-105"
-          >
-            <Edit2Icon className="text-foreground h-4 w-4" />
-          </Button>
-        </Link>
-      )}
+      {isOwner && <ListEditButton listId={list.id} variant="overlay" />}
     </Card>
   );
 }
