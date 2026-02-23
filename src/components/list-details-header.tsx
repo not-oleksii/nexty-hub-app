@@ -1,0 +1,134 @@
+'use client';
+
+import Link from 'next/link';
+
+import { ListVisibility } from '@generated/prisma/enums';
+import { useQuery } from '@tanstack/react-query';
+import { Edit2Icon, GlobeIcon, LockIcon, UsersIcon } from 'lucide-react';
+
+import { ItemsProgress } from '@/components/items-progress';
+import { Body } from '@/components/typography/body';
+import { Caption } from '@/components/typography/caption';
+import { Header } from '@/components/typography/header';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { ListCover } from '@/components/ui/list-cover';
+import { ROUTES } from '@/constants/routes';
+import { formatDate } from '@/lib/utils/format-date';
+import type { UserListViewDto } from '@/server/api/lists';
+import { usersQueries } from '@/server/api/queries/users.queries';
+
+const VISIBILITY_LABELS: Record<
+  ListVisibility,
+  { label: string; icon: typeof LockIcon }
+> = {
+  PRIVATE: { label: 'Private', icon: LockIcon },
+  FRIENDS_ONLY: { label: 'Friends', icon: UsersIcon },
+  PUBLIC: { label: 'Public', icon: GlobeIcon },
+};
+
+type ListDetailsHeaderProps = {
+  list: UserListViewDto;
+};
+
+export function ListDetailsHeader({ list }: ListDetailsHeaderProps) {
+  const { data: currentUser } = useQuery(usersQueries.current());
+  const isOwner = list.owner.id === currentUser?.id;
+
+  const tags = list.tags ?? [];
+  const members = list.members ?? [];
+  const visibilityKey = (list.visibility ??
+    ListVisibility.PRIVATE) as ListVisibility;
+  const visibility =
+    VISIBILITY_LABELS[visibilityKey] ?? VISIBILITY_LABELS.PRIVATE;
+
+  return (
+    <div className="flex flex-col gap-6 md:flex-row md:items-stretch md:gap-8">
+      <div className="flex min-w-0 flex-1 flex-col gap-4 md:min-h-0">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1">
+            <Header size="xl">{list.name}</Header>
+            <Caption size="base" className="text-muted-foreground">
+              {`By ${list.owner.username}`} • {visibility.label} •{' '}
+              {`Updated ${list.updatedAt ? formatDate(list.updatedAt) : 'Recently'}`}{' '}
+              • {list.viewsCount ?? 0} views
+            </Caption>
+          </div>
+
+          {list.description && (
+            <Body className="text-muted-foreground max-w-2xl leading-relaxed">
+              {list.description}
+            </Body>
+          )}
+        </div>
+
+        <div className="mt-auto flex flex-col gap-3">
+          {members.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
+              <UsersIcon className="text-muted-foreground h-4 w-4 shrink-0" />
+              Shared with {members.length} users
+              <div className="flex flex-wrap gap-1.5">
+                {members.map((m) => (
+                  <Badge
+                    key={m.id}
+                    variant="outline"
+                    className="text-muted-foreground text-xs font-medium tracking-wider uppercase"
+                  >
+                    {m.username}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+          {tags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {tags.map((tag) => (
+                <Badge
+                  key={tag}
+                  variant="secondary"
+                  className="bg-muted/50 hover:bg-muted text-xs font-normal"
+                >
+                  #{tag}
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="border-border/50 bg-background/40 rounded-lg border p-4 backdrop-blur-xl">
+          <ItemsProgress
+            value={list.completedDiscoverItems}
+            maxValue={list.totalDiscoverItems}
+          />
+        </div>
+      </div>
+
+      <div className="relative shrink-0 overflow-hidden rounded-xl md:w-64 md:min-w-64">
+        <ListCover
+          coverImageUrl={list.coverImageUrl}
+          listName={list.name}
+          discoverItems={list.discoverItems}
+          className="aspect-[3/4] w-full"
+        />
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-black/40 to-transparent"
+          aria-hidden
+        />
+        {isOwner && (
+          <Link
+            href={ROUTES.lists.edit(list.id)}
+            className="absolute top-4 right-4 z-10"
+          >
+            <Button
+              variant="secondary"
+              size="icon"
+              className="bg-background/80 hover:bg-background shadow-md backdrop-blur-sm"
+            >
+              <Edit2Icon className="h-4 w-4" />
+            </Button>
+          </Link>
+        )}
+      </div>
+    </div>
+  );
+}

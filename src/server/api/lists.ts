@@ -8,6 +8,14 @@ import type {
 } from '@/server/lib/lists';
 import { getJson, postJson, putJson } from '@/server/utils/fetch-json';
 
+export type UserListViewDto = Omit<
+  UserListWithProgress,
+  'createdAt' | 'updatedAt'
+> & {
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type UserListSummaryDto = Omit<
   UserListWithProgress,
   'createdAt' | 'updatedAt'
@@ -22,6 +30,9 @@ export const listsApi = {
   getAll: () => getJson<UserListSummaryDto[]>('/api/lists'),
 
   getById: (id: string) => getJson<UserListDetail>(`/api/lists/${id}`),
+
+  getViewById: (id: string) =>
+    getJson<UserListViewDto>(`/api/lists/${id}/view`),
 
   create: (payload: ListSchema) => postJson<UserListDto>('/api/lists', payload),
 

@@ -13,6 +13,7 @@ export const ROUTES = {
   lists: {
     root: '/lists',
     create: '/lists/create',
+    detail: (id: string) => `/lists/${id}`,
     edit: (id: string) => `/lists/${id}/edit`,
   },
   randomPick: {
