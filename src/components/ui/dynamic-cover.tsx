@@ -70,19 +70,16 @@ export function DynamicCover({
       {showFallback && (
         <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
           <div
-            className={cn(
-              'absolute inset-0',
-              fallbackVariant === 'initials' ? 'scale-125 blur-3xl' : '',
-            )}
+            className="absolute inset-0"
             style={{
-              backgroundImage: `linear-gradient(135deg, ${palette.gradient[0]}, ${palette.gradient[1]})`,
+              backgroundImage: `linear-gradient(135deg, ${palette.gradient[0]}, ${palette.gradient[1]}, ${palette.gradient[2]})`,
             }}
           />
 
           {fallbackVariant === 'initials' && (
             <div
-              className="relative z-10 flex size-14 items-center justify-center rounded-full bg-white/5 text-lg font-bold tracking-wider text-white shadow-2xl ring-2 ring-white/90 backdrop-blur-md"
-              style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}
+              className="relative z-10 flex size-14 items-center justify-center rounded-full bg-white/10 text-lg font-bold tracking-wider text-white shadow-xl ring-2 ring-white/80 backdrop-blur-md"
+              style={{ textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
               aria-hidden="true"
             >
               {initials}
@@ -93,8 +90,8 @@ export function DynamicCover({
 
       {actions && (
         <div
-          className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-b from-black/60 via-transparent to-black/20 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-          aria-hidden
+          className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-b from-black/50 via-transparent to-black/30 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+          aria-hidden="true"
         />
       )}
 
