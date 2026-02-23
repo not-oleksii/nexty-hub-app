@@ -166,19 +166,26 @@ body {
   @apply bg-background text-foreground;
 }
 
-/* subtle background glow (optional) */
 .dark body {
+  background-attachment: fixed;
   background-image:
     radial-gradient(
-      600px circle at 20% 10%,
-      hsl(199 89% 58% / 0.12),
+      100% 50% at 30% 0%,
+      hsl(199 60% 35% / 0.12),
       transparent 60%
     ),
     radial-gradient(
-      800px circle at 80% 20%,
-      hsl(142 71% 45% / 0.1),
-      transparent 55%
+      50% 120% at 100% 50%,
+      hsl(152 50% 30% / 0.1),
+      transparent 50%
+    ),
+    radial-gradient(
+      80% 60% at 0% 100%,
+      hsl(250 40% 30% / 0.08),
+      transparent 50%
     );
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
 }
 /*
   ---break---
