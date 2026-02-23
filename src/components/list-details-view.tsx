@@ -4,10 +4,17 @@ import Link from 'next/link';
 
 import { ArrowLeftIcon } from 'lucide-react';
 
-import { DiscoverItemCard } from '@/components/discover-item-card';
-import { ListDetailsHeader } from '@/components/list-details-header';
+import {
+  DiscoverItemCard,
+  DiscoverItemCardSkeleton,
+} from '@/components/discover-item-card';
+import {
+  ListDetailsHeader,
+  ListDetailsHeaderSkeleton,
+} from '@/components/list-details-header';
 import { Caption } from '@/components/typography/caption';
 import { Header } from '@/components/typography/header';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ROUTES } from '@/constants/routes';
 import type { UserListViewDto } from '@/server/api/lists';
 
@@ -47,11 +54,39 @@ export function ListDetailsView({ list }: ListDetailsViewProps) {
             <Caption size="base" className="text-muted-foreground">
               No items in this list yet
             </Caption>
-            <Caption size="sm" className="text-muted-foreground/70 mt-1">
-              Add discover items when editing the list
-            </Caption>
+            <Link href={ROUTES.discoverList.root}>
+              <Caption
+                size="sm"
+                className="text-primary mt-1 underline-offset-4 hover:underline"
+              >
+                Explore discover items!
+              </Caption>
+            </Link>
           </div>
         )}
+      </section>
+    </div>
+  );
+}
+
+const DISCOVER_ITEMS_SKELETON_COUNT = 8;
+
+export function ListDetailsViewSkeleton() {
+  return (
+    <div className="flex flex-col gap-8">
+      <div>
+        <Skeleton className="mb-4 h-5 w-32" />
+      </div>
+
+      <ListDetailsHeaderSkeleton />
+
+      <section>
+        <Skeleton className="mb-4 h-8 w-40" />
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {Array.from({ length: DISCOVER_ITEMS_SKELETON_COUNT }).map((_, i) => (
+            <DiscoverItemCardSkeleton key={i} />
+          ))}
+        </div>
       </section>
     </div>
   );

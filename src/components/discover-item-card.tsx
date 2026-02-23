@@ -8,6 +8,7 @@ import { Body } from '@/components/typography/body';
 import { Caption } from '@/components/typography/caption';
 import { AlbumImage } from '@/components/ui/album-image';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ROUTES } from '@/constants/routes';
 import { mapPrismaToItemType } from '@/server/utils/prisma-maps';
 
@@ -53,5 +54,19 @@ export function DiscoverItemCard({ item }: DiscoverItemCardProps) {
         </CardFooter>
       </Card>
     </Link>
+  );
+}
+
+export function DiscoverItemCardSkeleton() {
+  return (
+    <Card className="flex h-full flex-col overflow-hidden">
+      <CardContent className="p-0">
+        <Skeleton className="h-36 w-full rounded-none" />
+      </CardContent>
+      <CardFooter className="flex flex-col items-start gap-0.5 p-3">
+        <Skeleton className="h-4 w-3/4" />
+        <Skeleton className="h-3 w-1/2" />
+      </CardFooter>
+    </Card>
   );
 }

@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 
+import { useEffect, useState } from 'react';
+
 import { ListVisibility } from '@generated/prisma/enums';
 import { useQuery } from '@tanstack/react-query';
 import { CalendarIcon, EyeIcon } from 'lucide-react';
@@ -41,8 +43,13 @@ type ListCardProps = {
 };
 
 export function ListCard({ list }: ListCardProps) {
+  const [mounted, setMounted] = useState(false);
   const { data: currentUser } = useQuery(usersQueries.current());
   const isOwner = list.owner.id === currentUser?.id;
+
+  useEffect(() => {
+    queueMicrotask(() => setMounted(true));
+  }, []);
 
   const tags = list.tags ?? [];
   const members = list.members ?? [];
@@ -177,7 +184,9 @@ export function ListCard({ list }: ListCardProps) {
         </CardFooter>
       </Link>
 
-      {isOwner && <ListEditButton listId={list.id} variant="overlay" />}
+      {mounted && isOwner && (
+        <ListEditButton listId={list.id} variant="overlay" />
+      )}
     </Card>
   );
 }
