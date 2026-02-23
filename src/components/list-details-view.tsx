@@ -4,10 +4,7 @@ import Link from 'next/link';
 
 import { ArrowLeftIcon } from 'lucide-react';
 
-import {
-  DiscoverItemCard,
-  DiscoverItemCardSkeleton,
-} from '@/components/discover-item-card';
+import { DiscoverItem, DiscoverItemSkeleton } from '@/components/discover-item';
 import {
   ListDetailsHeader,
   ListDetailsHeaderSkeleton,
@@ -46,7 +43,11 @@ export function ListDetailsView({ list }: ListDetailsViewProps) {
         {discoverItems.length > 0 ? (
           <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {discoverItems.map((item) => (
-              <DiscoverItemCard key={item.id} item={item} />
+              <DiscoverItem
+                key={item.id}
+                discoverItem={item}
+                from={ROUTES.lists.detail(list.id)}
+              />
             ))}
           </div>
         ) : (
@@ -84,7 +85,7 @@ export function ListDetailsViewSkeleton() {
         <Skeleton className="mb-4 h-8 w-40" />
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {Array.from({ length: DISCOVER_ITEMS_SKELETON_COUNT }).map((_, i) => (
-            <DiscoverItemCardSkeleton key={i} />
+            <DiscoverItemSkeleton key={i} />
           ))}
         </div>
       </section>
