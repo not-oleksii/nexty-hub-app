@@ -7,9 +7,13 @@ import type { KeyboardEvent } from 'react';
 
 import { Caption } from '@/components/typography/caption';
 import { Badge } from '@/components/ui/badge';
-import { Field, FieldLabel } from '@/components/ui/field';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { SUGGESTED_TAGS } from '@/constants/suggested-tags';
+import {
+  containsProfanity,
+  PROFANITY_MESSAGE,
+} from '@/lib/validators/profanity';
 
 type ListTagInputProps = {
   value: string[];
@@ -19,12 +23,21 @@ type ListTagInputProps = {
 export function ListTagInput({ value: tags, onChange }: ListTagInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [tagInput, setTagInput] = useState('');
+  const [tagError, setTagError] = useState<string | null>(null);
 
   const addTag = useCallback(
     (tag: string) => {
       const trimmed = tag.trim().toLowerCase();
 
       if (!trimmed) return;
+
+      if (containsProfanity(trimmed)) {
+        setTagError(PROFANITY_MESSAGE);
+
+        return;
+      }
+
+      setTagError(null);
 
       if (tags.length >= 20) return;
       if (tags.some((t) => t.toLowerCase() === trimmed)) return;
@@ -75,7 +88,10 @@ export function ListTagInput({ value: tags, onChange }: ListTagInputProps) {
           <Input
             ref={inputRef}
             value={tagInput}
-            onChange={(e) => setTagInput(e.target.value)}
+            onChange={(e) => {
+              setTagInput(e.target.value);
+              if (tagError) setTagError(null);
+            }}
             onKeyDown={handleKeyDown}
             onBlur={() => tagInput.trim() && addTag(tagInput)}
             placeholder="Add tag..."
@@ -83,6 +99,7 @@ export function ListTagInput({ value: tags, onChange }: ListTagInputProps) {
           />
         )}
       </div>
+      {tagError && <FieldError>{tagError}</FieldError>}
       <div className="mt-2 flex flex-wrap gap-1">
         {SUGGESTED_TAGS.filter(
           (t) => !tags.some((f) => f.toLowerCase() === t),

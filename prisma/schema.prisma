@@ -80,6 +80,7 @@ model User {
   sentFriendRequests     Friendship[]       @relation("SentRequests")
   receivedFriendRequests Friendship[]       @relation("ReceivedRequests")
   likedLists             UserList[]         @relation("ListLikes")
+  savedLists             SavedList[]
 
   @@index([username])
 }
@@ -98,6 +99,7 @@ model UserList {
   updatedAt     DateTime         @updatedAt
   visibility    ListVisibility   @default(PRIVATE)
   likedBy       User[]           @relation("ListLikes")
+  savedBy       SavedList[]
 
   owner   User   @relation(name: "Owner", fields: [ownerId], references: [id])
   ownerId String
@@ -157,4 +159,19 @@ model Friendship {
   @@unique([requesterId, addresseeId])
   @@index([requesterId])
   @@index([addresseeId])
+}
+
+model SavedList {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  list   UserList @relation(fields: [listId], references: [id], onDelete: Cascade)
+  listId String
+
+  @@unique([userId, listId])
+  @@index([userId])
+  @@index([listId])
 }

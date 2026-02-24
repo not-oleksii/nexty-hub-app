@@ -56,6 +56,26 @@ type CreateListFormProps = {
   onCancelClick?: () => void;
 };
 
+type FieldSchema = {
+  safeParse: (v: unknown) => {
+    success: boolean;
+    error?: { issues?: Array<{ message: string }> };
+  };
+};
+
+function validateField(
+  schema: FieldSchema,
+  value: unknown,
+): { message: string } | undefined {
+  const result = schema.safeParse(value);
+
+  if (result.success) return undefined;
+
+  const msg = result.error?.issues?.[0]?.message;
+
+  return msg ? { message: msg } : undefined;
+}
+
 function arraysEqual<T>(a: T[], b: T[]): boolean {
   if (a.length !== b.length) return false;
   const sortedA = [...a].sort();
@@ -217,15 +237,24 @@ export function CreateListForm({
   const dirty =
     computeIsDirty((formValues as Record<string, unknown>) ?? {}) || false;
 
-  const hasFormErrors = useMemo(() => {
+  const formValidation = useMemo(() => {
     const v = (formValues ?? {}) as Record<string, unknown>;
-
-    return !listSchema.safeParse({
+    const result = listSchema.safeParse({
       ...v,
       tags,
       memberIds,
       discoverItemIds,
-    }).success;
+    });
+
+    if (result.success) {
+      return { hasErrors: false, errors: [] as string[] };
+    }
+
+    const errors = result.error.issues
+      .map((issue) => issue.message)
+      .filter((msg, i, arr) => arr.indexOf(msg) === i);
+
+    return { hasErrors: true, errors };
   }, [formValues, tags, memberIds, discoverItemIds]);
 
   useEffect(() => {
@@ -257,7 +286,13 @@ export function CreateListForm({
       >
         <FieldGroup>
           <FieldSet>
-            <form.Field name="name">
+            <form.Field
+              name="name"
+              validators={{
+                onChange: ({ value }) =>
+                  validateField(listSchema.shape.name, value),
+              }}
+            >
               {(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
@@ -284,42 +319,72 @@ export function CreateListForm({
               }}
             </form.Field>
 
-            <form.Field name="description">
+            <form.Field
+              name="description"
+              validators={{
+                onChange: ({ value }) =>
+                  validateField(listSchema.shape.description, value),
+              }}
+            >
               {(field) => {
                 const description = field.state.value ?? '';
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
 
                 return (
-                  <LimitedTextarea
-                    id={field.name}
-                    name={field.name}
-                    label="Description"
-                    value={description}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    onBlur={field.handleBlur}
-                    maxLength={DESCRIPTION_MAX_LENGTH}
-                    placeholder="Tell what your list is about..."
-                    rows={3}
-                    overLimitMessage={`Description is too long. Maximum ${DESCRIPTION_MAX_LENGTH} characters.`}
-                  />
+                  <Field data-invalid={isInvalid}>
+                    <LimitedTextarea
+                      id={field.name}
+                      name={field.name}
+                      label="Description"
+                      value={description}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      onBlur={field.handleBlur}
+                      maxLength={DESCRIPTION_MAX_LENGTH}
+                      placeholder="Tell what your list is about..."
+                      rows={3}
+                      overLimitMessage={`Description is too long. Maximum ${DESCRIPTION_MAX_LENGTH} characters.`}
+                    />
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
                 );
               }}
             </form.Field>
 
-            <form.Field name="coverImageUrl">
-              {(field) => (
-                <Field>
-                  <FieldLabel htmlFor={field.name}>Cover image URL</FieldLabel>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    type="url"
-                    value={field.state.value ?? ''}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    onBlur={field.handleBlur}
-                    placeholder="https://..."
-                  />
-                </Field>
-              )}
+            <form.Field
+              name="coverImageUrl"
+              validators={{
+                onChange: ({ value }) =>
+                  validateField(listSchema.shape.coverImageUrl, value),
+              }}
+            >
+              {(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>
+                      Cover image URL
+                    </FieldLabel>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      type="url"
+                      value={field.state.value ?? ''}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      onBlur={field.handleBlur}
+                      placeholder="https://..."
+                      aria-invalid={isInvalid}
+                    />
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                );
+              }}
             </form.Field>
 
             <ListTagInput value={tags} onChange={setTags} />
@@ -380,7 +445,9 @@ export function CreateListForm({
             type="submit"
             form={isEditMode ? 'edit-list-form' : 'create-list-form'}
             size="lg"
-            disabled={form.state.isSubmitting || isPending || hasFormErrors}
+            disabled={
+              form.state.isSubmitting || isPending || formValidation.hasErrors
+            }
             className={
               isEditMode
                 ? undefined

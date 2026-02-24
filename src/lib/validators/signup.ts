@@ -1,5 +1,7 @@
 import z from 'zod';
 
+import { noProfanity } from './profanity';
+
 export const signupSchema = z
   .object({
     username: z
@@ -15,7 +17,8 @@ export const signupSchema = z
             /^[a-zA-Z0-9]+$/,
             'Username must contain only letters and numbers.',
           ),
-      ),
+      )
+      .pipe(noProfanity()),
     password: z
       .string()
       .trim()

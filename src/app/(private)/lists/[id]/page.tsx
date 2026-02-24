@@ -6,8 +6,8 @@ import {
   QueryClient,
 } from '@tanstack/react-query';
 
+import { ListDetailsView } from '@/components/common/list/list-details-view';
 import { ContentWrapper } from '@/components/layout/content';
-import { ListDetailsView } from '@/components/list-details-view';
 import { Card, CardContent } from '@/components/ui/card';
 import { ROUTES } from '@/constants/routes';
 import type { UserListViewDto } from '@/server/api/lists';

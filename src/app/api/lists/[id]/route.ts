@@ -2,6 +2,7 @@ import { ErrorResponse, SuccessResponse } from '@/server/http/response';
 import { ApiErrorType, HttpStatus } from '@/server/http/types';
 import {
   addOrRemoveDiscoverItemToList,
+  deleteList,
   getListById,
   updateList,
 } from '@/server/lib/lists';
@@ -43,6 +44,26 @@ export async function PUT(req: Request, { params }: Params) {
     return SuccessResponse(data, status);
   } catch (error: unknown) {
     console.error('Error updating list:', error);
+
+    return ErrorResponse(
+      new Error(ApiErrorType.INTERNAL_SERVER_ERROR),
+      HttpStatus.INTERNAL_SERVER_ERROR,
+    );
+  }
+}
+
+export async function DELETE(_req: Request, { params }: Params) {
+  try {
+    const { id } = await params;
+    const { data, status, error } = await deleteList(id);
+
+    if (error) {
+      return ErrorResponse(error, status);
+    }
+
+    return SuccessResponse(data, status);
+  } catch (error: unknown) {
+    console.error('Error deleting list:', error);
 
     return ErrorResponse(
       new Error(ApiErrorType.INTERNAL_SERVER_ERROR),

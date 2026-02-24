@@ -5,10 +5,11 @@ export const ROUTES = {
   signup: '/signup',
 
   // Private routes
-  discoverList: {
-    root: '/discover-list',
-    add: '/discover-list/add',
-    item: '/discover-list/:type/:id',
+  discover: {
+    root: '/discover',
+    add: '/discover/add',
+    type: (type: string) => `/discover/${type.toLowerCase()}`,
+    item: (type: string, id: string) => `/discover/${type.toLowerCase()}/${id}`,
   },
   lists: {
     root: '/lists',

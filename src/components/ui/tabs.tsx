@@ -11,10 +11,7 @@ export function TabsList({
   return (
     <TabsPrimitive.List
       className={cn(
-        [
-          'bg-muted text-muted-foreground inline-flex h-9 items-center justify-center rounded-lg p-1',
-          'shadow-sm',
-        ].join(' '),
+        `bg-muted text-muted-foreground inline-flex h-9 w-fit items-center rounded-lg p-1 shadow-sm`,
         className,
       )}
       {...props}

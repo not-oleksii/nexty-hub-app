@@ -2,7 +2,6 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { Body } from '@/components/typography/body';
 import { Caption } from '@/components/typography/caption';
 import { Badge } from '@/components/ui/badge';
 import { Field, FieldLabel } from '@/components/ui/field';
@@ -30,6 +29,10 @@ export function ListFriendSelector({
     onChange(next);
   };
 
+  if (!friendsQuery.isLoading && friends.length === 0) {
+    return null;
+  }
+
   return (
     <Field>
       <FieldLabel>Share with friends</FieldLabel>
@@ -38,8 +41,6 @@ export function ListFriendSelector({
       </Caption>
       {friendsQuery.isLoading ? (
         <Spinner className="h-6 w-6" />
-      ) : friends.length === 0 ? (
-        <Body variant="muted">No friends yet</Body>
       ) : (
         <div className="flex flex-wrap gap-2">
           {friends.map((friend) => (

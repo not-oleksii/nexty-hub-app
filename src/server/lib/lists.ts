@@ -1,5 +1,9 @@
 import { Prisma, UserList } from '@generated/prisma/client';
-import { FriendshipStatus, ListRole } from '@generated/prisma/enums';
+import {
+  FriendshipStatus,
+  ListRole,
+  ListVisibility,
+} from '@generated/prisma/enums';
 
 import { ListSchema, listSchema } from '@/lib/validators/list';
 
@@ -33,6 +37,7 @@ export type UserListWithProgress = {
   tags: string[];
   visibility: string;
   viewsCount: number;
+  savedCount: number;
   createdAt: Date;
   updatedAt: Date;
   owner: { id: string; username: string };
@@ -40,6 +45,7 @@ export type UserListWithProgress = {
   discoverItems: DiscoverItemInList[];
   totalDiscoverItems: number;
   completedDiscoverItems: number;
+  isSaved?: boolean;
 };
 
 export type UserListWithItemStatus = Prisma.UserListGetPayload<{
@@ -77,6 +83,7 @@ export async function getUserLists(): ServerResponse<UserListWithProgress[]> {
         viewsCount: true,
         createdAt: true,
         updatedAt: true,
+        _count: { select: { savedBy: true } },
         owner: {
           select: {
             id: true,
@@ -134,6 +141,7 @@ export async function getUserLists(): ServerResponse<UserListWithProgress[]> {
         tags: list.tags,
         visibility: list.visibility,
         viewsCount: list.viewsCount,
+        savedCount: list._count.savedBy,
         createdAt: list.createdAt,
         updatedAt: list.updatedAt,
         owner,
@@ -473,6 +481,7 @@ export async function getListViewData(
         createdAt: true,
         updatedAt: true,
         ownerId: true,
+        _count: { select: { savedBy: true } },
         owner: { select: { id: true, username: true } },
         members: {
           select: {
@@ -496,6 +505,10 @@ export async function getListViewData(
             },
           },
         },
+        savedBy: {
+          where: { userId },
+          select: { id: true },
+        },
       },
     });
 
@@ -507,7 +520,9 @@ export async function getListViewData(
     }
 
     const isMember = list.members.some((m) => m.userId === userId);
-    if (list.ownerId !== userId && !isMember) {
+    const isPublic = list.visibility === ListVisibility.PUBLIC;
+
+    if (list.ownerId !== userId && !isMember && !isPublic) {
       return ResponseService.error({
         message: 'You do not have access to this list',
         status: HttpStatus.FORBIDDEN,
@@ -519,6 +534,7 @@ export async function getListViewData(
       item.trackers.some((t) => t.id),
     ).length;
     const owner = { ...list.owner };
+
     if (owner.id === userId) {
       owner.username = 'You';
     }
@@ -531,6 +547,7 @@ export async function getListViewData(
       tags: list.tags,
       visibility: list.visibility,
       viewsCount: list.viewsCount,
+      savedCount: list._count.savedBy,
       createdAt: list.createdAt,
       updatedAt: list.updatedAt,
       owner,
@@ -543,6 +560,7 @@ export async function getListViewData(
       ),
       totalDiscoverItems,
       completedDiscoverItems,
+      isSaved: list.savedBy.length > 0,
     };
 
     return ResponseService.success({
@@ -780,6 +798,375 @@ export async function addOrRemoveDiscoverItemToList(
     });
   } catch (error: unknown) {
     console.error('Error adding discover item to list:', error);
+
+    return ResponseService.error({
+      message: ApiErrorType.INTERNAL_SERVER_ERROR,
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+}
+
+export async function getPublicLists(): ServerResponse<UserListWithProgress[]> {
+  try {
+    const userId = await getUserId();
+
+    if (!userId) {
+      return ResponseService.error({
+        message: ApiErrorType.UNAUTHORIZED,
+        status: HttpStatus.UNAUTHORIZED,
+      });
+    }
+
+    const lists = await prisma.userList.findMany({
+      where: {
+        visibility: ListVisibility.PUBLIC,
+        ownerId: { not: userId },
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        coverImageUrl: true,
+        tags: true,
+        visibility: true,
+        viewsCount: true,
+        createdAt: true,
+        updatedAt: true,
+        _count: { select: { savedBy: true } },
+        owner: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+        members: {
+          select: {
+            id: true,
+            user: {
+              select: { username: true },
+            },
+          },
+        },
+        discoverItems: {
+          select: {
+            id: true,
+            title: true,
+            imageUrl: true,
+            type: true,
+            category: true,
+            description: true,
+            owner: {
+              select: {
+                id: true,
+                username: true,
+              },
+            },
+            trackers: {
+              where: { userId, status: 'COMPLETED' },
+              select: { id: true },
+            },
+          },
+        },
+        savedBy: {
+          where: { userId },
+          select: { id: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const listsWithProgress = lists.map((list) => {
+      const totalDiscoverItems = list.discoverItems.length;
+      const completedDiscoverItems = list.discoverItems.filter((item) =>
+        item.trackers.some((t) => t.id),
+      ).length;
+
+      return {
+        id: list.id,
+        name: list.name,
+        description: list.description,
+        coverImageUrl: list.coverImageUrl,
+        tags: list.tags,
+        visibility: list.visibility,
+        viewsCount: list.viewsCount,
+        savedCount: list._count.savedBy,
+        createdAt: list.createdAt,
+        updatedAt: list.updatedAt,
+        owner: { ...list.owner },
+        members: list.members.map((m) => ({
+          id: m.id,
+          username: m.user.username,
+        })),
+        discoverItems: list.discoverItems.map(
+          ({ trackers: _trackers, ...item }) => item,
+        ),
+        totalDiscoverItems,
+        completedDiscoverItems,
+        isSaved: list.savedBy.length > 0,
+      };
+    });
+
+    return ResponseService.success({
+      data: listsWithProgress,
+      message: 'Public lists fetched successfully',
+      status: HttpStatus.OK,
+    });
+  } catch (error: unknown) {
+    console.error('Error fetching public lists:', error);
+
+    return ResponseService.error({
+      message: ApiErrorType.INTERNAL_SERVER_ERROR,
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+}
+
+export async function saveList(listId: string): ServerResponse<{ id: string }> {
+  try {
+    const userId = await getUserId();
+
+    if (!userId) {
+      return ResponseService.error({
+        message: ApiErrorType.UNAUTHORIZED,
+        status: HttpStatus.UNAUTHORIZED,
+      });
+    }
+
+    const list = await prisma.userList.findUnique({
+      where: { id: listId },
+      select: { id: true, ownerId: true, visibility: true },
+    });
+
+    if (!list) {
+      return ResponseService.error({
+        message: `List with id ${listId} not found`,
+        status: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    if (list.ownerId === userId) {
+      return ResponseService.error({
+        message: 'You cannot save your own list',
+        status: HttpStatus.BAD_REQUEST,
+      });
+    }
+
+    if (list.visibility !== ListVisibility.PUBLIC) {
+      return ResponseService.error({
+        message: 'You can only save public lists',
+        status: HttpStatus.FORBIDDEN,
+      });
+    }
+
+    const saved = await prisma.savedList.upsert({
+      where: { userId_listId: { userId, listId } },
+      update: {},
+      create: { userId, listId },
+    });
+
+    return ResponseService.success({
+      data: { id: saved.id },
+      message: 'List saved successfully',
+      status: HttpStatus.CREATED,
+    });
+  } catch (error: unknown) {
+    console.error('Error saving list:', error);
+
+    return ResponseService.error({
+      message: ApiErrorType.INTERNAL_SERVER_ERROR,
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+}
+
+export async function unsaveList(
+  listId: string,
+): ServerResponse<{ id: string }> {
+  try {
+    const userId = await getUserId();
+
+    if (!userId) {
+      return ResponseService.error({
+        message: ApiErrorType.UNAUTHORIZED,
+        status: HttpStatus.UNAUTHORIZED,
+      });
+    }
+
+    const savedList = await prisma.savedList.findUnique({
+      where: { userId_listId: { userId, listId } },
+    });
+
+    if (!savedList) {
+      return ResponseService.error({
+        message: 'This list is not saved',
+        status: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    await prisma.savedList.delete({
+      where: { userId_listId: { userId, listId } },
+    });
+
+    return ResponseService.success({
+      data: { id: listId },
+      message: 'List unsaved successfully',
+      status: HttpStatus.OK,
+    });
+  } catch (error: unknown) {
+    console.error('Error unsaving list:', error);
+
+    return ResponseService.error({
+      message: ApiErrorType.INTERNAL_SERVER_ERROR,
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+}
+
+export async function deleteList(
+  listId: string,
+): ServerResponse<{ id: string }> {
+  try {
+    const userId = await getUserId();
+
+    if (!userId) {
+      return ResponseService.error({
+        message: ApiErrorType.UNAUTHORIZED,
+        status: HttpStatus.UNAUTHORIZED,
+      });
+    }
+
+    const list = await prisma.userList.findUnique({
+      where: { id: listId },
+      select: { ownerId: true },
+    });
+
+    if (!list) {
+      return ResponseService.error({
+        message: `List with id ${listId} not found`,
+        status: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    if (list.ownerId !== userId) {
+      return ResponseService.error({
+        message: 'You can only delete your own lists',
+        status: HttpStatus.FORBIDDEN,
+      });
+    }
+
+    await prisma.userList.delete({
+      where: { id: listId },
+    });
+
+    return ResponseService.success({
+      data: { id: listId },
+      message: 'List deleted successfully',
+      status: HttpStatus.OK,
+    });
+  } catch (error: unknown) {
+    console.error('Error deleting list:', error);
+
+    return ResponseService.error({
+      message: ApiErrorType.INTERNAL_SERVER_ERROR,
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+}
+
+export async function getSavedLists(): ServerResponse<UserListWithProgress[]> {
+  try {
+    const userId = await getUserId();
+
+    if (!userId) {
+      return ResponseService.error({
+        message: ApiErrorType.UNAUTHORIZED,
+        status: HttpStatus.UNAUTHORIZED,
+      });
+    }
+
+    const savedEntries = await prisma.savedList.findMany({
+      where: { userId },
+      select: {
+        list: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            coverImageUrl: true,
+            tags: true,
+            visibility: true,
+            viewsCount: true,
+            createdAt: true,
+            updatedAt: true,
+            _count: { select: { savedBy: true } },
+            owner: {
+              select: { id: true, username: true },
+            },
+            members: {
+              select: {
+                id: true,
+                user: { select: { username: true } },
+              },
+            },
+            discoverItems: {
+              select: {
+                id: true,
+                title: true,
+                imageUrl: true,
+                type: true,
+                category: true,
+                description: true,
+                owner: { select: { id: true, username: true } },
+                trackers: {
+                  where: { userId, status: 'COMPLETED' },
+                  select: { id: true },
+                },
+              },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const listsWithProgress = savedEntries.map(({ list }) => {
+      const totalDiscoverItems = list.discoverItems.length;
+      const completedDiscoverItems = list.discoverItems.filter((item) =>
+        item.trackers.some((t) => t.id),
+      ).length;
+
+      return {
+        id: list.id,
+        name: list.name,
+        description: list.description,
+        coverImageUrl: list.coverImageUrl,
+        tags: list.tags,
+        visibility: list.visibility,
+        viewsCount: list.viewsCount,
+        savedCount: list._count.savedBy,
+        createdAt: list.createdAt,
+        updatedAt: list.updatedAt,
+        owner: { ...list.owner },
+        members: list.members.map((m) => ({
+          id: m.id,
+          username: m.user.username,
+        })),
+        discoverItems: list.discoverItems.map(
+          ({ trackers: _trackers, ...item }) => item,
+        ),
+        totalDiscoverItems,
+        completedDiscoverItems,
+        isSaved: true,
+      };
+    });
+
+    return ResponseService.success({
+      data: listsWithProgress,
+      message: 'Saved lists fetched successfully',
+      status: HttpStatus.OK,
+    });
+  } catch (error: unknown) {
+    console.error('Error fetching saved lists:', error);
 
     return ResponseService.error({
       message: ApiErrorType.INTERNAL_SERVER_ERROR,

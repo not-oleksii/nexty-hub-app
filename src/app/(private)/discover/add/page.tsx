@@ -1,0 +1,32 @@
+import Link from 'next/link';
+
+import { AddDiscoverItemForm } from '@/app/(private)/discover/add/_components/discover-list-add-form';
+import { ContentWrapper } from '@/components/layout/content';
+import { Caption } from '@/components/typography/caption';
+import { Header } from '@/components/typography/header';
+import { Card, CardHeader } from '@/components/ui/card';
+import { ROUTES } from '@/constants/routes';
+
+export default function AddDiscoverItemPage() {
+  return (
+    <ContentWrapper className="flex flex-col gap-6">
+      <Card className="mx-auto w-full max-w-md">
+        <CardHeader>
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col gap-1">
+              <Header>Add Discover Item</Header>
+              <Caption>Add a new discover item to your list</Caption>
+            </div>
+            <Link
+              className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-9 items-center justify-center rounded-md border px-4 text-sm font-medium shadow-sm"
+              href={ROUTES.discover.root}
+            >
+              Back
+            </Link>
+          </div>
+        </CardHeader>
+        <AddDiscoverItemForm />
+      </Card>
+    </ContentWrapper>
+  );
+}
