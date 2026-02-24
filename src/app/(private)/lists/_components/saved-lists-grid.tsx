@@ -1,10 +1,12 @@
 'use client';
 
+import Link from 'next/link';
+
 import { useQuery } from '@tanstack/react-query';
 
 import { ListCard, ListCardSkeleton } from '@/components/list-card';
-import { Header } from '@/components/typography/header';
-import { Separator } from '@/components/ui/separator';
+import { Caption } from '@/components/typography/caption';
+import { ROUTES } from '@/constants/routes';
 import { listsQueries } from '@/server/api/queries/lists.queries';
 
 export function SavedListsGrid() {
@@ -23,36 +25,41 @@ export function SavedListsGrid() {
   }
 
   if (!data?.length) {
-    return null;
+    return (
+      <div className="border-border bg-muted/20 flex flex-col items-center justify-center rounded-xl border py-12">
+        <Caption size="base" className="text-muted-foreground">
+          No saved lists yet
+        </Caption>
+        <Caption size="sm" className="text-muted-foreground mt-1">
+          Save public lists from the Discover page to find them here.
+        </Caption>
+        <Link href={ROUTES.discover.root}>
+          <Caption
+            size="sm"
+            className="text-primary mt-1 underline-offset-4 hover:underline"
+          >
+            Explore user-created lists!
+          </Caption>
+        </Link>
+      </div>
+    );
   }
 
   return (
-    <>
-      <Separator className="my-6" />
-      <div className="flex flex-col gap-4">
-        <Header size="lg">Saved Lists</Header>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {data.map((list) => (
-            <ListCard key={list.id} list={list} />
-          ))}
-        </div>
-      </div>
-    </>
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {data.map((list) => (
+        <ListCard key={list.id} list={list} />
+      ))}
+    </div>
   );
 }
 
 function SavedListsGridSkeleton() {
   return (
-    <>
-      <Separator className="my-6" />
-      <div className="flex flex-col gap-4">
-        <Header size="lg">Saved Lists</Header>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <ListCardSkeleton key={index} />
-          ))}
-        </div>
-      </div>
-    </>
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {Array.from({ length: 4 }).map((_, index) => (
+        <ListCardSkeleton key={index} />
+      ))}
+    </div>
   );
 }

@@ -27,7 +27,7 @@ export default function AuthorizedLayout({ children }: AuthorizedLayoutProps) {
           <SidebarTrigger />
         </header>
 
-        <ContentWrapper className="mx-auto w-full max-w-7xl px-4 md:px-6">
+        <ContentWrapper className="w-full max-w-7xl px-4 md:px-6 2xl:ml-[10rem]">
           {children}
         </ContentWrapper>
       </SidebarInset>

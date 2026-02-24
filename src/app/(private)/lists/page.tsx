@@ -6,8 +6,7 @@ import {
 
 import { listsQueries } from '@/server/api/queries/lists.queries';
 
-import { ListsGrid } from './_components/lists-grid';
-import { SavedListsGrid } from './_components/saved-lists-grid';
+import { ListsTabs } from './_components/lists-tabs';
 
 export default async function ListsPage() {
   const queryClient = new QueryClient();
@@ -18,10 +17,7 @@ export default async function ListsPage() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="flex flex-col gap-4">
-        <ListsGrid />
-        <SavedListsGrid />
-      </div>
+      <ListsTabs />
     </HydrationBoundary>
   );
 }

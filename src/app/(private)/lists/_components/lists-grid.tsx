@@ -3,7 +3,6 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { ListCard, ListCardSkeleton } from '@/components/list-card';
-import { Header } from '@/components/typography/header';
 import { listsQueries } from '@/server/api/queries/lists.queries';
 
 import { CreateListCard } from './create-list-card';
@@ -24,28 +23,22 @@ export function ListsGrid() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <Header size="lg">My Lists</Header>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        <CreateListCard />
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <CreateListCard />
 
-        {data?.map((list) => (
-          <ListCard key={list.id} list={list} />
-        ))}
-      </div>
+      {data?.map((list) => (
+        <ListCard key={list.id} list={list} />
+      ))}
     </div>
   );
 }
 
 export function ListsGridSkeleton() {
   return (
-    <div className="flex flex-col gap-4">
-      <Header size="lg">My Lists</Header>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {Array.from({ length: 6 }).map((_, index) => (
-          <ListCardSkeleton key={index} />
-        ))}
-      </div>
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {Array.from({ length: 6 }).map((_, index) => (
+        <ListCardSkeleton key={index} />
+      ))}
     </div>
   );
 }
