@@ -1,6 +1,8 @@
 import { ListVisibility } from '@generated/prisma/enums';
 import { z } from 'zod';
 
+import { noProfanity } from './profanity';
+
 const listVisibilityEnum = z.enum([
   ListVisibility.PRIVATE,
   ListVisibility.FRIENDS_ONLY,
@@ -18,14 +20,16 @@ export const listSchema = z.object({
       z
         .string()
         .regex(
-          /^[A-Za-z0-9][A-Za-z0-9\s'’\-:.,!?()&/+#]*$/,
+          /^[A-Za-z0-9][A-Za-z0-9\s''\-:.,!?()&/+#]*$/,
           'Name contains invalid characters.',
         ),
-    ),
+    )
+    .pipe(noProfanity()),
   description: z
     .string()
     .trim()
     .max(500, 'Description is too long.')
+    .pipe(noProfanity())
     .optional()
     .or(z.literal('')),
   coverImageUrl: z
@@ -41,7 +45,8 @@ export const listSchema = z.object({
         .string()
         .trim()
         .min(1, 'Tag cannot be empty.')
-        .max(30, 'Tag is too long.'),
+        .max(30, 'Tag is too long.')
+        .pipe(noProfanity()),
     )
     .max(20, 'Maximum 20 tags allowed.')
     .default([]),
