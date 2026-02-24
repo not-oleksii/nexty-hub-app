@@ -38,7 +38,8 @@ export function DiscoverItem({
     return <DiscoverItemSkeleton />;
   }
 
-  const baseHref = `${ROUTES.discoverList.item.replace(':type', mapPrismaToItemType(discoverItem.type as DiscoverItemType)).replace(':id', discoverItem.id)}`;
+  const itemType = mapPrismaToItemType(discoverItem.type as DiscoverItemType);
+  const baseHref = ROUTES.discover.item(itemType, discoverItem.id);
   const href = from ? `${baseHref}?from=${encodeURIComponent(from)}` : baseHref;
 
   return (

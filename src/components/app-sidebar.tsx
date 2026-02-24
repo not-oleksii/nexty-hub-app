@@ -71,11 +71,11 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu>
-            <MenuItemWithLink href={ROUTES.discoverList.root}>
+            <MenuItemWithLink href={ROUTES.discover.root}>
               <ListVideoIcon size={24} className="text-primary" />
-              Discovery List
+              Discover
             </MenuItemWithLink>
-            <MenuItemWithLink href={ROUTES.discoverList.add}>
+            <MenuItemWithLink href={ROUTES.discover.add}>
               <CirclePlusIcon size={24} className="text-primary" /> Add New Item
             </MenuItemWithLink>
             <MenuItemWithLink href={ROUTES.lists.root}>

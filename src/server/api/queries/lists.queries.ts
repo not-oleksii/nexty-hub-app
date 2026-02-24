@@ -7,6 +7,7 @@ import { listsApi } from '../lists';
 export const listsKeys = {
   all: ['lists'] as const,
   getAll: () => [...listsKeys.all] as const,
+  public: () => [...listsKeys.all, 'public'] as const,
   detail: (id: string) => [...listsKeys.all, 'detail', id] as const,
   view: (id: string) => [...listsKeys.all, 'view', id] as const,
   byDiscoverItemId: (discoverItemId: string) =>
@@ -24,6 +25,11 @@ export const listsQueries = {
     queryOptions({
       queryKey: listsKeys.getAll(),
       queryFn: listsApi.getAll,
+    }),
+  public: () =>
+    queryOptions({
+      queryKey: listsKeys.public(),
+      queryFn: listsApi.getPublic,
     }),
   detail: (id: string) =>
     queryOptions({

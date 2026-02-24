@@ -1,10 +1,11 @@
 import Link from 'next/link';
 
-import { AddDiscoverItemForm } from '@/app/(private)/discover-list/add/_components/discover-list-add-form';
+import { AddDiscoverItemForm } from '@/app/(private)/discover/add/_components/discover-list-add-form';
 import { ContentWrapper } from '@/components/layout/content';
 import { Caption } from '@/components/typography/caption';
 import { Header } from '@/components/typography/header';
 import { Card, CardHeader } from '@/components/ui/card';
+import { ROUTES } from '@/constants/routes';
 
 export default function AddDiscoverItemPage() {
   return (
@@ -18,7 +19,7 @@ export default function AddDiscoverItemPage() {
             </div>
             <Link
               className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-9 items-center justify-center rounded-md border px-4 text-sm font-medium shadow-sm"
-              href="/discover-list"
+              href={ROUTES.discover.root}
             >
               Back
             </Link>

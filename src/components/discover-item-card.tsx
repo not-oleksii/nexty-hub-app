@@ -26,7 +26,7 @@ type DiscoverItemCardProps = {
 
 export function DiscoverItemCard({ item }: DiscoverItemCardProps) {
   const typeSlug = mapPrismaToItemType(item.type as DiscoverItemType);
-  const href = `${ROUTES.discoverList.root}/${typeSlug}/${item.id}`;
+  const href = ROUTES.discover.item(typeSlug, item.id);
 
   return (
     <Link href={href} className="block">

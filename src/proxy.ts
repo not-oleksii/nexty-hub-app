@@ -4,7 +4,11 @@ import { NextResponse } from 'next/server';
 import { AUTH_COOKIE } from '@/constants/auth';
 import { ROUTES } from '@/constants/routes';
 
-const PRIVATE_ROUTES = [ROUTES.discoverList.root];
+const PRIVATE_ROUTES = [
+  ROUTES.discover.root,
+  ROUTES.lists.root,
+  ROUTES.randomPick.root,
+];
 const PUBLIC_ROUTES = [ROUTES.home, ROUTES.login, ROUTES.signup];
 
 export function proxy(request: NextRequest) {
@@ -24,14 +28,8 @@ export function proxy(request: NextRequest) {
     return path.startsWith(route);
   });
 
-  if (
-    isPublicRoute &&
-    authCookie &&
-    !path.startsWith(ROUTES.discoverList.root)
-  ) {
-    return NextResponse.redirect(
-      new URL(ROUTES.discoverList.root, request.url),
-    );
+  if (isPublicRoute && authCookie && !path.startsWith(ROUTES.discover.root)) {
+    return NextResponse.redirect(new URL(ROUTES.discover.root, request.url));
   }
 
   return NextResponse.next();

@@ -29,6 +29,8 @@ export type UserListDto = Prisma.UserListGetPayload<object>;
 export const listsApi = {
   getAll: () => getJson<UserListSummaryDto[]>('/api/lists'),
 
+  getPublic: () => getJson<UserListSummaryDto[]>('/api/lists/public'),
+
   getById: (id: string) => getJson<UserListDetail>(`/api/lists/${id}`),
 
   getViewById: (id: string) =>

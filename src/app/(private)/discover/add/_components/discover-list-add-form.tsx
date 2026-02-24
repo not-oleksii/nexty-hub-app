@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { ROUTES } from '@/constants/routes';
 import { getErrorMessage } from '@/lib/utils/common';
 import {
   DiscoverItemSchema,
@@ -72,7 +73,7 @@ export function AddDiscoverItemForm() {
         });
 
         form.reset(DEFAULT_VALUES);
-        router.push('/discover-list');
+        router.push(ROUTES.discover.root);
         router.refresh();
       } catch (error) {
         console.error(error);

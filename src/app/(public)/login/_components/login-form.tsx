@@ -52,7 +52,7 @@ export function LoginForm() {
 
         clearSessionCache(queryClient);
 
-        router.push(ROUTES.discoverList.root);
+        router.push(ROUTES.discover.root);
         router.refresh();
       } catch (error: unknown) {
         console.error('Error logging in:', error);

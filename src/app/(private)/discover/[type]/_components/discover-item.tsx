@@ -25,7 +25,8 @@ export function DiscoverItem({ discoverItem, isLoading }: DiscoverItemProps) {
     return <DiscoverItemSkeleton />;
   }
 
-  const href = `${ROUTES.discoverList.item.replace(':type', mapPrismaToItemType(discoverItem.type as DiscoverItemType)).replace(':id', discoverItem.id)}`;
+  const itemType = mapPrismaToItemType(discoverItem.type as DiscoverItemType);
+  const href = ROUTES.discover.item(itemType, discoverItem.id);
 
   return (
     <Link href={href} className="block h-full">

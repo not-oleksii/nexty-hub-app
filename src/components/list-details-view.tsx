@@ -55,7 +55,7 @@ export function ListDetailsView({ list }: ListDetailsViewProps) {
             <Caption size="base" className="text-muted-foreground">
               No items in this list yet
             </Caption>
-            <Link href={ROUTES.discoverList.root}>
+            <Link href={ROUTES.discover.root}>
               <Caption
                 size="sm"
                 className="text-primary mt-1 underline-offset-4 hover:underline"

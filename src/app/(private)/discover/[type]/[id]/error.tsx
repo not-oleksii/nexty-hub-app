@@ -18,7 +18,7 @@ export default function DiscoverItemPageError() {
             The item you are looking for not found. Try another one.
           </Caption>
         </div>
-        <Link href={ROUTES.discoverList.root}>
+        <Link href={ROUTES.discover.root}>
           <Button>
             <ArrowLeftIcon data-icon="inline-left" />
             Go back to the Discover List

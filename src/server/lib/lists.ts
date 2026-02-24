@@ -1,5 +1,9 @@
 import { Prisma, UserList } from '@generated/prisma/client';
-import { FriendshipStatus, ListRole } from '@generated/prisma/enums';
+import {
+  FriendshipStatus,
+  ListRole,
+  ListVisibility,
+} from '@generated/prisma/enums';
 
 import { ListSchema, listSchema } from '@/lib/validators/list';
 
@@ -507,7 +511,9 @@ export async function getListViewData(
     }
 
     const isMember = list.members.some((m) => m.userId === userId);
-    if (list.ownerId !== userId && !isMember) {
+    const isPublic = list.visibility === ListVisibility.PUBLIC;
+
+    if (list.ownerId !== userId && !isMember && !isPublic) {
       return ResponseService.error({
         message: 'You do not have access to this list',
         status: HttpStatus.FORBIDDEN,
@@ -519,6 +525,7 @@ export async function getListViewData(
       item.trackers.some((t) => t.id),
     ).length;
     const owner = { ...list.owner };
+
     if (owner.id === userId) {
       owner.username = 'You';
     }
@@ -780,6 +787,114 @@ export async function addOrRemoveDiscoverItemToList(
     });
   } catch (error: unknown) {
     console.error('Error adding discover item to list:', error);
+
+    return ResponseService.error({
+      message: ApiErrorType.INTERNAL_SERVER_ERROR,
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+}
+
+export async function getPublicLists(): ServerResponse<UserListWithProgress[]> {
+  try {
+    const userId = await getUserId();
+
+    if (!userId) {
+      return ResponseService.error({
+        message: ApiErrorType.UNAUTHORIZED,
+        status: HttpStatus.UNAUTHORIZED,
+      });
+    }
+
+    const lists = await prisma.userList.findMany({
+      where: {
+        visibility: ListVisibility.PUBLIC,
+        ownerId: { not: userId },
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        coverImageUrl: true,
+        tags: true,
+        visibility: true,
+        viewsCount: true,
+        createdAt: true,
+        updatedAt: true,
+        owner: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+        members: {
+          select: {
+            id: true,
+            user: {
+              select: { username: true },
+            },
+          },
+        },
+        discoverItems: {
+          select: {
+            id: true,
+            title: true,
+            imageUrl: true,
+            type: true,
+            category: true,
+            description: true,
+            owner: {
+              select: {
+                id: true,
+                username: true,
+              },
+            },
+            trackers: {
+              where: { userId, status: 'COMPLETED' },
+              select: { id: true },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const listsWithProgress = lists.map((list) => {
+      const totalDiscoverItems = list.discoverItems.length;
+      const completedDiscoverItems = list.discoverItems.filter((item) =>
+        item.trackers.some((t) => t.id),
+      ).length;
+
+      return {
+        id: list.id,
+        name: list.name,
+        description: list.description,
+        coverImageUrl: list.coverImageUrl,
+        tags: list.tags,
+        visibility: list.visibility,
+        viewsCount: list.viewsCount,
+        createdAt: list.createdAt,
+        updatedAt: list.updatedAt,
+        owner: { ...list.owner },
+        members: list.members.map((m) => ({
+          id: m.id,
+          username: m.user.username,
+        })),
+        discoverItems: list.discoverItems.map(
+          ({ trackers: _trackers, ...item }) => item,
+        ),
+        totalDiscoverItems,
+        completedDiscoverItems,
+      };
+    });
+
+    return ResponseService.success({
+      data: listsWithProgress,
+      message: 'Public lists fetched successfully',
+      status: HttpStatus.OK,
+    });
+  } catch (error: unknown) {
+    console.error('Error fetching public lists:', error);
 
     return ResponseService.error({
       message: ApiErrorType.INTERNAL_SERVER_ERROR,

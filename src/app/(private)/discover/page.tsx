@@ -8,9 +8,12 @@ import { SparkleIcon } from 'lucide-react';
 
 import { ContentWrapper } from '@/components/layout/content';
 import { Header } from '@/components/typography/header';
+import { Separator } from '@/components/ui/separator';
 import { discoverQueries } from '@/server/api/queries/discover.queries';
+import { listsQueries } from '@/server/api/queries/lists.queries';
 
 import { DiscoverListCard } from './_components/discover-list-card';
+import { PublicListsGrid } from './_components/public-lists-grid';
 
 const types: DiscoverItemType[] = [
   DiscoverItemType.MOVIE,
@@ -21,12 +24,15 @@ const types: DiscoverItemType[] = [
   DiscoverItemType.OTHER,
 ];
 
-export default async function DiscoverListPage() {
+export default async function DiscoverPage() {
   const queryClient = new QueryClient();
 
-  await Promise.all(
-    types.map((type) => queryClient.prefetchQuery(discoverQueries.type(type))),
-  );
+  await Promise.all([
+    ...types.map((type) =>
+      queryClient.prefetchQuery(discoverQueries.type(type)),
+    ),
+    queryClient.prefetchQuery(listsQueries.public()),
+  ]);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
@@ -44,6 +50,14 @@ export default async function DiscoverListPage() {
           <DiscoverListCard type={DiscoverItemType.COURSE} />
           <DiscoverListCard type={DiscoverItemType.OTHER} />
         </div>
+
+        <Separator className="my-10" />
+
+        <div className="mb-8 flex items-center gap-2">
+          <Header>Explore lists from other users</Header>
+        </div>
+
+        <PublicListsGrid />
       </ContentWrapper>
     </HydrationBoundary>
   );

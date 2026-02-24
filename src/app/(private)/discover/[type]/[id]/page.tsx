@@ -32,9 +32,7 @@ export default async function DiscoverItemPage({
       <div className="mb-4 w-full max-w-3xl">
         <Link
           href={
-            from && isValidFromPath(from)
-              ? from
-              : `${ROUTES.discoverList.root}/${type}`
+            from && isValidFromPath(from) ? from : ROUTES.discover.type(type)
           }
           className="text-primary inline-flex items-center gap-2 text-sm font-medium underline-offset-4 hover:underline"
         >

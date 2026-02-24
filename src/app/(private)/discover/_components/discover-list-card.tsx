@@ -59,7 +59,7 @@ export function DiscoverListCard({ type }: DiscoverListCardProps) {
   if (!data?.length || isError) return null;
 
   return (
-    <Link href={`${ROUTES.discoverList.root}/${type.toLowerCase()}`}>
+    <Link href={ROUTES.discover.type(type)}>
       <Card variant="interactive" className="md:min-w-sm">
         <CardHeader>
           <div className="flex items-center gap-2">
