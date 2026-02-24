@@ -9,6 +9,7 @@ import { EyeIcon } from 'lucide-react';
 
 import { ItemsProgress } from '@/components/items-progress';
 import { ListEditButton } from '@/components/list-edit-button';
+import { ListSaveButton } from '@/components/list-save-button';
 import { ListTagsBadges } from '@/components/list-tags-badges';
 import { Body } from '@/components/typography/body';
 import { Caption } from '@/components/typography/caption';
@@ -96,13 +97,24 @@ export function ListCard({ list }: ListCardProps) {
             fallbackSrcs={list.discoverItems?.map((i) => i.imageUrl)}
             className="w-full"
             actions={
-              mounted &&
-              isOwner && (
-                <ListEditButton
-                  listId={list.id}
-                  variant="overlay"
-                  className="relative"
-                />
+              mounted && (
+                <>
+                  {isOwner && (
+                    <ListEditButton
+                      listId={list.id}
+                      variant="overlay"
+                      className="relative"
+                    />
+                  )}
+                  {!isOwner && list.isSaved !== undefined && (
+                    <ListSaveButton
+                      listId={list.id}
+                      isSaved={list.isSaved}
+                      variant="overlay"
+                      className="relative"
+                    />
+                  )}
+                </>
               )
             }
           />

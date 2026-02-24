@@ -5,9 +5,11 @@ import { useEffect, useState } from 'react';
 import { ListVisibility } from '@generated/prisma/enums';
 import { useQuery } from '@tanstack/react-query';
 
+import { DeleteListDialog } from '@/components/delete-list-dialog';
 import { ItemsProgress } from '@/components/items-progress';
 import { ListEditButton } from '@/components/list-edit-button';
 import { ListMembersBadges } from '@/components/list-members-badges';
+import { ListSaveButton } from '@/components/list-save-button';
 import { ListTagsBadges } from '@/components/list-tags-badges';
 import { Body } from '@/components/typography/body';
 import { Caption } from '@/components/typography/caption';
@@ -44,7 +46,12 @@ export function ListDetailsHeader({ list }: ListDetailsHeaderProps) {
       <div className="flex min-w-0 flex-1 flex-col gap-4 md:min-h-0">
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            <Header size="xl">{list.name}</Header>
+            <div className="flex items-start justify-between gap-4">
+              <Header size="xl">{list.name}</Header>
+              {mounted && isOwner && (
+                <DeleteListDialog listId={list.id} listName={list.name} />
+              )}
+            </div>
             <Caption size="base" className="text-muted-foreground">
               {`By ${list.owner.username}`} • {visibility.label} •{' '}
               {`Updated ${list.updatedAt ? formatDate(list.updatedAt) : 'Recently'}`}{' '}
@@ -86,13 +93,24 @@ export function ListDetailsHeader({ list }: ListDetailsHeaderProps) {
           aspectRatio="aspect-[3/4]"
           className="w-full"
           actions={
-            mounted &&
-            isOwner && (
-              <ListEditButton
-                listId={list.id}
-                variant="static"
-                className="relative"
-              />
+            mounted && (
+              <>
+                {isOwner && (
+                  <ListEditButton
+                    listId={list.id}
+                    variant="static"
+                    className="relative"
+                  />
+                )}
+                {!isOwner && Boolean(list.isSaved) && (
+                  <ListSaveButton
+                    listId={list.id}
+                    isSaved={Boolean(list.isSaved)}
+                    variant="static"
+                    className="relative"
+                  />
+                )}
+              </>
             )
           }
         />
