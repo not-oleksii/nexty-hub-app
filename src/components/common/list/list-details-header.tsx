@@ -5,12 +5,12 @@ import { useEffect, useState } from 'react';
 import { ListVisibility } from '@generated/prisma/enums';
 import { useQuery } from '@tanstack/react-query';
 
-import { DeleteListDialog } from '@/components/delete-list-dialog';
-import { ItemsProgress } from '@/components/items-progress';
-import { ListEditButton } from '@/components/list-edit-button';
-import { ListMembersBadges } from '@/components/list-members-badges';
-import { ListSaveButton } from '@/components/list-save-button';
-import { ListTagsBadges } from '@/components/list-tags-badges';
+import { ItemsProgress } from '@/components/common/items-progress';
+import { DeleteListDialog } from '@/components/common/list/delete-list-dialog';
+import { ListEditButton } from '@/components/common/list/list-edit-button';
+import { ListMembersBadges } from '@/components/common/list/list-members-badges';
+import { ListSaveButton } from '@/components/common/list/list-save-button';
+import { ListTagsBadges } from '@/components/common/list/list-tags-badges';
 import { Body } from '@/components/typography/body';
 import { Caption } from '@/components/typography/caption';
 import { Header } from '@/components/typography/header';

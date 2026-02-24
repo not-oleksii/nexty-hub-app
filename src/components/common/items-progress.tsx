@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils/common';
 
-import { Body } from './typography/body';
-import { Progress } from './ui/progress';
+import { Body } from '../typography/body';
+import { Progress } from '../ui/progress';
 
 interface ItemsProgressProps {
   value: number;

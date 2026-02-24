@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { ListCard, ListCardSkeleton } from '@/components/list-card';
+import { ListCard, ListCardSkeleton } from '@/components/common/list/list-card';
 import { Header } from '@/components/typography/header';
 import { Separator } from '@/components/ui/separator';
 import { listsQueries } from '@/server/api/queries/lists.queries';

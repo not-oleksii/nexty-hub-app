@@ -1,4 +1,4 @@
-import { AppSidebar } from '@/components/app-sidebar';
+import { AppSidebar } from '@/components/common/app-sidebar';
 import { ContentWrapper } from '@/components/layout/content';
 import {
   SidebarInset,

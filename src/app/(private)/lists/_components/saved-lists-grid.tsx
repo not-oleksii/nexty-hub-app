@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 import { useQuery } from '@tanstack/react-query';
 
-import { ListCard, ListCardSkeleton } from '@/components/list-card';
+import { ListCard, ListCardSkeleton } from '@/components/common/list/list-card';
 import { Caption } from '@/components/typography/caption';
 import { ROUTES } from '@/constants/routes';
 import { listsQueries } from '@/server/api/queries/lists.queries';

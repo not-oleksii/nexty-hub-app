@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { DiscoverItemType } from '@generated/prisma/enums';
 import { ListIcon, StarIcon } from 'lucide-react';
 
-import { AddToListButton } from '@/components/add-to-list-button';
+import { AddToListButton } from '@/components/common/list/add-to-list-button';
 import { Caption } from '@/components/typography/caption';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { DynamicCover } from '@/components/ui/dynamic-cover';

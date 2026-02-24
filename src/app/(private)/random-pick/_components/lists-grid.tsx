@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 
-import { ListsTabsLayout } from '@/components/lists-tabs-layout';
+import { ListsTabsLayout } from '@/components/common/list/lists-tabs-layout';
 import { Caption } from '@/components/typography/caption';
 import { Subtitle } from '@/components/typography/subtitle';
 import type { UserListSummaryDto } from '@/server/api/lists';

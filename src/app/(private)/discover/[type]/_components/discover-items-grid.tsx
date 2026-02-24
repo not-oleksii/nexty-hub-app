@@ -3,7 +3,10 @@
 import { DiscoverItemType } from '@generated/prisma/enums';
 import { useQuery } from '@tanstack/react-query';
 
-import { DiscoverItem, DiscoverItemSkeleton } from '@/components/discover-item';
+import {
+  DiscoverItem,
+  DiscoverItemSkeleton,
+} from '@/components/common/discover/discover-item';
 import { Header } from '@/components/typography/header';
 import { discoverQueries } from '@/server/api/queries/discover.queries';
 

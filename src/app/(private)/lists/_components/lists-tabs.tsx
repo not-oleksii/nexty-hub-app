@@ -1,6 +1,6 @@
 'use client';
 
-import { ListsTabsLayout } from '@/components/lists-tabs-layout';
+import { ListsTabsLayout } from '@/components/common/list/lists-tabs-layout';
 
 import { ListsGrid } from './lists-grid';
 import { SavedListsGrid } from './saved-lists-grid';

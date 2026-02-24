@@ -22,11 +22,15 @@ export function ListsTabsLayout({
   return (
     <Tabs defaultValue="my-lists">
       <TabsList>
-        <TabsTrigger value="my-lists" className="gap-1.5">
+        <TabsTrigger value="my-lists" className="cursor-pointer gap-1.5">
           <LibraryIcon className="h-3.5 w-3.5" />
           My Lists
         </TabsTrigger>
-        <TabsTrigger value="saved" className="gap-1.5" disabled={disableSaved}>
+        <TabsTrigger
+          value="saved"
+          className="cursor-pointer gap-1.5"
+          disabled={disableSaved}
+        >
           <BookmarkIcon className="h-3.5 w-3.5" />
           Saved
         </TabsTrigger>

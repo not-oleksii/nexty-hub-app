@@ -1,5 +1,5 @@
 import { ContentWrapper } from '@/components/layout/content';
-import { ThemeToggle } from '@/components/theme-toggle';
+import { ThemeToggle } from '@/components/common/theme-toggle';
 import { Caption } from '@/components/typography/caption';
 import { Header } from '@/components/typography/header';
 import { Subtitle } from '@/components/typography/subtitle';

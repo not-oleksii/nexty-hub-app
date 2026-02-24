@@ -18,8 +18,8 @@ import {
   listsQueries,
 } from '@/server/api/queries/lists.queries';
 
-import { Button } from './ui/button';
-import { Spinner } from './ui/spinner';
+import { Button } from '../../ui/button';
+import { Spinner } from '../../ui/spinner';
 
 interface AddToListButtonProps {
   discoverItemId: string;

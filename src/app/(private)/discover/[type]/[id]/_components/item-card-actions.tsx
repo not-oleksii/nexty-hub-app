@@ -1,6 +1,6 @@
 'use client';
 
-import { AddToListButton } from '@/components/add-to-list-button';
+import { AddToListButton } from '@/components/common/list/add-to-list-button';
 
 interface ItemCardActionsProps {
   discoverItemId: string;

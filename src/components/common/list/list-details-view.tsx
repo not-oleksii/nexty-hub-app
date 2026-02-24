@@ -4,11 +4,14 @@ import Link from 'next/link';
 
 import { ArrowLeftIcon } from 'lucide-react';
 
-import { DiscoverItem, DiscoverItemSkeleton } from '@/components/discover-item';
+import {
+  DiscoverItem,
+  DiscoverItemSkeleton,
+} from '@/components/common/discover/discover-item';
 import {
   ListDetailsHeader,
   ListDetailsHeaderSkeleton,
-} from '@/components/list-details-header';
+} from '@/components/common/list/list-details-header';
 import { Caption } from '@/components/typography/caption';
 import { Header } from '@/components/typography/header';
 import { Skeleton } from '@/components/ui/skeleton';
