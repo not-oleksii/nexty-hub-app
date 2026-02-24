@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { ListVisibility } from '@generated/prisma/enums';
 import { useQuery } from '@tanstack/react-query';
-import { EyeIcon } from 'lucide-react';
+import { BookmarkIcon } from 'lucide-react';
 
 import { ItemsProgress } from '@/components/items-progress';
 import { ListEditButton } from '@/components/list-edit-button';
@@ -152,9 +152,9 @@ export function ListCard({ list }: ListCardProps) {
               </Badge>
 
               <div className="text-muted-foreground flex items-center gap-1.5">
-                <EyeIcon className="h-3.5 w-3.5 opacity-70" />
+                <BookmarkIcon className="h-3.5 w-3.5 opacity-70" />
                 <Caption size="xs" className="font-medium">
-                  {list.viewsCount ?? 0}
+                  {list.savedCount ?? 0}
                 </Caption>
               </div>
             </div>

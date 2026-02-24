@@ -37,6 +37,7 @@ export type UserListWithProgress = {
   tags: string[];
   visibility: string;
   viewsCount: number;
+  savedCount: number;
   createdAt: Date;
   updatedAt: Date;
   owner: { id: string; username: string };
@@ -82,6 +83,7 @@ export async function getUserLists(): ServerResponse<UserListWithProgress[]> {
         viewsCount: true,
         createdAt: true,
         updatedAt: true,
+        _count: { select: { savedBy: true } },
         owner: {
           select: {
             id: true,
@@ -139,6 +141,7 @@ export async function getUserLists(): ServerResponse<UserListWithProgress[]> {
         tags: list.tags,
         visibility: list.visibility,
         viewsCount: list.viewsCount,
+        savedCount: list._count.savedBy,
         createdAt: list.createdAt,
         updatedAt: list.updatedAt,
         owner,
@@ -478,6 +481,7 @@ export async function getListViewData(
         createdAt: true,
         updatedAt: true,
         ownerId: true,
+        _count: { select: { savedBy: true } },
         owner: { select: { id: true, username: true } },
         members: {
           select: {
@@ -543,6 +547,7 @@ export async function getListViewData(
       tags: list.tags,
       visibility: list.visibility,
       viewsCount: list.viewsCount,
+      savedCount: list._count.savedBy,
       createdAt: list.createdAt,
       updatedAt: list.updatedAt,
       owner,
@@ -827,6 +832,7 @@ export async function getPublicLists(): ServerResponse<UserListWithProgress[]> {
         viewsCount: true,
         createdAt: true,
         updatedAt: true,
+        _count: { select: { savedBy: true } },
         owner: {
           select: {
             id: true,
@@ -883,6 +889,7 @@ export async function getPublicLists(): ServerResponse<UserListWithProgress[]> {
         tags: list.tags,
         visibility: list.visibility,
         viewsCount: list.viewsCount,
+        savedCount: list._count.savedBy,
         createdAt: list.createdAt,
         updatedAt: list.updatedAt,
         owner: { ...list.owner },
@@ -1091,6 +1098,7 @@ export async function getSavedLists(): ServerResponse<UserListWithProgress[]> {
             viewsCount: true,
             createdAt: true,
             updatedAt: true,
+            _count: { select: { savedBy: true } },
             owner: {
               select: { id: true, username: true },
             },
@@ -1135,6 +1143,7 @@ export async function getSavedLists(): ServerResponse<UserListWithProgress[]> {
         tags: list.tags,
         visibility: list.visibility,
         viewsCount: list.viewsCount,
+        savedCount: list._count.savedBy,
         createdAt: list.createdAt,
         updatedAt: list.updatedAt,
         owner: { ...list.owner },

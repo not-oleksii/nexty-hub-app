@@ -55,7 +55,7 @@ export function ListDetailsHeader({ list }: ListDetailsHeaderProps) {
             <Caption size="base" className="text-muted-foreground">
               {`By ${list.owner.username}`} • {visibility.label} •{' '}
               {`Updated ${list.updatedAt ? formatDate(list.updatedAt) : 'Recently'}`}{' '}
-              • {list.viewsCount ?? 0} views
+              • {list.savedCount ?? 0} saved
             </Caption>
           </div>
 
