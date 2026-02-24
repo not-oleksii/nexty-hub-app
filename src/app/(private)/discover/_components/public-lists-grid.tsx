@@ -3,8 +3,8 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { ListCard, ListCardSkeleton } from '@/components/list-card';
-import { Caption } from '@/components/typography/caption';
 import { Header } from '@/components/typography/header';
+import { Separator } from '@/components/ui/separator';
 import { listsQueries } from '@/server/api/queries/lists.queries';
 
 export function PublicListsGrid() {
@@ -27,26 +27,32 @@ export function PublicListsGrid() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <Header size="lg">Public Lists</Header>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {data.map((list) => (
-          <ListCard key={list.id} list={list} />
-        ))}
+    <>
+      <Separator className="my-10" />
+      <div className="flex flex-col gap-4">
+        <Header size="lg">Public Lists</Header>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {data.map((list) => (
+            <ListCard key={list.id} list={list} />
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
 function PublicListsGridSkeleton() {
   return (
-    <div className="flex flex-col gap-4">
-      <Header size="lg">Public Lists</Header>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, index) => (
-          <ListCardSkeleton key={index} />
-        ))}
+    <>
+      <Separator className="my-10" />
+      <div className="flex flex-col gap-4">
+        <Header size="lg">Public Lists</Header>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <ListCardSkeleton key={index} />
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

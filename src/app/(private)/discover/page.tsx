@@ -8,7 +8,6 @@ import { SparkleIcon } from 'lucide-react';
 
 import { ContentWrapper } from '@/components/layout/content';
 import { Header } from '@/components/typography/header';
-import { Separator } from '@/components/ui/separator';
 import { discoverQueries } from '@/server/api/queries/discover.queries';
 import { listsQueries } from '@/server/api/queries/lists.queries';
 
@@ -49,12 +48,6 @@ export default async function DiscoverPage() {
           <DiscoverListCard type={DiscoverItemType.BOOK} />
           <DiscoverListCard type={DiscoverItemType.COURSE} />
           <DiscoverListCard type={DiscoverItemType.OTHER} />
-        </div>
-
-        <Separator className="my-10" />
-
-        <div className="mb-8 flex items-center gap-2">
-          <Header>Explore lists from other users</Header>
         </div>
 
         <PublicListsGrid />
