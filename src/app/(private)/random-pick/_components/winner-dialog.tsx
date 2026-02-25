@@ -1,6 +1,9 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
+
+import confetti from 'canvas-confetti';
 
 import { Header } from '@/components/typography/header';
 import {
@@ -22,11 +25,28 @@ interface WinnerDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+const WIN_SOUND_PATH = '/sounds/win.mp3';
+
 export function WinnerDialog({
   open,
   winner,
   onOpenChange,
 }: WinnerDialogProps) {
+  useEffect(() => {
+    if (!open) return;
+
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 },
+    });
+
+    const winAudio = new Audio(WIN_SOUND_PATH);
+    winAudio.volume = 0.25;
+
+    winAudio.play().catch(() => {});
+  }, [open]);
+
   if (!winner) return null;
 
   const linkable = isWinnerLinkable(winner);
