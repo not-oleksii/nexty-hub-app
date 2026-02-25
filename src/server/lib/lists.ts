@@ -3,6 +3,7 @@ import {
   FriendshipStatus,
   ListRole,
   ListVisibility,
+  TrackingStatus,
 } from '@generated/prisma/enums';
 
 import { ListSchema, listSchema } from '@/lib/validators/list';
@@ -113,7 +114,7 @@ export async function getUserLists(): ServerResponse<UserListWithProgress[]> {
               },
             },
             trackers: {
-              where: { userId, status: 'COMPLETED' },
+              where: { userId, status: TrackingStatus.COMPLETED },
               select: { id: true },
             },
           },
@@ -500,7 +501,7 @@ export async function getListViewData(
             description: true,
             owner: { select: { id: true, username: true } },
             trackers: {
-              where: { userId, status: 'COMPLETED' },
+              where: { userId, status: TrackingStatus.COMPLETED },
               select: { id: true },
             },
           },
@@ -862,7 +863,7 @@ export async function getPublicLists(): ServerResponse<UserListWithProgress[]> {
               },
             },
             trackers: {
-              where: { userId, status: 'COMPLETED' },
+              where: { userId, status: TrackingStatus.COMPLETED },
               select: { id: true },
             },
           },
@@ -1118,7 +1119,7 @@ export async function getSavedLists(): ServerResponse<UserListWithProgress[]> {
                 description: true,
                 owner: { select: { id: true, username: true } },
                 trackers: {
-                  where: { userId, status: 'COMPLETED' },
+                  where: { userId, status: TrackingStatus.COMPLETED },
                   select: { id: true },
                 },
               },

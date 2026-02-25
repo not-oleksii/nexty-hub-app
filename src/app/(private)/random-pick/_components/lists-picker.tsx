@@ -9,18 +9,20 @@ import { Caption } from '@/components/typography/caption';
 import { Subtitle } from '@/components/typography/subtitle';
 import { listsQueries } from '@/server/api/queries/lists.queries';
 
-import { splitLists } from '../helpers';
+import { getUniqueCandidates, splitLists, toggleSetMember } from '../helpers';
 import { ListCard, ListCardSkeleton } from './list-card';
 import type { SpinCandidate } from './types';
 
-interface ListsGridProps {
-  onListClick: (candidates: SpinCandidate[]) => void;
+interface ListsPickerProps {
+  onPoolChange: (candidates: SpinCandidate[]) => void;
 }
 
-export function ListsGrid({ onListClick }: ListsGridProps) {
+export function ListsPicker({ onPoolChange }: ListsPickerProps) {
   const myLists = useQuery(listsQueries.all());
   const savedLists = useQuery(listsQueries.saved());
-  const [selectedListsIds, setSelectedListsIds] = useState<string[]>([]);
+  const [selectedListIds, setSelectedListIds] = useState<Set<string>>(
+    new Set(),
+  );
 
   const myListsSplit = useMemo(() => splitLists(myLists.data), [myLists.data]);
   const savedListsSplit = useMemo(
@@ -35,27 +37,21 @@ export function ListsGrid({ onListClick }: ListsGridProps) {
 
   const handleListClick = useCallback(
     (listId: string) => {
-      const selectedIds = selectedListsIds.includes(listId)
-        ? selectedListsIds.filter((id) => id !== listId)
-        : [...selectedListsIds, listId];
-
-      setSelectedListsIds(selectedIds);
-
-      const candidates: SpinCandidate[] =
-        allNonEmpty
-          .filter((list) => selectedIds.includes(list.id))
-          .flatMap((list) =>
-            list.discoverItems.map((item) => ({
-              id: item.id,
-              name: item.title,
-              image: item.imageUrl ?? null,
-              type: item.type,
-            })),
-          ) ?? [];
-
-      onListClick(candidates);
+      const next = toggleSetMember(selectedListIds, listId);
+      setSelectedListIds(next);
+      const candidates: SpinCandidate[] = allNonEmpty
+        .filter((list) => next.has(list.id))
+        .flatMap((list) =>
+          list.discoverItems.map((item) => ({
+            id: item.id,
+            name: item.title,
+            image: item.imageUrl ?? null,
+            type: item.type,
+          })),
+        );
+      onPoolChange(getUniqueCandidates(candidates));
     },
-    [selectedListsIds, allNonEmpty, onListClick],
+    [allNonEmpty, onPoolChange, selectedListIds],
   );
 
   const isLoading = myLists.isLoading || savedLists.isLoading;
@@ -87,7 +83,7 @@ export function ListsGrid({ onListClick }: ListsGridProps) {
             <ListCard
               key={list.id}
               list={list}
-              selected={selectedListsIds.includes(list.id)}
+              selected={selectedListIds.has(list.id)}
               onClick={handleListClick}
             />
           ))}
@@ -103,7 +99,7 @@ export function ListsGrid({ onListClick }: ListsGridProps) {
               <ListCard
                 key={list.id}
                 list={list}
-                selected={selectedListsIds.includes(list.id)}
+                selected={selectedListIds.has(list.id)}
                 onClick={handleListClick}
               />
             ))}

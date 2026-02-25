@@ -1,7 +1,11 @@
 'use client';
 
+import { useEffect } from 'react';
+import Link from 'next/link';
+
+import confetti from 'canvas-confetti';
+
 import { Header } from '@/components/typography/header';
-import { Subtitle } from '@/components/typography/subtitle';
 import {
   Dialog,
   DialogContent,
@@ -10,21 +14,67 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { DynamicCover } from '@/components/ui/dynamic-cover';
+import { ROUTES } from '@/constants/routes';
 
-import { Reel } from './random-reel';
+import { isWinnerLinkable } from '../helpers';
+import type { SpinCandidate } from './types';
 
 interface WinnerDialogProps {
   open: boolean;
-  winner: Reel | null;
+  winner: SpinCandidate | null;
   onOpenChange: (open: boolean) => void;
 }
+
+const WIN_SOUND_PATH = '/sounds/win.mp3';
 
 export function WinnerDialog({
   open,
   winner,
   onOpenChange,
 }: WinnerDialogProps) {
+  useEffect(() => {
+    if (!open) return;
+
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 },
+    });
+
+    const winAudio = new Audio(WIN_SOUND_PATH);
+    winAudio.volume = 0.25;
+
+    winAudio.play().catch(() => {});
+  }, [open]);
+
   if (!winner) return null;
+
+  const linkable = isWinnerLinkable(winner);
+  const itemHref = linkable
+    ? ROUTES.discover.item(winner.type!, winner.id)
+    : null;
+
+  const content = (
+    <>
+      <div className="animate-in zoom-in-50 fill-mode-both relative delay-150 duration-500">
+        <div className="bg-primary/40 absolute -inset-2 animate-pulse rounded-xl blur-2xl" />
+
+        <DynamicCover
+          title={winner.name}
+          src={winner.image ?? null}
+          aspectRatio="aspect-album"
+          strictHosts
+          className="border-primary/50 relative z-10 w-48 rounded-xl border-2 shadow-xl"
+        />
+      </div>
+
+      <div className="animate-in fade-in slide-in-from-bottom-6 fill-mode-both text-center delay-300 duration-500">
+        <Header size="lg" className="text-primary">
+          {winner.name}
+        </Header>
+      </div>
+    </>
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -35,33 +85,24 @@ export function WinnerDialog({
           </DialogTitle>
 
           <DialogDescription className="sr-only">
-            The randomly selected winner is {winner.title}.
+            The randomly selected winner is {winner.name}.
           </DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col items-center gap-6 overflow-hidden py-6">
-          <div className="animate-in zoom-in-50 fill-mode-both relative delay-150 duration-500">
-            <div className="bg-primary/40 absolute -inset-2 animate-pulse rounded-xl blur-2xl" />
-
-            <DynamicCover
-              title={winner.title}
-              src={winner.imageUrl}
-              aspectRatio="aspect-album"
-              strictHosts
-              className="border-primary/50 relative z-10 w-48 rounded-xl border-2 shadow-xl"
-            />
-          </div>
-
-          <div className="animate-in fade-in slide-in-from-bottom-6 fill-mode-both text-center delay-300 duration-500">
-            <Header size="lg" className="text-primary">
-              {winner.title}
-            </Header>
-            {winner.category && (
-              <Subtitle className="text-muted-foreground mt-1">
-                {winner.category}
-              </Subtitle>
-            )}
-          </div>
+          {itemHref ? (
+            <Link
+              href={itemHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => onOpenChange(false)}
+              className="flex cursor-pointer flex-col items-center gap-6 transition-opacity hover:opacity-90"
+            >
+              {content}
+            </Link>
+          ) : (
+            content
+          )}
         </div>
       </DialogContent>
     </Dialog>

@@ -2,13 +2,7 @@
 
 import { DiscoverItemType } from '@generated/prisma/enums';
 import { useQuery } from '@tanstack/react-query';
-import {
-  CheckCircle2Icon,
-  CircleDashedIcon,
-  FolderIcon,
-  ListIcon,
-  StarIcon,
-} from 'lucide-react';
+import { FolderIcon, ListIcon, StarIcon } from 'lucide-react';
 
 import { Body } from '@/components/typography/body';
 import { Caption } from '@/components/typography/caption';
@@ -18,7 +12,6 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { DynamicCover } from '@/components/ui/dynamic-cover';
 import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils/common';
 import { discoverQueries } from '@/server/api/queries/discover.queries';
 
 import { ItemCardActions } from './item-card-actions';
@@ -34,8 +27,6 @@ export function DiscoverItemDetails({ type, id }: DiscoverItemDetailsProps) {
   if (isLoading) {
     return <DiscoverItemDetailsSkeleton />;
   }
-
-  const isCompleted = Boolean(data?.isCompleted);
 
   return (
     <Card className="border-border/50 bg-card/40 flex flex-col overflow-hidden py-0 backdrop-blur-md md:flex-row">
@@ -84,24 +75,11 @@ export function DiscoverItemDetails({ type, id }: DiscoverItemDetailsProps) {
         </div>
 
         <div className="border-border/10 mt-6 flex flex-wrap items-center gap-4 border-b pb-6">
-          <ItemCardActions discoverItemId={id} />
-
-          <Badge
-            variant="outline"
-            className={cn(
-              'gap-2 px-3 py-1.5 shadow-sm backdrop-blur-sm transition-colors',
-              isCompleted
-                ? 'border-emerald-500/20 bg-emerald-500/5 text-emerald-400'
-                : 'text-muted-foreground border-white/10 bg-white/5',
-            )}
-          >
-            {isCompleted ? (
-              <CheckCircle2Icon className="h-4 w-4" />
-            ) : (
-              <CircleDashedIcon className="h-4 w-4 opacity-70" />
-            )}
-            {isCompleted ? 'Completed' : 'Todo'}
-          </Badge>
+          <ItemCardActions
+            discoverItemId={id}
+            item={data ?? null}
+            type={type}
+          />
         </div>
         <div className="mt-6 flex flex-col gap-2">
           <Label className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
