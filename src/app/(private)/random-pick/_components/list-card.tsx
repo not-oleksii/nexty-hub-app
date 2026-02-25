@@ -53,6 +53,7 @@ export function ListCard({
       onClick={handleClick}
       className={cn(
         'relative flex h-full flex-col justify-between',
+        !disabled && 'cursor-pointer',
         selected &&
           'border-primary bg-primary/5 shadow-[0_0_15px_-3px_hsl(var(--primary)/0.15)]',
         disabled && 'cursor-not-allowed opacity-50 hover:translate-y-0',

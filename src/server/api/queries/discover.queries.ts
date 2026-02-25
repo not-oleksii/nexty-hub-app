@@ -1,4 +1,4 @@
-import { DiscoverItemType, TrackingStatus } from '@generated/prisma/enums';
+import { DiscoverItemType, type TrackingStatus } from '@generated/prisma/enums';
 import { mutationOptions, queryOptions } from '@tanstack/react-query';
 
 import { discoverApi } from '../discover';
@@ -9,6 +9,8 @@ export const discoverKeys = {
   type: (type: DiscoverItemType) =>
     [...discoverKeys.all, 'type', type] as const,
   detail: (id: string) => [...discoverKeys.all, 'detail', id] as const,
+  tracked: (status?: TrackingStatus) =>
+    [...discoverKeys.all, 'tracked', status ?? 'all'] as const,
   search: (query: string, limit?: number) =>
     [...discoverKeys.all, 'search', query, limit ?? 20] as const,
   mutations: {
@@ -34,6 +36,12 @@ export const discoverQueries = {
     queryOptions({
       queryKey: discoverKeys.detail(id),
       queryFn: () => discoverApi.getById(id),
+    }),
+
+  tracked: (status?: TrackingStatus) =>
+    queryOptions({
+      queryKey: discoverKeys.tracked(status),
+      queryFn: () => discoverApi.getTrackedItems(status),
     }),
 
   search: (query: string, limit = 20) =>

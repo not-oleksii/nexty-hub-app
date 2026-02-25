@@ -287,6 +287,67 @@ export async function getDiscoverItemById(
   }
 }
 
+export type UserTrackedItemDto = {
+  id: string;
+  title: string;
+  imageUrl: string | null;
+  status: TrackingStatus;
+  type: DiscoverItemType;
+};
+
+export async function getUserTrackedItems(options?: {
+  status?: TrackingStatus;
+}): ServerResponse<UserTrackedItemDto[]> {
+  try {
+    const userId = await getUserId();
+
+    if (!userId) {
+      return ResponseService.error({
+        message: ApiErrorType.UNAUTHORIZED,
+        status: HttpStatus.UNAUTHORIZED,
+      });
+    }
+
+    const trackings = await prisma.userItemTracking.findMany({
+      where: {
+        userId,
+        ...(options?.status != null && { status: options.status }),
+      },
+      select: {
+        status: true,
+        item: {
+          select: {
+            id: true,
+            title: true,
+            imageUrl: true,
+            type: true,
+          },
+        },
+      },
+    });
+
+    const data: UserTrackedItemDto[] = trackings.map((t) => ({
+      id: t.item.id,
+      title: t.item.title,
+      imageUrl: t.item.imageUrl,
+      status: t.status,
+      type: t.item.type,
+    }));
+
+    return ResponseService.success({
+      data,
+      message: 'Tracked items fetched successfully',
+    });
+  } catch (error: unknown) {
+    console.error('Error fetching user tracked items:', error);
+
+    return ResponseService.error({
+      message: ApiErrorType.INTERNAL_SERVER_ERROR,
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+}
+
 type DiscoverItemSearchResult = {
   id: string;
   type: string;

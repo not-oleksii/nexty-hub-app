@@ -1,6 +1,7 @@
 import type { DiscoverItemType, TrackingStatus } from '@generated/prisma/enums';
 
 import { DiscoverItemSchema } from '@/lib/validators/discovery-item';
+import type { UserTrackedItemDto } from '@/server/lib/discover';
 import { getJson, patchJson, postJson } from '@/server/utils/fetch-json';
 
 export type DiscoverItemDto = {
@@ -52,5 +53,12 @@ export const discoverApi = {
     patchJson<DiscoverItemDto>(
       `/api/discover/item/${encodeURIComponent(itemId)}/track`,
       payload,
+    ),
+
+  getTrackedItems: (status?: TrackingStatus) =>
+    getJson<UserTrackedItemDto[]>(
+      status
+        ? `/api/discover/tracked?status=${encodeURIComponent(status)}`
+        : '/api/discover/tracked',
     ),
 };

@@ -1,5 +1,5 @@
-import { Reel } from './_components/random-reel';
+import type { SpinCandidate } from './_components/types';
 
-export const getUniqueReels = (reels: Reel[]) => {
-  return [...new Map(reels.map((item) => [item.id, item])).values()];
+export const getUniqueCandidates = (candidates: SpinCandidate[]) => {
+  return [...new Map(candidates.map((item) => [item.id, item])).values()];
 };

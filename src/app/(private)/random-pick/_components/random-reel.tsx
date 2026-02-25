@@ -1,28 +1,23 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
-
-import { DiscoverItemType } from '@generated/prisma/enums';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
-import { UserListWithProgress } from '@/server/lib/lists';
+import { ROUTES } from '@/constants/routes';
 import {
   getArrayOfRandomItemsByLength,
   getRandomItem,
   getRandomTitle,
 } from '@/server/utils/random';
 
-import { getUniqueReels } from '../helpers';
+import { getUniqueCandidates } from '../helpers';
 import { ReelItem } from './reel-item';
+import type { SpinCandidate } from './types';
 import { WinnerDialog } from './winner-dialog';
 
-export type Reel = Pick<
-  UserListWithProgress,
-  'discoverItems'
->['discoverItems'][number];
-
 interface RandomReelProps {
-  reels: Reel[];
+  candidates: SpinCandidate[];
 }
 
 const ITEM_WIDTH = 180;
@@ -31,40 +26,42 @@ const TOTAL_ITEM_WIDTH = ITEM_WIDTH + GAP;
 const TRACK_LENGTH = 60;
 const WIN_INDEX = 50;
 
-const tempReels = Array.from({ length: 15 }, (_, index) => {
-  const title = getRandomTitle();
+const tempCandidates: SpinCandidate[] = Array.from({ length: 15 }, (_, i) => ({
+  id: `temp-${i}`,
+  name: getRandomTitle(),
+  image: null,
+}));
 
-  return {
-    category: 'Lorem',
-    description: 'Lorem ipsum dolor sit amet',
-    id: `title-${index}`,
-    imageUrl: null,
-    owner: null,
-    title: title,
-    type: DiscoverItemType.OTHER,
-  };
-}) as Reel[];
-
-export function RandomReel({ reels }: RandomReelProps) {
+export function RandomReel({ candidates }: RandomReelProps) {
   const [isSpinning, setIsSpinning] = useState(false);
   const [isSpinningComplete, setIsSpinningComplete] = useState(false);
   const [offset, setOffset] = useState(0);
-  const [spinTrack, setSpinTrack] = useState<Reel[]>([]);
-  const [pickedItem, setPickedItem] = useState<Reel | null>(null);
+  const [spinTrack, setSpinTrack] = useState<SpinCandidate[]>([]);
+  const [pickedItem, setPickedItem] = useState<SpinCandidate | null>(null);
   const [isWinnerDialogOpen, setIsWinnerDialogOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const baseItems = useMemo(() => {
-    if (reels.length === 0) return tempReels;
+  useEffect(() => {
+    if (isSpinning) return;
 
-    return getArrayOfRandomItemsByLength(getUniqueReels(reels), 15);
-  }, [reels]);
+    setSpinTrack([]);
+    setPickedItem(null);
+    setIsSpinningComplete(false);
+    setIsWinnerDialogOpen(false);
+    setOffset(0);
+  }, [candidates, isSpinning]);
+
+  const baseItems = useMemo(() => {
+    if (candidates.length === 0) return tempCandidates;
+
+    return getArrayOfRandomItemsByLength(getUniqueCandidates(candidates), 15);
+  }, [candidates]);
 
   const onPickClick = useCallback(() => {
     if (!containerRef.current) return;
 
-    const uniqueReels = getUniqueReels(reels);
-    const pool = uniqueReels.length > 0 ? uniqueReels : tempReels;
+    const unique = getUniqueCandidates(candidates);
+    const pool = unique.length > 0 ? unique : tempCandidates;
     const winner = getRandomItem(pool);
 
     if (!winner) return;
@@ -95,7 +92,7 @@ export function RandomReel({ reels }: RandomReelProps) {
         setOffset(finalOffset);
       });
     });
-  }, [reels]);
+  }, [candidates]);
 
   const handleTransitionEnd = useCallback(
     (e: React.TransitionEvent) => {
@@ -131,9 +128,9 @@ export function RandomReel({ reels }: RandomReelProps) {
         >
           {isSpinning || pickedItem ? (
             <div className="flex gap-4 pr-4">
-              {spinTrack.map(({ title, imageUrl }, itemIndex) => (
+              {spinTrack.map(({ name, image }, itemIndex) => (
                 <div key={`spin-${itemIndex}`} className="w-[180px] shrink-0">
-                  <ReelItem title={title} imageUrl={imageUrl} />
+                  <ReelItem title={name} imageUrl={image ?? null} />
                 </div>
               ))}
             </div>
@@ -144,12 +141,12 @@ export function RandomReel({ reels }: RandomReelProps) {
                   key={`group-${groupIndex}-container`}
                   className="flex gap-4 pr-4"
                 >
-                  {baseItems.map(({ title, imageUrl }, itemIndex) => (
+                  {baseItems.map(({ id, name, image }, itemIndex) => (
                     <div
-                      key={`idle-${groupIndex}-${title}-${itemIndex}`}
+                      key={`idle-${groupIndex}-${id}-${itemIndex}`}
                       className="w-[180px] shrink-0"
                     >
-                      <ReelItem title={title} imageUrl={imageUrl} />
+                      <ReelItem title={name} imageUrl={image ?? null} />
                     </div>
                   ))}
                 </div>
@@ -166,16 +163,31 @@ export function RandomReel({ reels }: RandomReelProps) {
         <Button
           size="lg"
           onClick={onPickClick}
-          disabled={reels.length === 0 || isSpinning}
+          disabled={candidates.length < 2 || isSpinning}
           className="w-32"
         >
-          {isSpinning ? 'Spinning...' : 'PICK!'}
+          {isSpinning ? 'Spinning...' : `PICK! (${candidates.length})`}
         </Button>
 
-        <div className="flex h-3 items-center justify-center">
+        <div className="flex min-h-12 flex-col items-center justify-center gap-1">
           {isSpinningComplete && pickedItem && (
             <p className="text-primary animate-entrance-fade-zoom font-bold">
-              Winner: {pickedItem.title}
+              Winner:{' '}
+              {pickedItem.type && !pickedItem.id.startsWith('text-') ? (
+                <Link
+                  href={ROUTES.discover.item(pickedItem.type, pickedItem.id)}
+                  className="underline underline-offset-2 hover:opacity-90"
+                >
+                  {pickedItem.name}
+                </Link>
+              ) : (
+                pickedItem.name
+              )}
+            </p>
+          )}
+          {!isSpinning && !pickedItem && candidates.length < 2 && (
+            <p className="text-muted-foreground text-center text-sm">
+              Select at least 2 items to spin
             </p>
           )}
         </div>
