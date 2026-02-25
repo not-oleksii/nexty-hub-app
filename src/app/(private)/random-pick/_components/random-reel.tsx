@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,7 @@ import {
   getRandomTitle,
 } from '@/server/utils/random';
 
-import { getUniqueCandidates } from '../helpers';
+import { getUniqueCandidates, isWinnerLinkable } from '../helpers';
 import { ReelItem } from './reel-item';
 import type { SpinCandidate } from './types';
 import { WinnerDialog } from './winner-dialog';
@@ -40,16 +40,6 @@ export function RandomReel({ candidates }: RandomReelProps) {
   const [pickedItem, setPickedItem] = useState<SpinCandidate | null>(null);
   const [isWinnerDialogOpen, setIsWinnerDialogOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (isSpinning) return;
-
-    setSpinTrack([]);
-    setPickedItem(null);
-    setIsSpinningComplete(false);
-    setIsWinnerDialogOpen(false);
-    setOffset(0);
-  }, [candidates, isSpinning]);
 
   const baseItems = useMemo(() => {
     if (candidates.length === 0) return tempCandidates;
@@ -173,9 +163,11 @@ export function RandomReel({ candidates }: RandomReelProps) {
           {isSpinningComplete && pickedItem && (
             <p className="text-primary animate-entrance-fade-zoom font-bold">
               Winner:{' '}
-              {pickedItem.type && !pickedItem.id.startsWith('text-') ? (
+              {isWinnerLinkable(pickedItem) ? (
                 <Link
-                  href={ROUTES.discover.item(pickedItem.type, pickedItem.id)}
+                  href={ROUTES.discover.item(pickedItem.type!, pickedItem.id)}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="underline underline-offset-2 hover:opacity-90"
                 >
                   {pickedItem.name}

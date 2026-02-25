@@ -16,10 +16,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils/common';
 import { discoverQueries } from '@/server/api/queries/discover.queries';
 
+import { toggleSetMember } from '../helpers';
+import { PoolItemSkeleton } from './pool-item-skeleton';
 import type { SpinCandidate } from './types';
 
 const ALL_STATUS = 'all';
@@ -37,21 +38,10 @@ interface ItemsPoolPickerProps {
   onPoolChange: (candidates: SpinCandidate[]) => void;
 }
 
-function PoolItemSkeleton() {
-  return (
-    <div className="border-border/50 bg-card/40 flex w-[140px] flex-col overflow-hidden rounded-xl border">
-      <Skeleton className="aspect-4/3 w-full" />
-      <div className="p-2">
-        <Skeleton className="h-4 w-full" />
-      </div>
-    </div>
-  );
-}
-
 export function ItemsPoolPicker({ onPoolChange }: ItemsPoolPickerProps) {
   const { data: items = [], isLoading } = useQuery(discoverQueries.tracked());
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>(ALL_STATUS);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const filtered = useMemo(() => {
@@ -71,11 +61,7 @@ export function ItemsPoolPicker({ onPoolChange }: ItemsPoolPickerProps) {
 
   const toggleSelection = useCallback(
     (id: string) => {
-      const next = new Set(selectedIds);
-
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-
+      const next = toggleSetMember(selectedIds, id);
       setSelectedIds(next);
 
       const pool = items

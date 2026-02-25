@@ -25,12 +25,25 @@ const RandomReelDynamic = dynamic(
   },
 );
 
+const EMPTY_POOL_KEY = 'empty';
+
+function getPoolKey(candidates: SpinCandidate[]): string {
+  if (candidates.length === 0) return EMPTY_POOL_KEY;
+
+  return [...candidates]
+    .map((c) => c.id)
+    .sort()
+    .join(',');
+}
+
 export function RandomPickContent() {
   const [spinCandidates, setSpinCandidates] = useState<SpinCandidate[]>([]);
 
+  const poolKey = getPoolKey(spinCandidates);
+
   return (
     <div className="flex w-full flex-col gap-8">
-      <RandomReelDynamic candidates={spinCandidates} />
+      <RandomReelDynamic key={poolKey} candidates={spinCandidates} />
 
       <div className="bg-card/40 border-border/50 w-full rounded-2xl border p-4 shadow-lg backdrop-blur-md sm:p-6">
         <Tabs defaultValue="lists" className="w-full">

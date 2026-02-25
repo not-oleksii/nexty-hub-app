@@ -13,11 +13,8 @@ import {
 import { DynamicCover } from '@/components/ui/dynamic-cover';
 import { ROUTES } from '@/constants/routes';
 
+import { isWinnerLinkable } from '../helpers';
 import type { SpinCandidate } from './types';
-
-function isWinnerLinkable(winner: SpinCandidate): boolean {
-  return Boolean(winner.type && !winner.id.startsWith('text-'));
-}
 
 interface WinnerDialogProps {
   open: boolean;
@@ -42,24 +39,13 @@ export function WinnerDialog({
       <div className="animate-in zoom-in-50 fill-mode-both relative delay-150 duration-500">
         <div className="bg-primary/40 absolute -inset-2 animate-pulse rounded-xl blur-2xl" />
 
-        {winner.image ? (
-          <DynamicCover
-            title={winner.name}
-            src={winner.image}
-            aspectRatio="aspect-album"
-            strictHosts
-            className="border-primary/50 relative z-10 w-48 rounded-xl border-2 shadow-xl"
-          />
-        ) : (
-          <div className="border-primary/50 bg-muted/30 relative z-10 flex w-48 items-center justify-center rounded-xl border-2 py-12">
-            <Header
-              size="lg"
-              className="text-muted-foreground px-4 text-center"
-            >
-              {winner.name}
-            </Header>
-          </div>
-        )}
+        <DynamicCover
+          title={winner.name}
+          src={winner.image ?? null}
+          aspectRatio="aspect-album"
+          strictHosts
+          className="border-primary/50 relative z-10 w-48 rounded-xl border-2 shadow-xl"
+        />
       </div>
 
       <div className="animate-in fade-in slide-in-from-bottom-6 fill-mode-both text-center delay-300 duration-500">
@@ -87,6 +73,8 @@ export function WinnerDialog({
           {itemHref ? (
             <Link
               href={itemHref}
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={() => onOpenChange(false)}
               className="flex cursor-pointer flex-col items-center gap-6 transition-opacity hover:opacity-90"
             >

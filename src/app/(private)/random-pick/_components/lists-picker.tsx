@@ -7,18 +7,11 @@ import { useQuery } from '@tanstack/react-query';
 import { ListsTabsLayout } from '@/components/common/list/lists-tabs-layout';
 import { Caption } from '@/components/typography/caption';
 import { Subtitle } from '@/components/typography/subtitle';
-import type { UserListSummaryDto } from '@/server/api/lists';
 import { listsQueries } from '@/server/api/queries/lists.queries';
 
+import { getUniqueCandidates, splitLists, toggleSetMember } from '../helpers';
 import { ListCard, ListCardSkeleton } from './list-card';
 import type { SpinCandidate } from './types';
-
-function splitLists(data: UserListSummaryDto[] | undefined) {
-  const nonEmpty = data?.filter((list) => list.discoverItems.length > 0) ?? [];
-  const empty = data?.filter((list) => list.discoverItems.length === 0) ?? [];
-
-  return { nonEmpty, empty };
-}
 
 interface ListsPickerProps {
   onPoolChange: (candidates: SpinCandidate[]) => void;
@@ -44,9 +37,7 @@ export function ListsPicker({ onPoolChange }: ListsPickerProps) {
 
   const handleListClick = useCallback(
     (listId: string) => {
-      const next = new Set(selectedListIds);
-      if (next.has(listId)) next.delete(listId);
-      else next.add(listId);
+      const next = toggleSetMember(selectedListIds, listId);
       setSelectedListIds(next);
       const candidates: SpinCandidate[] = allNonEmpty
         .filter((list) => next.has(list.id))
@@ -58,7 +49,7 @@ export function ListsPicker({ onPoolChange }: ListsPickerProps) {
             type: item.type,
           })),
         );
-      onPoolChange([...new Map(candidates.map((c) => [c.id, c])).values()]);
+      onPoolChange(getUniqueCandidates(candidates));
     },
     [allNonEmpty, onPoolChange, selectedListIds],
   );

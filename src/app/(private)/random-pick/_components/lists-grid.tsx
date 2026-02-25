@@ -7,21 +7,14 @@ import { useQuery } from '@tanstack/react-query';
 import { ListsTabsLayout } from '@/components/common/list/lists-tabs-layout';
 import { Caption } from '@/components/typography/caption';
 import { Subtitle } from '@/components/typography/subtitle';
-import type { UserListSummaryDto } from '@/server/api/lists';
 import { listsQueries } from '@/server/api/queries/lists.queries';
 
+import { splitLists } from '../helpers';
 import { ListCard, ListCardSkeleton } from './list-card';
 import type { SpinCandidate } from './types';
 
 interface ListsGridProps {
   onListClick: (candidates: SpinCandidate[]) => void;
-}
-
-function splitLists(data: UserListSummaryDto[] | undefined) {
-  const nonEmpty = data?.filter((list) => list.discoverItems.length > 0) ?? [];
-  const empty = data?.filter((list) => list.discoverItems.length === 0) ?? [];
-
-  return { nonEmpty, empty };
 }
 
 export function ListsGrid({ onListClick }: ListsGridProps) {
@@ -56,6 +49,7 @@ export function ListsGrid({ onListClick }: ListsGridProps) {
               id: item.id,
               name: item.title,
               image: item.imageUrl ?? null,
+              type: item.type,
             })),
           ) ?? [];
 
